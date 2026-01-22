@@ -1,0 +1,26 @@
+{
+    "title": "Taenttra",
+    "subtitle": "On-device AI. Fast. Private. Native.",
+    "sections": [
+        {
+            "title": "On-Device AI",
+            "text":
+                "Taenttra is a fully on-device AI model. All processing happens directly on your iPhone — no cloud, no servers, no data leaving your device. This makes Taenttra extremely fast, reliable, and privacy-focused."
+        },
+        {
+            "title": "Fully Native & Ultra Fast",
+            "text":
+                "Built entirely with Swift and SwiftUI, Taenttra is deeply optimized for iOS. It uses native system frameworks, system themes, and modern Apple technologies to deliver a smooth, responsive, and efficient experience."
+        },
+        {
+            "title": "Siri, Spotlight & System Integration",
+            "text":
+                "Taenttra integrates seamlessly with Siri and Spotlight, allowing you to open and access the app instantly. The AI is always within reach, deeply connected to the system and available without friction."
+        },
+        {
+            "title": "Privacy, Accessibility & Simplicity",
+            "text":
+                "Privacy, accessibility, and ease of use are core principles of Taenttra. The app supports speech-based interaction and is especially helpful for users with accessibility needs. The interface is clean, minimal, and focused on speed and clarity. More features will follow to further improve usability, accessibility, and simplicity."
+        }
+    ]
+}
