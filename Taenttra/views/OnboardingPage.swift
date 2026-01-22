@@ -5,9 +5,16 @@
 
 import SwiftUI
 
+enum OnboardingIcon {
+    case system(String)
+    case asset(String)
+}
+
 struct OnboardingPage: View {
 
-    let icon: String
+    private let iconSize: CGFloat = 56
+
+    let icon: OnboardingIcon
     let title: String
     let text: String
 
@@ -15,7 +22,6 @@ struct OnboardingPage: View {
         VStack(spacing: 24) {
 
             Spacer()
-
             iconView
 
             VStack(spacing: 10) {
@@ -40,15 +46,26 @@ struct OnboardingPage: View {
 extension OnboardingPage {
 
     fileprivate var iconView: some View {
-        Image(systemName: icon)
-            .font(.largeTitle)
-            .symbolRenderingMode(.hierarchical)
-            .foregroundStyle(.primary)
-            .padding(24)
-            .background(
-                Circle()
-                    .fill(.thinMaterial)
-            )
-            .accessibilityHidden(true)
+        Group {
+            switch icon {
+
+            case .system(let name):
+                Image(systemName: name)
+                    .font(.system(size: iconSize, weight: .semibold))
+
+            case .asset(let name):
+                Image(name)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: iconSize, height: iconSize)
+            }
+        }
+        .foregroundStyle(.primary)
+        .padding(24)
+        .background(
+            Circle()
+                .fill(.thinMaterial)
+        )
+        .accessibilityHidden(true)
     }
 }

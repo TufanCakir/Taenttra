@@ -256,8 +256,9 @@
 				DEVELOPMENT_TEAM = HN763R468M;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Taenttra benötigt Zugriff auf das Mikrofon für Spracheingabe.";
-				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Taenttra benötigt Zugriff auf Ihre Fotobibliothek, damit Sie Bilder im Chat teilen können.";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Taenttra nutzt das Mikrofon zur Spracheingabe.";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Mit Taenttra können Sie Bilder auswählen, die Sie im Chat teilen möchten.";
+				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "Taenttra wandelt gesprochene Wörter in Text um.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -290,8 +291,9 @@
 				DEVELOPMENT_TEAM = HN763R468M;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Taenttra benötigt Zugriff auf das Mikrofon für Spracheingabe.";
-				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Taenttra benötigt Zugriff auf Ihre Fotobibliothek, damit Sie Bilder im Chat teilen können.";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Taenttra nutzt das Mikrofon zur Spracheingabe.";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Mit Taenttra können Sie Bilder auswählen, die Sie im Chat teilen möchten.";
+				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "Taenttra wandelt gesprochene Wörter in Text um.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

@@ -16,7 +16,7 @@ struct OnboardingView: View {
             TabView(selection: $page) {
 
                 OnboardingPage(
-                    icon: "cpu",
+                    icon: .asset("taenttra_icon"),
                     title: "Taenttra",
                     text:
                         "On-device AI.\nFast. Private. Natural.\n\nRuns entirely on your iPhone.\nNo cloud. No servers.\nYour data stays with you."
@@ -24,7 +24,7 @@ struct OnboardingView: View {
                 .tag(0)
 
                 OnboardingPage(
-                    icon: "bolt.fill",
+                    icon: .system("bolt"),
                     title: "Built for iOS",
                     text:
                         "Fully native with Swift and SwiftUI.\n\nDeep system integration makes Taenttra fast, responsive, and available via Siri and Spotlight."
@@ -32,7 +32,7 @@ struct OnboardingView: View {
                 .tag(1)
 
                 OnboardingPage(
-                    icon: "hand.raised.fill",
+                    icon: .system("hand.raised.fill"),
                     title: "Privacy & Accessibility",
                     text:
                         "Designed for privacy, accessibility, and simplicity.\n\nSpeech support and clear language make Taenttra easy for everyone."

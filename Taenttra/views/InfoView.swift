@@ -31,10 +31,15 @@ struct InfoView: View {
     private var headerSection: some View {
         Section {
             VStack(spacing: 8) {
-                Image(systemName: "cpu")
-                    .font(.largeTitle)
-                    .symbolRenderingMode(.hierarchical)
-                    .foregroundStyle(.secondary)
+                Image("taenttra_icon")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 64, height: 64)
+                    .padding(12)
+                    .background(
+                        Circle()
+                            .fill(.thinMaterial)
+                    )
 
                 Text(content.subtitle)
                     .font(.body)
@@ -54,4 +59,8 @@ struct InfoView: View {
                 .fixedSize(horizontal: false, vertical: true)
         }
     }
+}
+
+#Preview {
+    InfoView()
 }

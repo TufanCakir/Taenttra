@@ -98,8 +98,11 @@ extension AccountView {
 
     private var aboutSection: some View {
         Section(text.aboutSection) {
-
-            Label("Taenttra", systemImage: "cpu")
+            NavigationLink {
+                InfoView()
+            } label: {
+                Label("Taenttra", systemImage: "cpu")
+            }
 
             Label(Bundle.main.appVersionString, systemImage: "number")
                 .foregroundStyle(.secondary)
