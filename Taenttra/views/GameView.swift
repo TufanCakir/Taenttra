@@ -8,7 +8,8 @@ import SwiftUI
 
 struct GameView: View {
 
-    @StateObject private var gameState = GameState()
+    @EnvironmentObject var gameState: GameState
+
     @StateObject private var storyViewModel = StoryViewModel()
     @StateObject private var arcadeViewModel = ArcadeViewModel()
     @StateObject private var survivalViewModel = SurvivalViewModel()
@@ -22,89 +23,106 @@ struct GameView: View {
     }
 
     var body: some View {
-        ZStack {
-            switch gameState.screen {
+        NavigationStack {
+            ZStack {
+                switch gameState.screen {
 
-            case .start:
-                StartView()
+                case .start:
+                    StartView()
 
-            case .home:
-                HomeView()
-                
-            case .options:
-                SettingsView()
-                
-            case .events:
-                EventView(
-                    viewModel: eventViewModel,
-                    onStartEvent: { event in
-                        gameState.pendingMode = .eventMode(event)
-                        gameState.screen = .characterSelect
-                    }
-                )
-                
-            case .training:
-                TrainingView(
-                    viewModel: trainingViewModel,
-                    onStartTraining: { mode in
-                        gameState.pendingMode = .trainingMode(mode)
-                        gameState.screen = .characterSelect
-                    }
-                )
-                
-            case .survival:
-                SurvivalView(
-                    viewModel: survivalViewModel,
-                    onStartSurvival: { mode in
-                        gameState.pendingMode = .survivalMode(mode)
-                        gameState.screen = .characterSelect
-                    }
-                )
+                case .home:
+                    HomeView()
 
-            case .story:
-                StoryView(
-                    viewModel: storyViewModel,
-                    onStartFight: { chapter, section in
-                        gameState.pendingMode = .story(chapter, section)
-                        gameState.screen = .characterSelect
-                    }
-                )
+                case .options:
+                    SettingsView()
 
-            case .characterSelect:
-                CharacterGridView()
-
-            case .versus:
-                if let left = gameState.leftCharacter,
-                   let vm = gameState.versusViewModel {
-
-                    VersusView(
-                        viewModel: vm,
-                        onVictoryContinue: { rewards in
-                            rewardStore.add(
-                                coins: rewards.coins,
-                                crystals: rewards.crystals
-                            )
-                            gameState.versusViewModel = nil
-                            gameState.screen = .story // 👈 Story-Flow
-                        },
-                        leftCharacter: left
+                case .events:
+                    EventView(
+                        viewModel: eventViewModel,
+                        onStartEvent: { event in
+                            gameState.pendingMode = .eventMode(event)
+                            gameState.screen = .characterSelect
+                        }
                     )
 
-                    GameHUDView(viewModel: vm)
-                }
+                case .training:
+                    TrainingView(
+                        viewModel: trainingViewModel,
+                        onStartTraining: { mode in
+                            gameState.pendingMode = .trainingMode(mode)
+                            gameState.screen = .characterSelect
+                        }
+                    )
 
-            case .arcade:
-                ArcadeView(
-                    viewModel: arcadeViewModel,
-                    onStartArcade: { stage in
-                        gameState.pendingMode = .arcadeStage(stage)
-                        gameState.screen = .characterSelect
+                case .survival:
+                    SurvivalView(
+                        viewModel: survivalViewModel,
+                        onStartSurvival: { mode in
+                            gameState.pendingMode = .survivalMode(mode)
+                            gameState.screen = .characterSelect
+                        }
+                    )
+
+                case .story:
+                    StoryView(
+                        viewModel: storyViewModel,
+                        onStartFight: { chapter, section in
+                            gameState.pendingMode = .story(chapter, section)
+                            gameState.screen = .characterSelect
+                        }
+                    )
+
+                case .characterSelect:
+                    CharacterGridView()
+
+                case .versus:
+                    if let left = gameState.leftCharacter,
+                        let vm = gameState.versusViewModel
+                    {
+
+                        VersusView(
+                            viewModel: vm,
+                            onVictoryContinue: { rewards in
+                                rewardStore.add(
+                                    coins: rewards.coins,
+                                    crystals: rewards.crystals
+                                )
+                                gameState.versusViewModel = nil
+                                gameState.screen = .story  // 👈 Story-Flow
+                            },
+                            leftCharacter: left
+                        )
+
+                        GameHUDView(viewModel: vm)
                     }
-                )
+
+                case .arcade:
+                    ArcadeView(
+                        viewModel: arcadeViewModel,
+                        onStartArcade: { stage in
+                            gameState.pendingMode = .arcadeStage(stage)
+                            gameState.screen = .characterSelect
+                        }
+                    )
+                case .shop:
+                    ShopView()
+
+                case .skin:
+                    SkinSelectionView()
+                }
             }
+            .environmentObject(gameState)
+            .toolbar {
+                if gameState.showsBackButton {
+                    ToolbarItem(placement: .navigationBarLeading) {
+                        GameBackButton {
+                            gameState.goBack()
+                        }
+                    }
+                }
+            }
+            .animation(.easeInOut(duration: 0.25), value: gameState.screen)
         }
-        .environmentObject(gameState)
-        .animation(.easeInOut(duration: 0.25), value: gameState.screen)
     }
 }
 

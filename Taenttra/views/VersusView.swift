@@ -9,6 +9,8 @@ import SwiftUI
 
 struct VersusView: View {
 
+    @EnvironmentObject var gameState: GameState
+
     @ObservedObject var viewModel: VersusViewModel
     let onVictoryContinue: (VictoryRewards) -> Void
     let leftCharacter: Character
@@ -34,6 +36,7 @@ struct VersusView: View {
                         alignment: .leading,
                         content: FighterView(
                             character: leftCharacter,
+                            skin: gameState.equippedSkinSprite,
                             state: viewModel.animationState,
                             rotation: 12,
                             mirrored: false,
@@ -45,6 +48,7 @@ struct VersusView: View {
                         alignment: .trailing,
                         content: FighterView(
                             character: currentEnemy,
+                            skin: gameState.equippedSkinSprite,
                             state: viewModel.animationState,
                             rotation: -12,
                             mirrored: true,
@@ -72,7 +76,10 @@ struct VersusView: View {
             GameHUDView(viewModel: viewModel)
         }
         .animation(.easeOut(duration: 0.3), value: viewModel.fightState)
-        .animation(viewModel.hitStopActive ? .none : .easeOut(duration: 0.1), value: viewModel.hitStopActive)
+        .animation(
+            viewModel.hitStopActive ? .none : .easeOut(duration: 0.1),
+            value: viewModel.hitStopActive
+        )
         .contentShape(Rectangle())  // sauberes Tap-Handling
         .onTapGesture {
             if viewModel.fightState == .fighting {

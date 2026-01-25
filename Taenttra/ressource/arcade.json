@@ -1,20 +1,20 @@
 {
-  "stages": [
-    {
-      "id": "arcade_1",
-      "title": "DOJO TRIAL",
-      "background": "dojo_night",
-      "music": "dojo_theme",
-      "enemy": "kenji",
-      "waves": 3
-    },
-    {
-      "id": "arcade_2",
-      "title": "NEON NIGHT",
-      "background": "neon_city",
-      "music": "neon_theme",
-      "enemy": "kenji",
-      "waves": 4
-    }
-  ]
+    "stages": [
+        {
+            "id": "arcade_1",
+            "title": "DOJO TRIAL",
+            "background": "dojo_night",
+            "music": "dojo_theme",
+            "enemy": "kenji",
+            "waves": 3
+        },
+        {
+            "id": "arcade_2",
+            "title": "NEON NIGHT",
+            "background": "neon_city",
+            "music": "neon_theme",
+            "enemy": "kenji",
+            "waves": 4
+        }
+    ]
 }

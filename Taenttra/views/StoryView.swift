@@ -20,7 +20,7 @@ struct StoryView: View {
                         ForEach(chapter.sections) { section in
                             Button {
                                 viewModel.select(chapter, section)
-                                onStartFight(chapter, section)   // ✅ KORREKT
+                                onStartFight(chapter, section)  // ✅ KORREKT
                             } label: {
                                 HStack {
                                     Text(section.id.uppercased())

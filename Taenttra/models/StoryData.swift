@@ -30,7 +30,10 @@ final class StoryLoader {
 
     static func load() -> StoryData {
         guard
-            let url = Bundle.main.url(forResource: "story", withExtension: "json"),
+            let url = Bundle.main.url(
+                forResource: "story",
+                withExtension: "json"
+            ),
             let data = try? Data(contentsOf: url),
             let story = try? JSONDecoder().decode(StoryData.self, from: data)
         else {
@@ -40,4 +43,3 @@ final class StoryLoader {
         return story
     }
 }
-

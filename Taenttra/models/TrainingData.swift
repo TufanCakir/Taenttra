@@ -24,13 +24,18 @@ final class TrainingLoader {
 
     static func load() -> TrainingData {
         guard
-            let url = Bundle.main.url(forResource: "training", withExtension: "json"),
+            let url = Bundle.main.url(
+                forResource: "training",
+                withExtension: "json"
+            ),
             let data = try? Data(contentsOf: url),
-            let decoded = try? JSONDecoder().decode(TrainingData.self, from: data)
+            let decoded = try? JSONDecoder().decode(
+                TrainingData.self,
+                from: data
+            )
         else {
             fatalError("❌ training.json missing or invalid")
         }
-
         return decoded
     }
 }

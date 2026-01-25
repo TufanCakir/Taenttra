@@ -24,9 +24,15 @@ final class SurvivalLoader {
 
     static func load() -> SurvivalData {
         guard
-            let url = Bundle.main.url(forResource: "survival", withExtension: "json"),
+            let url = Bundle.main.url(
+                forResource: "survival",
+                withExtension: "json"
+            ),
             let data = try? Data(contentsOf: url),
-            let decoded = try? JSONDecoder().decode(SurvivalData.self, from: data)
+            let decoded = try? JSONDecoder().decode(
+                SurvivalData.self,
+                from: data
+            )
         else {
             fatalError("❌ survival.json missing or invalid")
         }

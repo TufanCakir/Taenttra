@@ -1,20 +1,20 @@
 {
-  "modes": [
-    {
-      "id": "training_basic",
-      "title": "BASIC TRAINING",
-      "background": "dojo_night",
-      "music": "training_theme",
-      "enemy": "dummy",
-      "timeLimit": 999
-    },
-    {
-      "id": "training_combo",
-      "title": "COMBO PRACTICE",
-      "background": "bg_dojo_night",
-      "music": "training_combo_theme",
-      "enemy": "kenji",
-      "timeLimit": 120
-    }
-  ]
+    "modes": [
+        {
+            "id": "training_basic",
+            "title": "BASIC TRAINING",
+            "background": "dojo_night",
+            "music": "training_theme",
+            "enemy": "dummy",
+            "timeLimit": 999
+        },
+        {
+            "id": "training_combo",
+            "title": "COMBO PRACTICE",
+            "background": "bg_dojo_night",
+            "music": "training_combo_theme",
+            "enemy": "kenji",
+            "timeLimit": 120
+        }
+    ]
 }

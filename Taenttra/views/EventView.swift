@@ -18,7 +18,7 @@ struct EventView: View {
                 ForEach(viewModel.events) { event in
                     Button {
                         viewModel.select(event)
-                        onStartEvent(event)   // ✅ nur Intent
+                        onStartEvent(event)  // ✅ nur Intent
                     } label: {
                         HStack {
                             VStack(alignment: .leading, spacing: 4) {

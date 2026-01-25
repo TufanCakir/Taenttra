@@ -68,25 +68,27 @@ struct CharacterGridView: View {
                     gameState.leftCharacter = player
 
                     switch gameState.pendingMode {
-                        
+
                     case .eventMode(let event):
                         gameState.startEvent(mode: event)
-                        
+
                     case .trainingMode(let mode):
                         gameState.startTraining(mode: mode)
-                        
+
                     case .survivalMode(let mode):
-                        gameState.startSurvival(mode: mode)   // ✅ HIER
+                        gameState.startSurvival(mode: mode)  // ✅ HIER
 
                     case .arcadeStage(let stage):
-                        gameState.startArcade(stage: stage)   // ✅ HIER
+                        gameState.startArcade(stage: stage)  // ✅ HIER
 
                     case .story(let chapter, let section):
                         gameState.startVersus(from: chapter, section: section)
 
                     case .versus:
                         let data = VersusLoader.load()
-                        gameState.versusViewModel = VersusViewModel(stages: data.stages)
+                        gameState.versusViewModel = VersusViewModel(
+                            stages: data.stages
+                        )
                         gameState.screen = .versus
 
                     case .none:

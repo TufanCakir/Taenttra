@@ -1,47 +1,47 @@
 {
-  "chapters": [
-    {
-        "id": "chapter_1",
-          "title": "Dojo of Ash",
-          "background": "dojo_night",
-          "music": "dojo_theme",
-      "sections": [
+    "chapters": [
         {
-          "id": "1_1",
-          "enemy": "kenji",
-          "waves": 2
+            "id": "chapter_1",
+            "title": "Dojo of Ash",
+            "background": "dojo_night",
+            "music": "dojo_theme",
+            "sections": [
+                {
+                    "id": "1_1",
+                    "enemy": "kenji",
+                    "waves": 2
+                },
+                {
+                    "id": "1_2",
+                    "enemy": "kenji",
+                    "waves": 3
+                },
+                {
+                    "id": "1_boss",
+                    "enemy": "kenji",
+                    "waves": 1,
+                    "boss": true
+                }
+            ]
         },
         {
-          "id": "1_2",
-          "enemy": "kenji",
-          "waves": 3
-        },
-        {
-          "id": "1_boss",
-          "enemy": "kenji",
-          "waves": 1,
-          "boss": true
+            "id": "chapter_2",
+            "title": "Neon City",
+            "background": "neon_city",
+            "music": "city_theme",
+            "sections": [
+                {
+                    "id": "2_1",
+                    "enemy": "kenji",
+                    "waves": 3
+                },
+                {
+                    "id": "2_boss",
+                    "enemy": "kenji",
+                    "waves": 1,
+                    "boss": true
+                }
+            ]
         }
-      ]
-    },
-    {
-      "id": "chapter_2",
-      "title": "Neon City",
-      "background": "neon_city",
-      "music": "city_theme",
-      "sections": [
-        {
-          "id": "2_1",
-          "enemy": "kenji",
-          "waves": 3
-        },
-        {
-          "id": "2_boss",
-          "enemy": "kenji",
-          "waves": 1,
-          "boss": true
-        }
-      ]
-    }
-  ]
+    ]
 }

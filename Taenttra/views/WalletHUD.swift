@@ -9,56 +9,64 @@ import SwiftData
 import SwiftUI
 
 struct WalletHUD: View {
-    
+
     @Query private var wallets: [PlayerWallet]
-    
+
     private var coins: Int { wallets.first?.coins ?? 0 }
     private var crystals: Int { wallets.first?.crystals ?? 0 }
-    
+
     var body: some View {
         HStack(spacing: 12) {
-            
+
             walletItem(icon: "icon_coin", value: coins)
             walletItem(icon: "icon_crystal", value: crystals)
-            
+
             Spacer()
         }
-        .scaledToFit()
-        .frame(width: 20, height: 20)
-        .padding(.horizontal, 18)
+        .padding(.horizontal, 16)
         .padding(.vertical, 10)
         .background(
             RoundedRectangle(cornerRadius: 12, style: .continuous)
-                .fill(Color.black.opacity(0.35))
+                .fill(Color.black.opacity(0.4))
                 .overlay(
                     RoundedRectangle(cornerRadius: 12)
-                        .stroke(Color.yellow.opacity(0.25), lineWidth: 1)
+                        .stroke(Color.white.opacity(0.15), lineWidth: 1)
                 )
-                .blur(radius: 0.5)
         )
         .padding(.horizontal, 12)
         .padding(.top, 12)
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
-    
-    // MARK: - Subview
+
+    // MARK: - Wallet Item
     private func walletItem(icon: String, value: Int) -> some View {
         HStack(spacing: 6) {
-            
+
             Image(icon)
                 .resizable()
                 .scaledToFit()
-                .frame(width: 18, height: 18)
-            
+                .frame(width: 50, height: 50)
+
             Text("\(value)")
                 .font(.caption.weight(.bold))
                 .monospacedDigit()
-                .foregroundStyle(.yellow)
+                .foregroundStyle(.white)
+                .frame(width: 50, height: 50)
+
         }
         .padding(.horizontal, 10)
         .padding(.vertical, 6)
         .background(
             RoundedRectangle(cornerRadius: 8, style: .continuous)
-                .fill(Color.black.opacity(0.4))
+                .fill(Color.white.opacity(0.08))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 8)
+                        .stroke(Color.white.opacity(0.12), lineWidth: 1)
+                )
         )
     }
+}
+
+#Preview {
+    WalletHUD()
 }

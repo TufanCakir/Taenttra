@@ -19,6 +19,8 @@ enum GameScreen {
     case training
     case events
     case options
+    case shop
+    case skin
 }
 
 enum PendingMode {
@@ -45,10 +47,48 @@ final class GameState: ObservableObject {
     @Published var leftHealth: CGFloat = 0
     @Published var rightHealth: CGFloat = 0
     @Published var time: Int = 99
+
+    @Published var equippedSkinSprite: String = "fighter_default"
+
+    func syncSkin(from wallet: PlayerWallet, skins: [SkinItem]) {
+        guard let equipped = wallet.equippedSkin,
+            let skin = skins.first(where: { $0.id == equipped })
+        else {
+            equippedSkinSprite = "fighter_default"
+            return
+        }
+
+        equippedSkinSprite = skin.fighterSprite
+    }
 }
 
 extension GameState {
-    
+
+    var showsBackButton: Bool {
+        switch screen {
+        case .home, .start:
+            return false
+        default:
+            return true
+        }
+    }
+
+    func goBack() {
+        switch screen {
+        case .shop, .skin, .options:
+            screen = .home
+
+        case .arcade, .story, .training, .survival, .events:
+            screen = .home
+
+        case .characterSelect:
+            screen = .home
+
+        default:
+            screen = .home
+        }
+    }
+
     func startEvent(mode: EventMode) {
 
         let wave = VersusWave(
@@ -69,7 +109,7 @@ extension GameState {
         versusViewModel = VersusViewModel(stages: [stage])
         screen = .versus
     }
-    
+
     func startTraining(mode: TrainingMode) {
 
         let wave = VersusWave(
@@ -90,7 +130,7 @@ extension GameState {
         versusViewModel = VersusViewModel(stages: [stage])
         screen = .versus
     }
-    
+
     func startSurvival(mode: SurvivalMode) {
 
         let randomEnemy = mode.enemyPool.randomElement() ?? "kenji"
@@ -113,18 +153,17 @@ extension GameState {
         versusViewModel = VersusViewModel(stages: [stage])
         screen = .versus
     }
-    
-    func startArcade(stage: ArcadeStage) {
-        
 
-            let waves = (0..<stage.waves).map { index in
-                VersusWave(
-                    wave: index + 1,
-                    enemies: [stage.enemy],
-                    timeLimit: 99
-                )
-            }
-        
+    func startArcade(stage: ArcadeStage) {
+
+        let waves = (0..<stage.waves).map { index in
+            VersusWave(
+                wave: index + 1,
+                enemies: [stage.enemy],
+                timeLimit: 99
+            )
+        }
+
         let versusStage = VersusStage(
             id: stage.id,
             name: stage.title,
@@ -154,7 +193,7 @@ extension GameState {
                 )
             }
         )
-        
+
         // 2️⃣ Stage speichern
         currentStage = stage
 

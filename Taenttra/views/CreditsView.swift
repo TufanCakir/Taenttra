@@ -19,4 +19,3 @@ struct CreditsView: View {
         .navigationTitle("Credits")
     }
 }
-

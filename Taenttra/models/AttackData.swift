@@ -12,5 +12,3 @@ struct AttackData {
     let hitStop: Double
     let recovery: Double
 }
-
-

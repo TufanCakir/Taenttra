@@ -18,7 +18,7 @@ struct TrainingView: View {
                 ForEach(viewModel.modes) { mode in
                     Button {
                         viewModel.select(mode)
-                        onStartTraining(mode)   // ✅ nur Intent
+                        onStartTraining(mode)  // ✅ nur Intent
                     } label: {
                         HStack {
                             VStack(alignment: .leading, spacing: 4) {

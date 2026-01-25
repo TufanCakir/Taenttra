@@ -18,7 +18,7 @@ struct ArcadeView: View {
                 ForEach(viewModel.stages) { stage in
                     Button {
                         viewModel.select(stage)
-                        onStartArcade(stage)   // ✅ nur Intent
+                        onStartArcade(stage)  // ✅ nur Intent
                     } label: {
                         HStack {
                             VStack(alignment: .leading) {

@@ -78,7 +78,8 @@ struct SettingsView: View {
 
     // MARK: - App Info
     private var appVersion: String {
-        Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "—"
+        Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String
+            ?? "—"
     }
 
     private var appBuild: String {
@@ -87,11 +88,11 @@ struct SettingsView: View {
 
     private var platformName: String {
         #if os(iOS)
-        return "iOS"
+            return "iOS"
         #elseif os(macOS)
-        return "macOS"
+            return "macOS"
         #else
-        return "Unknown"
+            return "Unknown"
         #endif
     }
 

@@ -1,0 +1,39 @@
+{
+    "categories": [
+        {
+            "id": "skins",
+            "title": "Skins",
+            "icon": "tshirt",
+            "items": [
+                {
+                    "id": "skin_shadow",
+                    "name": "Kenji",
+                    "price": 0,
+                    "currency": "coins",
+                    "preview": "kenji_front"
+                },
+                {
+                    "id": "skin_white",
+                    "name": "Kenji",
+                    "price": 1000,
+                    "currency": "crystals",
+                    "preview": "kenji_front"
+                }
+            ]
+        },
+        {
+            "id": "skin_black",
+            "title": "Characters",
+            "icon": "person.3.fill",
+            "items": [
+                {
+                    "id": "char_kenji",
+                    "name": "Kenji",
+                    "price": 2000,
+                    "currency": "coins",
+                    "preview": "kenji_front"
+                }
+            ]
+        }
+    ]
+}

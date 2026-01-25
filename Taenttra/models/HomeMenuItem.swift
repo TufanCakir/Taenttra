@@ -14,6 +14,8 @@ enum HomeMenuItem: CaseIterable {
     case events
     case versus
     case training
+    case shop
+    case skin
     case options
 
     var title: String {
@@ -24,6 +26,8 @@ enum HomeMenuItem: CaseIterable {
         case .survival: return "SURVIVAL"
         case .events: return "EVENTS"
         case .training: return "TRAINING"
+        case .shop: return "SHOP"
+        case .skin: return "SKIN"
         case .options: return "OPTIONS"
         }
     }
@@ -36,6 +40,8 @@ enum HomeMenuItem: CaseIterable {
         case .events: return .purple
         case .versus: return .red
         case .training: return .green
+        case .shop: return .yellow
+        case .skin: return .cyan
         case .options: return .gray
         }
     }

@@ -1,20 +1,27 @@
 {
-  "modes": [
-    {
-      "id": "survival_basic",
-      "title": "ENDURANCE",
-      "background": "dojo_night",
-      "music": "survival_theme",
-      "enemyPool": ["kenji", "kenji", "kenji"],
-      "timeLimit": 60
-    },
-    {
-      "id": "survival_hard",
-      "title": "LAST STAND",
-      "background": "neon_city",
-      "music": "survival_hard_theme",
-      "enemyPool": ["kenji", "kenji"],
-      "timeLimit": 45
-    }
-  ]
+    "modes": [
+        {
+            "id": "survival_basic",
+            "title": "ENDURANCE",
+            "background": "dojo_night",
+            "music": "survival_theme",
+            "enemyPool": [
+                "kenji",
+                "kenji",
+                "kenji"
+            ],
+            "timeLimit": 60
+        },
+        {
+            "id": "survival_hard",
+            "title": "LAST STAND",
+            "background": "neon_city",
+            "music": "survival_hard_theme",
+            "enemyPool": [
+                "kenji",
+                "kenji"
+            ],
+            "timeLimit": 45
+        }
+    ]
 }

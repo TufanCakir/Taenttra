@@ -18,7 +18,7 @@ struct SurvivalView: View {
                 ForEach(viewModel.modes) { mode in
                     Button {
                         viewModel.select(mode)
-                        onStartSurvival(mode)   // ✅ nur Intent
+                        onStartSurvival(mode)  // ✅ nur Intent
                     } label: {
                         HStack {
                             VStack(alignment: .leading, spacing: 4) {

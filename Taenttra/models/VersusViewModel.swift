@@ -60,7 +60,7 @@ final class VersusViewModel: ObservableObject {
         fightState = .fighting
         animationState = .idle
     }
-    
+
     private func triggerHitStop(duration: Double) {
         hitStopActive = true
         hitShakeOffset = -6
@@ -72,7 +72,7 @@ final class VersusViewModel: ObservableObject {
             }
         }
     }
-    
+
     private func data(for attack: FighterAnimation) -> AttackData {
         switch attack {
         case .punch:
@@ -209,4 +209,4 @@ final class VersusViewModel: ObservableObject {
         guard currentWaveIndex + 1 < currentStage.waves.count else { return }
         currentWaveIndex += 1
     }
-} 
+}

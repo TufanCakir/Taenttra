@@ -24,7 +24,10 @@ final class ArcadeLoader {
 
     static func load() -> ArcadeData {
         guard
-            let url = Bundle.main.url(forResource: "arcade", withExtension: "json"),
+            let url = Bundle.main.url(
+                forResource: "arcade",
+                withExtension: "json"
+            ),
             let data = try? Data(contentsOf: url),
             let decoded = try? JSONDecoder().decode(ArcadeData.self, from: data)
         else {

@@ -5,8 +5,8 @@
 //  Created by Tufan Cakir on 25.01.26.
 //
 
-import Foundation
 import Combine
+import Foundation
 
 final class ArcadeViewModel: ObservableObject {
 
@@ -21,4 +21,3 @@ final class ArcadeViewModel: ObservableObject {
         selectedStage = stage
     }
 }
-

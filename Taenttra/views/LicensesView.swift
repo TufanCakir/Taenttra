@@ -18,4 +18,3 @@ struct LicensesView: View {
         .navigationTitle("Licenses")
     }
 }
-
