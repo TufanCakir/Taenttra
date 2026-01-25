@@ -9,20 +9,22 @@ import SwiftData
 import SwiftUI
 
 struct WalletHUD: View {
-
+    
     @Query private var wallets: [PlayerWallet]
-
+    
     private var coins: Int { wallets.first?.coins ?? 0 }
     private var crystals: Int { wallets.first?.crystals ?? 0 }
-
+    
     var body: some View {
         HStack(spacing: 12) {
-
-            walletItem(icon: "🪙", value: coins)
-            walletItem(icon: "💎", value: crystals)
-
+            
+            walletItem(icon: "icon_coin", value: coins)
+            walletItem(icon: "icon_crystal", value: crystals)
+            
             Spacer()
         }
+        .scaledToFit()
+        .frame(width: 20, height: 20)
         .padding(.horizontal, 18)
         .padding(.vertical, 10)
         .background(
@@ -37,14 +39,16 @@ struct WalletHUD: View {
         .padding(.horizontal, 12)
         .padding(.top, 12)
     }
-
+    
     // MARK: - Subview
-
     private func walletItem(icon: String, value: Int) -> some View {
         HStack(spacing: 6) {
-            Text(icon)
-                .font(.caption)
-
+            
+            Image(icon)
+                .resizable()
+                .scaledToFit()
+                .frame(width: 18, height: 18)
+            
             Text("\(value)")
                 .font(.caption.weight(.bold))
                 .monospacedDigit()

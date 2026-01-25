@@ -18,6 +18,8 @@ final class VersusViewModel: ObservableObject {
     @Published var fightState: FightState = .fighting
     @Published var winner: FighterSide?
     @Published var rewards: VictoryRewards?
+    @Published var hitStopActive: Bool = false
+    @Published var hitShakeOffset: CGFloat = 0
 
     // MARK: - Stages
     let stages: [VersusStage]
@@ -58,6 +60,29 @@ final class VersusViewModel: ObservableObject {
         fightState = .fighting
         animationState = .idle
     }
+    
+    private func triggerHitStop(duration: Double) {
+        hitStopActive = true
+        hitShakeOffset = -6
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + duration) {
+            self.hitStopActive = false
+            withAnimation(.easeOut(duration: 0.1)) {
+                self.hitShakeOffset = 0
+            }
+        }
+    }
+    
+    private func data(for attack: FighterAnimation) -> AttackData {
+        switch attack {
+        case .punch:
+            return AttackData(damage: 0.06, hitStop: 0.04, recovery: 0.18)
+        case .kick:
+            return AttackData(damage: 0.1, hitStop: 0.06, recovery: 0.24)
+        default:
+            return AttackData(damage: 0, hitStop: 0, recovery: 0)
+        }
+    }
 
     // MARK: - Attack
     func performRandomAttack(from side: FighterSide = .left) {
@@ -65,17 +90,17 @@ final class VersusViewModel: ObservableObject {
         isAttacking = true
 
         let attack = attacks.randomElement() ?? .punch
-        let damage: CGFloat = attack == .punch ? 0.06 : 0.1
-        let target = side == .left ? FighterSide.right : .left
+        let config = data(for: attack)
+        let target: FighterSide = side == .left ? .right : .left
 
-        withAnimation(.easeOut(duration: 0.1)) {
+        withAnimation(.easeOut(duration: 0.08)) {
             animationState = attack
             attackOffset = 14
         }
 
-        applyDamage(to: target, amount: damage)
+        applyDamage(to: target, amount: config.damage, hitStop: config.hitStop)
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + config.recovery) {
             withAnimation(.easeOut(duration: 0.12)) {
                 self.attackOffset = 0
                 self.animationState = .idle
@@ -85,8 +110,14 @@ final class VersusViewModel: ObservableObject {
     }
 
     // MARK: - Damage
-    private func applyDamage(to side: FighterSide, amount: CGFloat) {
+    private func applyDamage(
+        to side: FighterSide,
+        amount: CGFloat,
+        hitStop: Double
+    ) {
         guard fightState == .fighting else { return }
+
+        triggerHitStop(duration: hitStop)
 
         let newHealth = max(0, health(for: side) - amount)
         setHealth(newHealth, for: side)
@@ -178,4 +209,4 @@ final class VersusViewModel: ObservableObject {
         guard currentWaveIndex + 1 < currentStage.waves.count else { return }
         currentWaveIndex += 1
     }
-}
+} 

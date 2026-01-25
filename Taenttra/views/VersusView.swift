@@ -54,6 +54,7 @@ struct VersusView: View {
                 }
                 .padding(.bottom, 24)
             }
+            .offset(x: viewModel.hitShakeOffset)
 
             // 🏆 VICTORY OVERLAY
             if viewModel.fightState == .victory,
@@ -71,6 +72,7 @@ struct VersusView: View {
             GameHUDView(viewModel: viewModel)
         }
         .animation(.easeOut(duration: 0.3), value: viewModel.fightState)
+        .animation(viewModel.hitStopActive ? .none : .easeOut(duration: 0.1), value: viewModel.hitStopActive)
         .contentShape(Rectangle())  // sauberes Tap-Handling
         .onTapGesture {
             if viewModel.fightState == .fighting {

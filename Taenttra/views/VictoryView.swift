@@ -8,41 +8,43 @@
 import SwiftUI
 
 struct VictoryView: View {
-
+    
     let rewards: VictoryRewards
     let onContinue: () -> Void
-
+    
     var body: some View {
         ZStack {
             // Background Overlay
             Color.black.opacity(0.85)
                 .ignoresSafeArea()
-
+            
             VStack(spacing: 32) {
-
+                
                 // TITLE
                 Text("STAGE CLEARED")
                     .font(.largeTitle.weight(.heavy))
                     .tracking(2)
                     .foregroundStyle(.yellow)
                     .multilineTextAlignment(.center)
-
+                
                 // REWARDS
                 VStack(spacing: 20) {
                     rewardRow(
-                        icon: "🪙",
+                        icon: "icon_coin",
                         title: "Coins",
                         value: rewards.coins
                     )
 
                     rewardRow(
-                        icon: "💎",
+                        icon: "icon_crystal",
                         title: "Crystals",
                         value: rewards.crystals
                     )
                 }
                 .padding(.horizontal)
-
+                .scaledToFit()
+                .frame(width: 20, height: 20)
+                
                 // CONTINUE BUTTON
                 Button(action: onContinue) {
                     Text("Continue")
@@ -64,25 +66,26 @@ struct VictoryView: View {
         }
         .transition(.opacity.combined(with: .scale))
     }
-
+    
     // MARK: - Reward Row
-
     private func rewardRow(
         icon: String,
         title: String,
         value: Int
     ) -> some View {
         HStack(spacing: 16) {
-
-            Text(icon)
-                .font(.title2)
-
+            
+            Image(icon)
+                .resizable()
+                .scaledToFit()
+                .frame(width: 28, height: 28)
+            
             Text(title)
                 .font(.headline)
                 .foregroundStyle(.primary)
-
+            
             Spacer()
-
+            
             Text("+\(value)")
                 .font(.headline.weight(.bold))
                 .foregroundStyle(.yellow)

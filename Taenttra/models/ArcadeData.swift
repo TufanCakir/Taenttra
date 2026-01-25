@@ -7,43 +7,30 @@
 
 import Foundation
 
-struct ArcadeData: Codable {
+struct ArcadeData: Decodable {
     let stages: [ArcadeStage]
 }
 
-struct ArcadeStage: Codable, Identifiable {
+struct ArcadeStage: Decodable, Identifiable {
     let id: String
-    let name: String
+    let title: String
     let background: String
     let music: String
-    let waves: [ArcadeWave]
-}
-
-struct ArcadeWave: Codable, Identifiable {
-    let wave: Int
-    let enemyPool: [String]
-    let enemyCount: Int
-    let timeLimit: Int
-    var id: Int { wave }
+    let enemy: String
+    let waves: Int
 }
 
 final class ArcadeLoader {
 
     static func load() -> ArcadeData {
         guard
-            let url = Bundle.main.url(
-                forResource: "arcade_stages",
-                withExtension: "json"
-            )
+            let url = Bundle.main.url(forResource: "arcade", withExtension: "json"),
+            let data = try? Data(contentsOf: url),
+            let decoded = try? JSONDecoder().decode(ArcadeData.self, from: data)
         else {
-            fatalError("❌ arcade_stages.json missing")
+            fatalError("❌ arcade.json missing or invalid")
         }
 
-        do {
-            let data = try Data(contentsOf: url)
-            return try JSONDecoder().decode(ArcadeData.self, from: data)
-        } catch {
-            fatalError("❌ arcade json decode failed: \(error)")
-        }
+        return decoded
     }
 }

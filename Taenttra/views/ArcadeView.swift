@@ -8,8 +8,34 @@
 import SwiftUI
 
 struct ArcadeView: View {
+
+    @ObservedObject var viewModel: ArcadeViewModel
+    let onStartArcade: (ArcadeStage) -> Void
+
     var body: some View {
-        Color.black
-            .ignoresSafeArea()
+        NavigationStack {
+            List {
+                ForEach(viewModel.stages) { stage in
+                    Button {
+                        viewModel.select(stage)
+                        onStartArcade(stage)   // ✅ nur Intent
+                    } label: {
+                        HStack {
+                            VStack(alignment: .leading) {
+                                Text(stage.title)
+                                    .font(.headline)
+                                Text("WAVES: \(stage.waves)")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .opacity(0.4)
+                        }
+                    }
+                }
+            }
+            .navigationTitle("Arcade")
+        }
     }
 }

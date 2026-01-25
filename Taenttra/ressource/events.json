@@ -1,0 +1,22 @@
+{
+  "events": [
+    {
+      "id": "event_blood_moon",
+      "title": "BLOOD MOON",
+      "background": "dojo_night",
+      "music": "event_blood_theme",
+      "enemy": "kenji",
+      "timeLimit": 45,
+      "expiresAt": "2026-02-01"
+    },
+    {
+      "id": "event_neon_rush",
+      "title": "NEON RUSH",
+      "background": "neon_city",
+      "music": "event_neon_theme",
+      "enemy": "kenji",
+      "timeLimit": 30,
+      "expiresAt": "2026-01-31"
+    }
+  ]
+}

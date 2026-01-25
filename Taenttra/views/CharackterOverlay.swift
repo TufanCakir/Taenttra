@@ -61,25 +61,37 @@ struct CharacterGridView: View {
 
                 // 🔥 CONFIRM
                 Button {
-                    print("🟢 START FIGHT tapped")
-
                     let selected = characters[selectedIndex]
-                    print("Selected:", selected.key, "locked:", selected.locked)
-
-                    guard !selected.locked else {
-                        print("⛔️ Character is locked")
-                        return
-                    }
+                    guard !selected.locked else { return }
 
                     let player = selected.toCharacter()
-                    // 🔥 STAGE FESTLEGEN
-                    let versusData = VersusLoader.load()
-                    gameState.versusViewModel = VersusViewModel(
-                        stages: versusData.stages
-                    )
                     gameState.leftCharacter = player
-                    gameState.screen = .versus
 
+                    switch gameState.pendingMode {
+                        
+                    case .eventMode(let event):
+                        gameState.startEvent(mode: event)
+                        
+                    case .trainingMode(let mode):
+                        gameState.startTraining(mode: mode)
+                        
+                    case .survivalMode(let mode):
+                        gameState.startSurvival(mode: mode)   // ✅ HIER
+
+                    case .arcadeStage(let stage):
+                        gameState.startArcade(stage: stage)   // ✅ HIER
+
+                    case .story(let chapter, let section):
+                        gameState.startVersus(from: chapter, section: section)
+
+                    case .versus:
+                        let data = VersusLoader.load()
+                        gameState.versusViewModel = VersusViewModel(stages: data.stages)
+                        gameState.screen = .versus
+
+                    case .none:
+                        break
+                    }
                 } label: {
                     Text("START FIGHT")
                         .font(.system(size: 16, weight: .bold))
