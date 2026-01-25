@@ -1,0 +1,32 @@
+{
+    "stages": [
+        {
+            "id": "arcade_01",
+            "name": "Neon District",
+            "background": "neon_city",
+            "music": "arcade_neon",
+
+            "waves": [
+                {
+                    "wave": 1,
+                    "enemyPool": [
+                        "kenji",
+                        "kenji"
+                    ],
+                    "enemyCount": 1,
+                    "timeLimit": 60
+                },
+                {
+                    "wave": 2,
+                    "enemyPool": [
+                        "kenji",
+                        "kenji",
+                        "kenji"
+                    ],
+                    "enemyCount": 2,
+                    "timeLimit": 70
+                }
+            ]
+        }
+    ]
+}

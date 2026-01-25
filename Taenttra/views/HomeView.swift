@@ -1,0 +1,108 @@
+//
+//  HomeView.swift
+//  Taenttra
+//
+//  Created by Tufan Cakir on 23.01.26.
+//
+
+import SwiftData
+import SwiftUI
+
+struct HomeView: View {
+    @EnvironmentObject var gameState: GameState
+
+    @State private var selection: Int = 0
+
+    private let items = HomeMenuItem.allCases
+
+    var body: some View {
+        ZStack {
+            Color(.systemBackground)
+                .ignoresSafeArea()
+
+            VStack {
+                WalletHUD()
+
+                Text("TAENTTRA")
+                    .font(.largeTitle.weight(.semibold))
+
+                VStack(spacing: 6) {
+                    ForEach(items.indices, id: \.self) { index in
+                        menuItem(
+                            item: items[index],
+                            index: index
+                        )
+                    }
+                }
+
+                Spacer()
+
+                // 🔥 CONFIRM (optional, sehr Game-Style)
+                Text("TAP TO CONFIRM")
+                    .padding()
+                    .simultaneousGesture(
+                        TapGesture().onEnded {
+                            confirmSelection()
+                        }
+                    )
+            }
+        }
+    }
+
+    private func menuItem(
+        item: HomeMenuItem,
+        index: Int
+    ) -> some View {
+
+        let isSelected = selection == index
+
+        return HStack(spacing: 14) {
+
+            Rectangle()
+                .fill(isSelected ? item.color : item.color.opacity(0.3))
+                .frame(width: 10, height: 10)
+                .cornerRadius(2)
+
+            Text(item.title)
+                .font(.title3.weight(isSelected ? .semibold : .regular))
+                .foregroundStyle(isSelected ? item.color : .primary)
+                .opacity(isSelected ? 1 : 0.45)
+
+            Spacer()
+        }
+        .frame(height: 44)
+        .padding(.horizontal, 24)
+        .background(
+            isSelected
+                ? item.color.opacity(0.12)
+                : Color.clear
+        )
+        .scaleEffect(isSelected ? 1.02 : 1.0)  // 🔥 Fokus-Gefühl
+        .animation(.easeInOut(duration: 0.16), value: isSelected)
+        .contentShape(Rectangle())
+        .onTapGesture {
+            selection = index
+        }
+        .accessibilityAddTraits(isSelected ? .isSelected : [])
+    }
+
+    private func confirmSelection() {
+        let selectedItem = items[selection]
+
+        switch selectedItem {
+        case .versus:
+            gameState.screen = .characterSelect
+
+        case .arcade:
+            gameState.screen = .arcade
+
+        default:
+            break  // Story, Options etc. später
+        }
+    }
+}
+
+#Preview {
+    HomeView()
+        .environmentObject(GameState())
+}

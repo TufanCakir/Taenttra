@@ -1,0 +1,62 @@
+{
+    "stages": [
+        {
+            "id": "dojo_night",
+            "name": "Abandoned Dojo",
+            "background": "dojo_night",
+            "music": "dojo_theme",
+
+            "waves": [
+                {
+                    "wave": 1,
+                    "enemies": [
+                        "kenji"
+                    ],
+                    "timeLimit": 60
+                },
+                {
+                    "wave": 2,
+                    "enemies": [
+                        "kenji",
+                        "kenji"
+                    ],
+                    "timeLimit": 70
+                },
+                {
+                    "wave": 3,
+                    "enemies": [
+                        "kenji",
+                        "kenji",
+                        "kenji"
+                    ],
+                    "timeLimit": 80
+                }
+            ]
+        },
+
+        {
+            "id": "city_rain",
+            "name": "Rain Alley",
+            "background": "city_rain",
+            "music": "rain_theme",
+
+            "waves": [
+                {
+                    "wave": 1,
+                    "enemies": [
+                        "kenji"
+                    ],
+                    "timeLimit": 60
+                },
+                {
+                    "wave": 2,
+                    "enemies": [
+                        "kenji",
+                        "kenji"
+                    ],
+                    "timeLimit": 75
+                }
+            ]
+        }
+    ]
+}
