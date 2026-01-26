@@ -12,14 +12,20 @@ struct Character: Identifiable {
     let id = UUID()
     let key: String
     let isLocked: Bool
+    let skinId: String  // "base" | "red" | "shadow"
 
-    func imageNameSafe(for state: String) -> String {
-        let name = "char_\(key)_\(state)"
+    func imageNameSafe(for state: CharacterState) -> String {
+        let name = "char_\(key)_\(skinId)_\(state.rawValue)"
         if UIImage(named: name) != nil {
             return name
-        } else {
-            return "char_\(key)_idle"
         }
+
+        let idle = "char_\(key)_\(skinId)_idle"
+        if UIImage(named: idle) != nil {
+            return idle
+        }
+
+        fatalError("❌ Missing sprite: \(name)")
     }
 }
 
@@ -42,16 +48,14 @@ struct CharacterData: Codable {
 
 func loadCharactersFromAssets() -> [Character] {
 
-    let characterKeys = [
-        "kenji"
-    ]
-
+    let characterKeys = ["kenji"]
     let unlockedCount = 2
 
     return characterKeys.enumerated().map { index, key in
         Character(
             key: key,
-            isLocked: index >= unlockedCount
+            isLocked: index >= unlockedCount,
+            skinId: "base"  // 🔥 Default Skin
         )
     }
 }

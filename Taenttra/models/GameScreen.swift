@@ -7,6 +7,7 @@
 
 import Combine
 import Foundation
+import SwiftData
 
 enum GameScreen {
     case start
@@ -20,6 +21,7 @@ enum GameScreen {
     case events
     case options
     case shop
+    case leaderboard
     case skin
 }
 
@@ -49,6 +51,23 @@ final class GameState: ObservableObject {
     @Published var time: Int = 99
 
     @Published var equippedSkinSprite: String = "fighter_default"
+    @Published var wallet: PlayerWallet?
+
+    @Published var equippedSkin: String?  // frei wechselbar
+    @Published var activeSkin: String?  // fight-locked
+
+    func loadWallet(context: ModelContext) {
+        let fetch = FetchDescriptor<PlayerWallet>()
+
+        if let existing = try? context.fetch(fetch).first {
+            wallet = existing
+            return
+        }
+
+        let newWallet = PlayerWallet()
+        context.insert(newWallet)
+        wallet = newWallet
+    }
 
     func syncSkin(from wallet: PlayerWallet, skins: [SkinItem]) {
         guard let equipped = wallet.equippedSkin,
@@ -178,6 +197,9 @@ extension GameState {
     }
 
     func startVersus(from chapter: StoryChapter, section: StorySection) {
+
+        // 🔒 Skin für den Fight fixieren
+        activeSkin = equippedSkin
 
         // 1️⃣ Stage aus Story-Daten bauen
         let stage = VersusStage(

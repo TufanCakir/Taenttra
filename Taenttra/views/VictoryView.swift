@@ -9,6 +9,8 @@ import SwiftUI
 
 struct VictoryView: View {
 
+    @Environment(\.modelContext) private var modelContext  // ✅ HIER
+
     let rewards: VictoryRewards
     let onContinue: () -> Void
 
@@ -22,10 +24,10 @@ struct VictoryView: View {
             VStack(spacing: 36) {
 
                 // TITLE
-                Text("STAGE CLEARED")
-                    .font(.system(size: 32, weight: .heavy))
-                    .tracking(2)
-                    .foregroundStyle(.white)
+                VictoryHeader(
+                    title: "STAGE CLEARED",
+                    subtitle: nil
+                )
 
                 // REWARDS
                 VStack(spacing: 16) {
@@ -44,7 +46,15 @@ struct VictoryView: View {
                 .padding(.horizontal, 24)
 
                 // CONTINUE
-                Button(action: onContinue) {
+                Button {
+                    let store = RewardStore(context: modelContext)
+                    store.add(
+                        coins: rewards.coins,
+                        crystals: rewards.crystals
+                    )
+
+                    onContinue()
+                } label: {
                     Text("CONTINUE")
                         .font(.headline.weight(.bold))
                         .tracking(1)

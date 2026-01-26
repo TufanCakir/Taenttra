@@ -170,9 +170,31 @@ final class VersusViewModel: ObservableObject {
     private func handleVictory() {
         rewards = calculateRewards()
 
+        if let rewards {
+            CoinManager.shared.add(rewards.coins)
+            CrystalManager.shared.add(rewards.crystals)
+        }
+
+        let score = calculateLeaderboardScore()
+
+        if GameCenterManager.shared.isAuthenticated {
+            Task {
+                await GameCenterManager.shared.submitScore(score)
+            }
+        }
+
         withAnimation(.easeOut(duration: 0.3)) {
             fightState = .victory
         }
+    }
+
+    private func calculateLeaderboardScore() -> Int {
+
+        let stageScore = (currentStageIndex + 1) * 1_000
+        let waveScore = currentWaveIndex * 250
+        let healthBonus = Int(leftHealth * 1_000)
+
+        return stageScore + waveScore + healthBonus
     }
 
     // MARK: - Rewards

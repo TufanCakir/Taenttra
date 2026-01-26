@@ -7,31 +7,29 @@
 
 import SwiftData
 import SwiftUI
+import Combine
 
 @MainActor
-final class RewardStore {
+final class RewardStore: ObservableObject {
 
-    private let context: ModelContext
+    @Published var wallet: PlayerWallet
 
     init(context: ModelContext) {
-        self.context = context
-    }
-
-    func wallet() -> PlayerWallet {
         let fetch = FetchDescriptor<PlayerWallet>()
-
         if let existing = try? context.fetch(fetch).first {
-            return existing
+            self.wallet = existing
+        } else {
+            let newWallet = PlayerWallet()
+            context.insert(newWallet)
+            try? context.save()
+            self.wallet = newWallet
         }
-
-        let newWallet = PlayerWallet()
-        context.insert(newWallet)
-        return newWallet
     }
 
     func add(coins: Int, crystals: Int) {
-        let wallet = wallet()
         wallet.coins += coins
         wallet.crystals += crystals
     }
 }
+
+

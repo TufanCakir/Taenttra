@@ -33,6 +33,9 @@ struct GameView: View {
                 case .home:
                     HomeView()
 
+                case .leaderboard:
+                    LeaderboardView()
+
                 case .options:
                     SettingsView()
 
@@ -122,6 +125,11 @@ struct GameView: View {
                 }
             }
             .animation(.easeInOut(duration: 0.25), value: gameState.screen)
+        }
+        .onAppear {
+            if gameState.wallet == nil {
+                gameState.loadWallet(context: modelContext)
+            }
         }
     }
 }

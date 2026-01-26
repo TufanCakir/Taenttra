@@ -5,14 +5,11 @@
 //  Created by Tufan Cakir on 24.01.26.
 //
 
-// FighterView.swift
-
 import SwiftUI
 
 struct FighterView: View {
 
     let character: Character
-    let skin: String  // 🔥 NEU
     let state: FighterAnimation
     let rotation: Double
     let mirrored: Bool
@@ -21,8 +18,7 @@ struct FighterView: View {
     var body: some View {
         Image(
             character.imageNameSafe(
-                skin: skin,
-                for: state.rawValue
+                for: state.characterState  // ✅ HIER DER FIX
             )
         )
         .resizable()
@@ -36,18 +32,5 @@ struct FighterView: View {
             anchor: mirrored ? .leading : .trailing,
             perspective: 0.6
         )
-    }
-}
-
-extension Character {
-
-    func imageNameSafe(
-        skin: String,
-        for animation: String
-    ) -> String {
-        let name = "\(skin)_\(animation)"
-        return UIImage(named: name) != nil
-            ? name
-            : imageNameSafe(for: animation)
     }
 }

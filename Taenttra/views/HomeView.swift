@@ -20,35 +20,44 @@ struct HomeView: View {
             Color(.systemBackground)
                 .ignoresSafeArea()
 
-            VStack {
-                WalletHUD()
+            VStack(spacing: 16) {
+
+                VersusHeaderView()
+                
 
                 Text("TAENTTRA")
                     .font(.largeTitle.weight(.semibold))
+                    .padding(.top, 4)
 
-                VStack(spacing: 6) {
-                    ForEach(items.indices, id: \.self) { index in
-                        menuItem(
-                            item: items[index],
-                            index: index
-                        )
+                // MARK: - Scrollable Menu
+                ScrollView(showsIndicators: false) {
+                    VStack(spacing: 6) {
+                        ForEach(items.indices, id: \.self) { index in
+                            menuItem(
+                                item: items[index],
+                                index: index
+                            )
+                        }
                     }
+                    .padding(.top, 4)
                 }
 
                 Spacer()
 
-                // 🔥 CONFIRM (optional, sehr Game-Style)
+                // 🔥 CONFIRM
                 Text("TAP TO CONFIRM")
-                    .padding()
+                    .padding(.bottom, 12)
                     .simultaneousGesture(
                         TapGesture().onEnded {
                             confirmSelection()
                         }
                     )
             }
+            .padding(.top, 8)
         }
     }
 
+    // MARK: - Menu Item
     private func menuItem(
         item: HomeMenuItem,
         index: Int
@@ -77,7 +86,7 @@ struct HomeView: View {
                 ? item.color.opacity(0.12)
                 : Color.clear
         )
-        .scaleEffect(isSelected ? 1.02 : 1.0)  // 🔥 Fokus-Gefühl
+        .scaleEffect(isSelected ? 1.02 : 1.0)
         .animation(.easeInOut(duration: 0.16), value: isSelected)
         .contentShape(Rectangle())
         .onTapGesture {
@@ -86,6 +95,7 @@ struct HomeView: View {
         .accessibilityAddTraits(isSelected ? .isSelected : [])
     }
 
+    // MARK: - Navigation
     private func confirmSelection() {
         let selectedItem = items[selection]
 
@@ -93,32 +103,25 @@ struct HomeView: View {
 
         case .story:
             gameState.screen = .story
-
         case .events:
             gameState.screen = .events
-
         case .training:
             gameState.screen = .training
-
         case .arcade:
             gameState.screen = .arcade
-
         case .survival:
-            gameState.screen = .survival  // ✅ DAS FEHLTE
-
+            gameState.screen = .survival
         case .versus:
             gameState.pendingMode = .versus
             gameState.screen = .characterSelect
-
         case .shop:
             gameState.screen = .shop
-
         case .skin:
             gameState.screen = .skin
-
+        case .leaderboard:
+            gameState.screen = .leaderboard
         case .options:
             gameState.screen = .options
-
         }
     }
 }

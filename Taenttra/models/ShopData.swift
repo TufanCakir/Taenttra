@@ -19,11 +19,44 @@ struct ShopCategory: Codable, Identifiable {
 }
 
 struct ShopItem: Codable, Identifiable {
-    let id: String
+
+    let id: UUID  // SwiftUI
+    let skinId: String  // Gameplay-ID
+
     let name: String
     let price: Int
     let currency: Currency
     let preview: String
+
+    init(
+        id: UUID = UUID(),
+        skinId: String,
+        name: String,
+        price: Int,
+        currency: Currency,
+        preview: String
+    ) {
+        self.id = id
+        self.skinId = skinId
+        self.name = name
+        self.price = price
+        self.currency = currency
+        self.preview = preview
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.id = UUID()
+        self.skinId = try container.decode(String.self, forKey: .skinId)
+        self.name = try container.decode(String.self, forKey: .name)
+        self.price = try container.decode(Int.self, forKey: .price)
+        self.currency = try container.decode(Currency.self, forKey: .currency)
+        self.preview = try container.decode(String.self, forKey: .preview)
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case skinId, name, price, currency, preview
+    }
 }
 
 enum Currency: String, Codable {

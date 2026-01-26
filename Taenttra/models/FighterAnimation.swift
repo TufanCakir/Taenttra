@@ -24,3 +24,14 @@ enum FightState {
     case ko
     case victory
 }
+
+extension FighterAnimation {
+    var characterState: CharacterState {
+        switch self {
+        case .idle: return .idle
+        case .punch: return .punch
+        case .kick: return .kick
+        case .ko: return .idle  // 🔁 KO nutzt idle Sprite
+        }
+    }
+}

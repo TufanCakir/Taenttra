@@ -36,7 +36,6 @@ struct VersusView: View {
                         alignment: .leading,
                         content: FighterView(
                             character: leftCharacter,
-                            skin: gameState.equippedSkinSprite,
                             state: viewModel.animationState,
                             rotation: 12,
                             mirrored: false,
@@ -48,7 +47,6 @@ struct VersusView: View {
                         alignment: .trailing,
                         content: FighterView(
                             character: currentEnemy,
-                            skin: gameState.equippedSkinSprite,
                             state: viewModel.animationState,
                             rotation: -12,
                             mirrored: true,
@@ -91,6 +89,10 @@ struct VersusView: View {
     // MARK: - Enemy (safe)
     private var currentEnemy: Character {
         let key = viewModel.currentWave?.enemies.first ?? "kenji"
-        return Character(key: key, isLocked: false)
+        return Character(
+            key: key,
+            isLocked: false,
+            skinId: "red"
+        )
     }
 }

@@ -11,24 +11,10 @@ import SwiftUI
 struct SkinSelectionView: View {
 
     @EnvironmentObject var gameState: GameState
-    @Environment(\.modelContext) private var modelContext
-    @Query private var wallets: [PlayerWallet]
-
     private let data = ShopLoader.load()
 
-    private var wallet: PlayerWallet {
-        if let w = wallets.first { return w }
-        let w = PlayerWallet()
-        modelContext.insert(w)
-        return w
-    }
-
-    private var skinsCategory: ShopCategory? {
-        data.categories.first { $0.id.lowercased() == "skins" }
-    }
-
     private var skins: [ShopItem] {
-        skinsCategory?.items ?? []
+        data.categories.first { $0.id.lowercased() == "skins" }?.items ?? []
     }
 
     var body: some View {
@@ -36,55 +22,141 @@ struct SkinSelectionView: View {
             Color(.systemBackground)
                 .ignoresSafeArea()
 
-            VStack(spacing: 12) {
-
-                header
-
-                ScrollView {
-                    LazyVStack(spacing: 12) {
-                        ForEach(skins) { skin in
-                            skinRow(skin)
-                        }
-                    }
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 8)
-                }
+            if let wallet = gameState.wallet {
+                content(wallet: wallet)
+            } else {
+                ProgressView("Loading Skins…")
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
         }
+    }
+
+    // MARK: - Content
+
+    private func content(wallet: PlayerWallet) -> some View {
+        VStack(spacing: 16) {
+
+            header
+
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 20) {
+                    ForEach(skins) { skin in
+                        skinCard(skin, wallet: wallet)
+                    }
+                }
+                .padding(.horizontal, 20)
+                .padding(.vertical, 12)
+            }
+        }
+    }
+
+    private func skinCard(
+        _ skin: ShopItem,
+        wallet: PlayerWallet
+    ) -> some View {
+
+        let owned = wallet.ownedSkins.contains(skin.skinId)
+        let equipped = wallet.equippedSkin == skin.skinId
+
+        return VStack(spacing: 12) {
+
+            // 🖼️ Preview
+            Image(skin.preview)
+                .resizable()
+                .scaledToFit()
+                .frame(height: 160)
+                .padding()
+                .background(
+                    RoundedRectangle(cornerRadius: 16)
+                        .fill(Color(.tertiarySystemBackground))
+                )
+                .overlay {
+                    if !owned {
+                        Color.black.opacity(0.4)
+                        Image(systemName: "lock.fill")
+                            .font(.title)
+                            .foregroundStyle(.white)
+                    }
+                }
+
+            // 🏷️ Name + Status
+            VStack(spacing: 4) {
+                Text(skin.name)
+                    .font(.headline)
+
+                if equipped {
+                    tag("EquIPPED")
+                } else if owned {
+                    tag("OWNED")
+                } else {
+                    Text("Locked")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+            }
+
+            // 🎯 Action Button
+            Button {
+                withAnimation(.easeInOut(duration: 0.15)) {
+                    if equipped {
+                        wallet.equippedSkin = nil  // BASE
+                    } else if owned {
+                        wallet.equippedSkin = skin.skinId
+                    }
+                }
+            } label: {
+                Text(equipped ? "USE BASE" : "EQUIP")
+                    .font(.caption.weight(.semibold))
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 10)
+                    .background(
+                        Capsule()
+                            .fill(owned ? Color.cyan : Color.gray.opacity(0.3))
+                    )
+                    .foregroundColor(.black)
+            }
+            .disabled(!owned)
+        }
+        .frame(width: 220)
+        .padding(16)
+        .background(
+            RoundedRectangle(cornerRadius: 22)
+                .fill(Color(.secondarySystemBackground))
+        )
+        .scaleEffect(equipped ? 1.05 : 1.0)
+        .animation(.easeOut(duration: 0.2), value: equipped)
     }
 
     // MARK: - Header
 
     private var header: some View {
-        HStack(spacing: 12) {
+        HStack {
             Text("Select Skin")
                 .font(.headline.weight(.semibold))
-
             Spacer()
-
         }
         .padding(.horizontal, 12)
         .padding(.top, 8)
     }
 
-    private func miniCurrency(icon: String, value: Int) -> some View {
-        HStack(spacing: 6) {
-            Image(icon)
-                .resizable()
-                .scaledToFit()
-                .frame(width: 14, height: 14)
+    // MARK: - Empty State
 
-            Text("\(value)")
-                .font(.caption.weight(.bold))
-                .monospacedDigit()
-        }
+    private var emptyState: some View {
+        Text("No skins available")
+            .font(.headline)
+            .foregroundStyle(.secondary)
+            .padding(.top, 40)
     }
 
-    // MARK: - Skin Row (EQUIP ONLY)
+    // MARK: - Skin Row
 
-    private func skinRow(_ skin: ShopItem) -> some View {
-        let owned = wallet.ownedSkins.contains(skin.id)
-        let equipped = wallet.equippedSkin == skin.id
+    private func skinRow(
+        _ skin: ShopItem,
+        wallet: PlayerWallet
+    ) -> some View {
+
+        let owned = wallet.ownedSkins.contains(skin.skinId)
+        let equipped = wallet.equippedSkin == skin.skinId
 
         return HStack(spacing: 12) {
 
@@ -107,6 +179,7 @@ struct SkinSelectionView: View {
                 }
 
             VStack(alignment: .leading, spacing: 6) {
+
                 HStack(spacing: 8) {
                     Text(skin.name)
                         .font(.headline)
@@ -126,11 +199,18 @@ struct SkinSelectionView: View {
             Spacer()
 
             Button {
-                guard owned else { return }
-                wallet.equippedSkin = skin.id
-                gameState.equippedSkinSprite = skin.id
+                withAnimation(.easeInOut(duration: 0.15)) {
+
+                    if equipped {
+                        // 🔥 SKIN ABLEGEN → BASE
+                        wallet.equippedSkin = nil
+                    } else if owned {
+                        // 🔥 SKIN ANLEGEN
+                        wallet.equippedSkin = skin.skinId
+                    }
+                }
             } label: {
-                Text(equipped ? "EQUIPPED" : "EQUIP")
+                Text(equipped ? "UNEQUIP" : "EQUIP")
                     .font(.caption.weight(.semibold))
                     .padding(.horizontal, 14)
                     .padding(.vertical, 8)
@@ -148,6 +228,8 @@ struct SkinSelectionView: View {
         )
     }
 
+    // MARK: - Tag
+
     private func tag(_ text: String) -> some View {
         Text(text.uppercased())
             .font(.caption2.weight(.bold))
@@ -161,8 +243,16 @@ struct SkinSelectionView: View {
 }
 
 #Preview {
-    NavigationStack {
+    let gs = GameState()
+    gs.wallet = PlayerWallet(
+        coins: 2000,
+        crystals: 10,
+        ownedSkins: ["skin_shadow"],
+        equippedSkin: "skin_shadow"
+    )
+
+    return NavigationStack {
         SkinSelectionView()
-            .environmentObject(GameState())
+            .environmentObject(gs)
     }
 }

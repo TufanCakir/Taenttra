@@ -19,7 +19,7 @@ struct StartView: View {
             Color(.systemBackground)
                 .ignoresSafeArea()
 
-            Image("kenji_front")
+            Image("kenji_base_preview")
                 .resizable()
                 .scaledToFit()
                 .frame(height: 500)

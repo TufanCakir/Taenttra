@@ -12,8 +12,17 @@ struct CreditsView: View {
     var body: some View {
         List {
             Section {
-                Text("TAENTTRA is an independent fighting game project.")
-                Text("Design, Code & Art by Tufan Cakir.")
+                Text("Taenttra ist ein Fighting-Game-Projekt.")
+                Text("Ein Experiment über Spielgefühl, Klarheit und Fokus.")
+                    .foregroundStyle(.secondary)
+
+                Divider()
+
+                Text("Design, Code & Art")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+
+                Text("Tufan Cakir")
             }
         }
         .navigationTitle("Credits")
