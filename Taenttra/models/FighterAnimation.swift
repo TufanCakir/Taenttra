@@ -23,6 +23,7 @@ enum FightState {
     case fighting
     case ko
     case victory
+    case timeout  // 🆕
 }
 
 extension FighterAnimation {

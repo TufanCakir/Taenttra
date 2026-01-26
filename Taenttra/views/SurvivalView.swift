@@ -29,9 +29,6 @@ struct SurvivalView: View {
                                     .font(.caption)
                                     .foregroundStyle(.secondary)
                             }
-                            Spacer()
-                            Image(systemName: "timer")
-                                .opacity(0.5)
                         }
                     }
                 }

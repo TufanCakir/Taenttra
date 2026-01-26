@@ -10,7 +10,7 @@
                 "kenji",
                 "kenji"
             ],
-            "timeLimit": 60
+            "timeLimit": 50
         },
         {
             "id": "survival_hard",
@@ -21,7 +21,29 @@
                 "kenji",
                 "kenji"
             ],
-            "timeLimit": 45
+            "timeLimit": 20
+        },
+        {
+            "id": "survival_challenge",
+            "title": "NIGHT CHALLENGE",
+            "background": "night",
+            "music": "survival_night_theme",
+            "enemyPool": [
+                "kenji",
+                "kenji"
+            ],
+            "timeLimit": 10
+        },
+        {
+            "id": "survival_challenge_2",
+            "title": "NIGHT CHALLENGE 2",
+            "background": "night_2",
+            "music": "survival_night_2_theme",
+            "enemyPool": [
+                "kenji",
+                "kenji"
+            ],
+            "timeLimit": 5
         }
     ]
 }

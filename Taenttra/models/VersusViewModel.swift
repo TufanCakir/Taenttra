@@ -9,11 +9,10 @@ import Combine
 import SwiftUI
 
 final class VersusViewModel: ObservableObject {
-    
+
     // MARK: - Timer
     @Published var timeRemaining: Int = 0
     @Published var isTimerRunning: Bool = false
-
 
     // MARK: - Animation
     @Published var animationState: FighterAnimation = .idle
@@ -55,7 +54,7 @@ final class VersusViewModel: ObservableObject {
         self.stages = stages
         self.currentStage = stages.first!
         self.phase = .intro
-        startTimer() // 🔥 DAS FEHLTE
+        startTimer()  // 🔥 DAS FEHLTE
     }
 
     func loadStage(_ stage: VersusStage) {
@@ -69,12 +68,12 @@ final class VersusViewModel: ObservableObject {
         fightState = .fighting
         animationState = .idle
     }
-    
+
     func startFight() {
         phase = .fighting
         startTimer()
     }
-    
+
     private func resetForNextWave() {
         fightState = .fighting
         winner = nil
@@ -84,25 +83,27 @@ final class VersusViewModel: ObservableObject {
 
         startTimer()
     }
-    
+
     private func startTimer() {
         timerCancellable?.cancel()
 
-        let limit = currentWave?.timeLimit
+        let limit =
+            currentWave?.timeLimit
             ?? currentStage.waves.last?.timeLimit
             ?? 99
 
         timeRemaining = limit
         isTimerRunning = true
 
-        timerCancellable = Timer
+        timerCancellable =
+            Timer
             .publish(every: 1, on: .main, in: .common)
             .autoconnect()
             .sink { [weak self] _ in
                 self?.tick()
             }
     }
-    
+
     private func tick() {
         guard fightState == .fighting else { return }
 
@@ -112,20 +113,33 @@ final class VersusViewModel: ObservableObject {
             handleTimeout()
         }
     }
-    
+
     private func handleTimeout() {
         timerCancellable?.cancel()
         isTimerRunning = false
 
-        // Wer hat mehr HP?
+        // Sieger anhand HP bestimmen
         if leftHealth > rightHealth {
-            handleKO(loser: .right)
+            winner = .left
         } else if rightHealth > leftHealth {
-            handleKO(loser: .left)
+            winner = .right
         } else {
-            // Draw → Gegner gewinnt oder Sudden Death
-            handleKO(loser: .left)
+            winner = .right  // oder .left oder sudden death
         }
+
+        withAnimation(.easeOut(duration: 0.3)) {
+            animationState = .idle
+        }
+
+        let score = calculateLeaderboardScore()
+        if GameCenterManager.shared.isAuthenticated {
+            Task {
+                await GameCenterManager.shared.submitScore(score)
+            }
+        }
+
+        fightState = .victory  // ⬅️ direkt vorbei
+        rewards = calculateRewards()
     }
 
     private func triggerHitStop(duration: Double) {
@@ -196,7 +210,7 @@ final class VersusViewModel: ObservableObject {
 
     private func handleKO(loser: FighterSide) {
         timerCancellable?.cancel()
-          isTimerRunning = false
+        isTimerRunning = false
         fightState = .ko
         winner = loser == .left ? .right : .left
 
@@ -227,7 +241,7 @@ final class VersusViewModel: ObservableObject {
 
         handleVictory()
     }
-    
+
     private func handleVictory() {
         timerCancellable?.cancel()
         isTimerRunning = false

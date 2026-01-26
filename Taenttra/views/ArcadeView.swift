@@ -28,9 +28,6 @@ struct ArcadeView: View {
                                     .font(.caption)
                                     .foregroundStyle(.secondary)
                             }
-                            Spacer()
-                            Image(systemName: "chevron.right")
-                                .opacity(0.4)
                         }
                     }
                 }

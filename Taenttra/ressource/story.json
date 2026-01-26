@@ -2,31 +2,31 @@
     "chapters": [
         {
             "id": "chapter_1",
-            "title": "Dojo of Ash",
+            "title": "Resurrection",
             "background": "dojo_night",
             "music": "dojo_theme",
             "sections": [
                 {
-                  "id": "1_1",
-                  "title": "First Clash",
-                  "enemy": "kenji",
-                  "waves": 2,
-                  "timeLimit": 60
+                    "id": "1_1",
+                    "title": "Revenge",
+                    "enemy": "kenji",
+                    "waves": 1,
+                    "timeLimit": 100
                 },
                 {
-                  "id": "1_2",
-                  "title": "Ashes Rising",
-                  "enemy": "kenji",
-                  "waves": 3,
-                  "timeLimit": 55
+                    "id": "1_2",
+                    "title": "The Training",
+                    "enemy": "kenji",
+                    "waves": 3,
+                    "timeLimit": 100
                 },
                 {
-                  "id": "1_boss",
-                  "title": "The Old Master",
-                  "enemy": "kenji",
-                  "waves": 1,
-                  "boss": true,
-                  "timeLimit": 45
+                    "id": "1_boss",
+                    "title": "The Old Master",
+                    "enemy": "kenji",
+                    "waves": 1,
+                    "boss": false,
+                    "timeLimit": 100
                 }
             ]
         }

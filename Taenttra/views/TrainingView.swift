@@ -29,11 +29,6 @@ struct TrainingView: View {
                                     .font(.caption)
                                     .foregroundStyle(.secondary)
                             }
-
-                            Spacer()
-
-                            Image(systemName: "target")
-                                .opacity(0.5)
                         }
                     }
                 }

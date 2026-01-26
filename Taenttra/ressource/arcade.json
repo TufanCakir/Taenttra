@@ -7,7 +7,7 @@
             "music": "dojo_theme",
             "enemy": "kenji",
             "waves": 3,
-            "timeLimit": 60
+            "timeLimit": 30
         },
         {
             "id": "arcade_2",
@@ -15,8 +15,26 @@
             "background": "neon_city",
             "music": "neon_theme",
             "enemy": "kenji",
-            "waves": 4,
-            "timeLimit": 45
+            "waves": 6,
+            "timeLimit": 60
+        },
+        {
+            "id": "arcade_3",
+            "title": "NIGHT TRIAL",
+            "background": "night",
+            "music": "night_theme",
+            "enemy": "kenji",
+            "waves": 9,
+            "timeLimit": 90
+        },
+        {
+            "id": "arcade_4",
+            "title": "NIGHT 2 TRIAL",
+            "background": "night_2",
+            "music": "night_2_theme",
+            "enemy": "kenji",
+            "waves": 12,
+            "timeLimit": 120
         }
     ]
 }

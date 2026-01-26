@@ -18,12 +18,12 @@ struct FighterView: View {
     var body: some View {
         Image(
             character.imageNameSafe(
-                for: state.characterState  // ✅ HIER DER FIX
+                for: state.characterState
             )
         )
         .resizable()
         .scaledToFit()
-        .frame(width: 180, height: 260)
+        .frame(width: 180, height: 280)
         .offset(x: (mirrored ? -1 : 1) * attackOffset)
         .scaleEffect(x: mirrored ? 1 : -1, y: 1)
         .rotation3DEffect(
@@ -33,4 +33,20 @@ struct FighterView: View {
             perspective: 0.6
         )
     }
+}
+
+#Preview {
+    FighterView(
+        character: Character(
+            key: "kenji",
+            isLocked: false,
+            skinId: "base"
+        ),
+        state: .idle,
+        rotation: 0,
+        mirrored: false,
+        attackOffset: 0
+    )
+    .padding()
+    .background(Color.black)
 }

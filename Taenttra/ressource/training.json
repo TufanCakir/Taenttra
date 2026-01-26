@@ -15,6 +15,22 @@
             "music": "training_combo_theme",
             "enemy": "kenji",
             "timeLimit": 999
+        },
+        {
+            "id": "training_skill",
+            "title": "COMBO PRACTICE",
+            "background": "night",
+            "music": "training_night_theme",
+            "enemy": "kenji",
+            "timeLimit": 999
+        },
+        {
+            "id": "training_skill_2",
+            "title": "COMBO PRACTICE",
+            "background": "night_2",
+            "music": "training_night_2_theme",
+            "enemy": "kenji",
+            "timeLimit": 999
         }
     ]
 }

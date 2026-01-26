@@ -33,11 +33,6 @@ struct EventView: View {
                                     .font(.caption2)
                                     .foregroundStyle(.secondary.opacity(0.7))
                             }
-
-                            Spacer()
-
-                            Image(systemName: "flame")
-                                .opacity(0.5)
                         }
                     }
                 }

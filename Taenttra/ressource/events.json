@@ -16,7 +16,25 @@
             "music": "event_neon_theme",
             "enemy": "kenji",
             "timeLimit": 30,
-            "expiresAt": "2026-01-31"
+            "expiresAt": "2026-02-01"
+        },
+        {
+            "id": "event_neon_rush",
+            "title": "NIGHT MOON",
+            "background": "night",
+            "music": "event_night_theme",
+            "enemy": "kenji",
+            "timeLimit": 30,
+            "expiresAt": "2026-02-01"
+        },
+        {
+            "id": "event_neon_rush",
+            "title": "NIGHT 2 MOON",
+            "background": "night_2",
+            "music": "event_night_2_theme",
+            "enemy": "kenji",
+            "timeLimit": 30,
+            "expiresAt": "2026-02-01"
         }
     ]
 }

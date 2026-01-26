@@ -99,23 +99,15 @@ struct CharacterGridView: View {
             // ENEMY
             VStack(spacing: 8) {
 
-                if let enemyKey {
-                    Image(
-                        SkinLibrary.previewImage(
-                            for: enemyKey,
-                            shopSkinId: enemySkinId
-                        )
+                Image(
+                    SkinLibrary.previewImage(
+                        for: enemyKey ?? "unknown",
+                        shopSkinId: enemySkinId
                     )
-                    .resizable()
-                    .scaledToFit()
-                    .frame(height: 140)
-                } else {
-                    Image("enemy_placeholder")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(height: 140)
-                        .opacity(0.4)
-                }
+                )
+                .resizable()
+                .scaledToFit()
+                .frame(height: 140)
 
                 Text(enemyDisplayName.uppercased())
                     .font(.caption.bold())
@@ -224,26 +216,18 @@ struct CharacterGridView: View {
 
     private var enemyKey: String? {
         switch gameState.pendingMode {
-
         case .story(_, let section):
             return section.enemy
-
         case .arcadeStage(let stage):
             return stage.enemy
-
         case .trainingMode(let mode):
             return mode.enemy
-
         case .eventMode(let mode):
             return mode.enemy
-
         case .survivalMode(let mode):
-            return mode.enemyPool.randomElement()
-
+            return mode.enemyPool.first
         case .versus:
-            // Wird später aus VersusSelect gesetzt
             return gameState.currentStage?.waves.first?.enemies.first
-
         case .none:
             return nil
         }

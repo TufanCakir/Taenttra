@@ -12,7 +12,7 @@
                     "enemies": [
                         "kenji"
                     ],
-                    "timeLimit": 60
+                    "timeLimit": 70
                 },
                 {
                     "wave": 2,
@@ -29,7 +29,7 @@
                         "kenji",
                         "kenji"
                     ],
-                    "timeLimit": 80
+                    "timeLimit": 70
                 }
             ]
         },
@@ -45,7 +45,7 @@
                     "enemies": [
                         "kenji"
                     ],
-                    "timeLimit": 60
+                    "timeLimit": 50
                 },
                 {
                     "wave": 2,
@@ -53,7 +53,104 @@
                         "kenji",
                         "kenji"
                     ],
-                    "timeLimit": 75
+                    "timeLimit": 50
+                }
+            ]
+        },
+        {
+            "id": "night",
+            "name": "Night",
+            "background": "night",
+            "music": "night_theme",
+
+            "waves": [
+                {
+                    "wave": 1,
+                    "enemies": [
+                        "kenji"
+                    ],
+                    "timeLimit": 30
+                },
+                {
+                    "wave": 2,
+                    "enemies": [
+                        "kenji",
+                        "kenji"
+                    ],
+                    "timeLimit": 30
+                },
+                {
+                    "wave": 3,
+                    "enemies": [
+                        "kenji",
+                        "kenji",
+                        "kenji"
+                    ],
+                    "timeLimit": 30
+                },
+                {
+                    "wave": 4,
+                    "enemies": [
+                        "kenji",
+                        "kenji",
+                        "kenji",
+                        "kenji"
+                    ],
+                    "timeLimit": 30
+                }
+            ]
+        },
+        {
+            "id": "night_2",
+            "name": "Night 2",
+            "background": "night_2",
+            "music": "rain_theme",
+
+            "waves": [
+                {
+                    "wave": 1,
+                    "enemies": [
+                        "kenji"
+                    ],
+                    "timeLimit": 10
+                },
+                {
+                    "wave": 2,
+                    "enemies": [
+                        "kenji",
+                        "kenji"
+                    ],
+                    "timeLimit": 10
+                },
+                {
+                    "wave": 3,
+                    "enemies": [
+                        "kenji",
+                        "kenji",
+                        "kenji"
+                    ],
+                    "timeLimit": 10
+                },
+                {
+                    "wave": 4,
+                    "enemies": [
+                        "kenji",
+                        "kenji",
+                        "kenji",
+                        "kenji"
+                    ],
+                    "timeLimit": 10
+                },
+                {
+                    "wave": 5,
+                    "enemies": [
+                        "kenji",
+                        "kenji",
+                        "kenji",
+                        "kenji",
+                        "kenji"
+                    ],
+                    "timeLimit": 10
                 }
             ]
         }
