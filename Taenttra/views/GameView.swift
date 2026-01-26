@@ -18,10 +18,6 @@ struct GameView: View {
 
     @Environment(\.modelContext) private var modelContext
 
-    private var rewardStore: RewardStore {
-        RewardStore(context: modelContext)
-    }
-
     var body: some View {
         NavigationStack {
             ZStack {
@@ -86,12 +82,13 @@ struct GameView: View {
                         VersusView(
                             viewModel: vm,
                             onVictoryContinue: { rewards in
-                                rewardStore.add(
-                                    coins: rewards.coins,
-                                    crystals: rewards.crystals
-                                )
+                                // ✅ Rewards ins Wallet schreiben
+                                gameState.wallet.coins += rewards.coins
+                                gameState.wallet.crystals += rewards.crystals
+
+                                // optional: Cleanup
                                 gameState.versusViewModel = nil
-                                gameState.screen = .story  // 👈 Story-Flow
+                                gameState.screen = .home
                             },
                             leftCharacter: left
                         )

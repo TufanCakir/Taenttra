@@ -7,39 +7,26 @@
             "music": "dojo_theme",
             "sections": [
                 {
-                    "id": "1_1",
-                    "enemy": "kenji",
-                    "waves": 2
+                  "id": "1_1",
+                  "title": "First Clash",
+                  "enemy": "kenji",
+                  "waves": 2,
+                  "timeLimit": 60
                 },
                 {
-                    "id": "1_2",
-                    "enemy": "kenji",
-                    "waves": 3
+                  "id": "1_2",
+                  "title": "Ashes Rising",
+                  "enemy": "kenji",
+                  "waves": 3,
+                  "timeLimit": 55
                 },
                 {
-                    "id": "1_boss",
-                    "enemy": "kenji",
-                    "waves": 1,
-                    "boss": true
-                }
-            ]
-        },
-        {
-            "id": "chapter_2",
-            "title": "Neon City",
-            "background": "neon_city",
-            "music": "city_theme",
-            "sections": [
-                {
-                    "id": "2_1",
-                    "enemy": "kenji",
-                    "waves": 3
-                },
-                {
-                    "id": "2_boss",
-                    "enemy": "kenji",
-                    "waves": 1,
-                    "boss": true
+                  "id": "1_boss",
+                  "title": "The Old Master",
+                  "enemy": "kenji",
+                  "waves": 1,
+                  "boss": true,
+                  "timeLimit": 45
                 }
             ]
         }

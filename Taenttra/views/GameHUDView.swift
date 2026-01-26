@@ -32,12 +32,9 @@ struct GameHUDView: View {
                     )
                 }
 
-                Text(
-                    viewModel.currentWave
-                        .map { "\($0.timeLimit)" } ?? ""
-                )
-                .font(.system(size: 26, weight: .bold))
-                .foregroundStyle(.white)
+                Text("\(viewModel.timeRemaining)")
+                    .font(.title2.monospacedDigit().weight(.bold))
+                    .foregroundStyle(viewModel.timeRemaining <= 10 ? .red : .white)
             }
             .padding()
 

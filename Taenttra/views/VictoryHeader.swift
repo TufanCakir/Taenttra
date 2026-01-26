@@ -13,31 +13,39 @@ struct VictoryHeader: View {
     let subtitle: String?
 
     var body: some View {
-        VStack(spacing: 12) {
+        VStack(spacing: 14) {
 
-            // TOP LINE
-            Rectangle()
-                .fill(Color.white.opacity(0.25))
-                .frame(width: 180, height: 1)
+            // 🔱 TOP ACCENT
+            Capsule()
+                .fill(
+                    LinearGradient(
+                        colors: [.white.opacity(0.05), .white.opacity(0.4), .white.opacity(0.05)],
+                        startPoint: .leading,
+                        endPoint: .trailing
+                    )
+                )
+                .frame(width: 220, height: 2)
 
-            // TITLE
+            // 🏆 TITLE
             Text(title)
-                .font(.system(size: 34, weight: .heavy))
-                .tracking(2.4)
+                .font(.system(size: 36, weight: .heavy, design: .rounded))
+                .tracking(3)
                 .foregroundStyle(.white)
+                .shadow(color: .black.opacity(0.6), radius: 6, y: 2)
 
-            // SUBTITLE
+            // ✨ SUBTITLE
             if let subtitle {
-                Text(subtitle)
-                    .font(.caption.weight(.semibold))
-                    .tracking(1.6)
-                    .foregroundStyle(.white.opacity(0.7))
+                Text(subtitle.uppercased())
+                    .font(.caption.weight(.bold))
+                    .tracking(2)
+                    .foregroundStyle(.white.opacity(0.75))
             }
 
-            // BOTTOM LINE
-            Rectangle()
-                .fill(Color.white.opacity(0.15))
-                .frame(width: 140, height: 1)
+            // 🔱 BOTTOM ACCENT
+            Capsule()
+                .fill(Color.white.opacity(0.2))
+                .frame(width: 160, height: 1.5)
         }
+        .padding(.vertical, 12)
     }
 }

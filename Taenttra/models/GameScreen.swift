@@ -35,6 +35,9 @@ enum PendingMode {
 }
 
 final class GameState: ObservableObject {
+    
+    @Published var wallet: PlayerWallet!
+    
     @Published var screen: GameScreen = .start
     @Published var pendingMode: PendingMode?
 
@@ -51,8 +54,6 @@ final class GameState: ObservableObject {
     @Published var time: Int = 99
 
     @Published var equippedSkinSprite: String = "fighter_default"
-    @Published var wallet: PlayerWallet?
-
     @Published var equippedSkin: String?  // frei wechselbar
     @Published var activeSkin: String?  // fight-locked
 
@@ -228,3 +229,4 @@ extension GameState {
         screen = .versus
     }
 }
+

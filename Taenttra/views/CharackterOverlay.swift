@@ -30,13 +30,18 @@ struct CharacterGridView: View {
         ZStack {
             Color.black.ignoresSafeArea()
 
-            VStack(spacing: 24) {
+            VStack(spacing: 20) {
 
                 Text("CHOOSE YOUR FIGHTER")
-                    .font(.system(size: 17, weight: .medium))
+                    .font(.system(size: 18, weight: .bold))
                     .foregroundColor(.cyan)
 
-                LazyVGrid(columns: columns, spacing: 12) {
+                versusPreview
+
+                Divider()
+                    .background(Color.cyan.opacity(0.3))
+
+                LazyVGrid(columns: columns, spacing: 14) {
                     ForEach(Array(characters.enumerated()), id: \.element.id) {
                         index,
                         character in
@@ -56,10 +61,83 @@ struct CharacterGridView: View {
 
                 startButton
             }
+            .padding(.horizontal, 16)
+            .padding(.top, 12)
         }
         .onChange(of: characters.count) { oldCount, newCount in
             selectedIndex = min(selectedIndex, max(newCount - 1, 0))
         }
+    }
+
+    private var versusPreview: some View {
+        HStack(spacing: 24) {
+
+            // PLAYER
+            VStack(spacing: 8) {
+                if let selected = selectedCharacter {
+                    Image(
+                        SkinLibrary.previewImage(
+                            for: selected.key,
+                            shopSkinId: gameState.wallet?.equippedSkin
+                        )
+                    )
+                    .resizable()
+                    .scaledToFit()
+                    .frame(height: 140)
+                }
+
+                Text(selectedCharacter?.name ?? "PLAYER")
+                    .font(.caption.bold())
+                    .foregroundStyle(.cyan)
+            }
+
+            // VS
+            Text("VS")
+                .font(.system(size: 42, weight: .heavy))
+                .foregroundStyle(.red)
+
+            // ENEMY
+            VStack(spacing: 8) {
+
+                if let enemyKey {
+                    Image(
+                        SkinLibrary.previewImage(
+                            for: enemyKey,
+                            shopSkinId: enemySkinId
+                        )
+                    )
+                    .resizable()
+                    .scaledToFit()
+                    .frame(height: 140)
+                } else {
+                    Image("enemy_placeholder")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(height: 140)
+                        .opacity(0.4)
+                }
+
+                Text(enemyDisplayName.uppercased())
+                    .font(.caption.bold())
+                    .foregroundStyle(.red)
+
+                if let waveCount = gameState.currentStage?.waves.count {
+                    Text("\(waveCount) WAVES")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                }
+            }
+        }
+    }
+
+    private var enemyDisplayName: String {
+        guard
+            let key = enemyKey,
+            let enemy = characters.first(where: { $0.key == key })
+        else {
+            return "RIVAL"
+        }
+        return enemy.name
     }
 
     // MARK: - Side Selector
@@ -86,12 +164,18 @@ struct CharacterGridView: View {
     private var startButton: some View {
         Button(action: startFight) {
             Text("START FIGHT")
-                .font(.system(size: 16, weight: .bold))
+                .font(.system(size: 18, weight: .heavy))
                 .foregroundColor(.black)
-                .padding(.horizontal, 32)
-                .padding(.vertical, 12)
-                .background(Color.cyan)
-                .cornerRadius(6)
+                .padding(.horizontal, 48)
+                .padding(.vertical, 14)
+                .background(
+                    LinearGradient(
+                        colors: [.cyan, .blue],
+                        startPoint: .leading,
+                        endPoint: .trailing
+                    )
+                )
+                .cornerRadius(8)
         }
         .disabled(selectedCharacter?.locked ?? true)
         .opacity((selectedCharacter?.locked ?? true) ? 0.4 : 1)
@@ -137,6 +221,60 @@ struct CharacterGridView: View {
             break
         }
     }
+
+    private var enemyKey: String? {
+        switch gameState.pendingMode {
+
+        case .story(_, let section):
+            return section.enemy
+
+        case .arcadeStage(let stage):
+            return stage.enemy
+
+        case .trainingMode(let mode):
+            return mode.enemy
+
+        case .eventMode(let mode):
+            return mode.enemy
+
+        case .survivalMode(let mode):
+            return mode.enemyPool.randomElement()
+
+        case .versus:
+            // Wird später aus VersusSelect gesetzt
+            return gameState.currentStage?.waves.first?.enemies.first
+
+        case .none:
+            return nil
+        }
+    }
+
+    private var enemySkinId: String? {
+        switch gameState.pendingMode {
+
+        case .story(_, let section):
+            return section.boss == true ? "boss" : nil
+
+        case .eventMode:
+            return "event"
+
+        case .arcadeStage:
+            return nil
+
+        case .trainingMode:
+            return nil
+
+        case .survivalMode:
+            return nil
+
+        case .versus:
+            return nil
+
+        case .none:
+            return nil
+        }
+    }
+
 }
 
 struct CharacterSlot: View {
@@ -166,10 +304,13 @@ struct CharacterSlot: View {
                     .clipped()
             }
 
-            RoundedRectangle(cornerRadius: 4)
+            RoundedRectangle(cornerRadius: 6)
                 .stroke(
-                    isSelected ? .cyan : .cyan.opacity(0.4),
-                    lineWidth: isSelected ? 2 : 1
+                    isSelected ? .cyan : .cyan.opacity(0.25),
+                    lineWidth: isSelected ? 2.5 : 1
+                )
+                .background(
+                    isSelected ? Color.cyan.opacity(0.1) : Color.clear
                 )
         }
         .animation(.easeOut(duration: 0.15), value: imageName)

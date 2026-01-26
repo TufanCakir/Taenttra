@@ -5,16 +5,16 @@
             "title": "BASIC TRAINING",
             "background": "dojo_night",
             "music": "training_theme",
-            "enemy": "dummy",
+            "enemy": "kenji",
             "timeLimit": 999
         },
         {
             "id": "training_combo",
             "title": "COMBO PRACTICE",
-            "background": "bg_dojo_night",
+            "background": "neon_city",
             "music": "training_combo_theme",
             "enemy": "kenji",
-            "timeLimit": 120
+            "timeLimit": 999
         }
     ]
 }

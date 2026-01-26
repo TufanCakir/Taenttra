@@ -23,12 +23,12 @@ struct StoryView: View {
                                 onStartFight(chapter, section)  // ✅ KORREKT
                             } label: {
                                 HStack {
-                                    Text(section.id.uppercased())
+                                    Text(section.title)
                                     Spacer()
                                     if section.boss == true {
                                         Text("BOSS")
-                                            .foregroundColor(.red)
-                                            .bold()
+                                            .foregroundStyle(.red)
+                                            .font(.caption.weight(.bold))
                                     }
                                 }
                             }

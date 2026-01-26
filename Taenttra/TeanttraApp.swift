@@ -8,8 +8,6 @@ import SwiftUI
 
 @main
 struct TeanttraApp: App {
-    @StateObject private var coinManager = CoinManager.shared
-    @StateObject private var crystalManager = CrystalManager.shared
 
     @StateObject private var gameState = GameState()
     @StateObject private var network = NetworkMonitor.shared

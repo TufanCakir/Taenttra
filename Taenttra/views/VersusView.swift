@@ -27,6 +27,17 @@ struct VersusView: View {
             Color.black.opacity(0.25)
                 .ignoresSafeArea()
 
+            // 🆕 VERSUS INTRO OVERLAY
+            if viewModel.phase == .intro {
+                VersusIntroView(
+                    stage: viewModel.currentStage,
+                    enemyName: currentEnemy.key.uppercased()
+                ) {
+                    viewModel.startFight()
+                }
+                .zIndex(20)
+            }
+            
             // 🥊 FIGHTERS (unten, unabhängig vom HUD)
             VStack {
                 Spacer()
@@ -71,7 +82,9 @@ struct VersusView: View {
         }
         // 🧠 HUD LEBT HIER – NICHT IM ZSTACK
         .safeAreaInset(edge: .top) {
-            GameHUDView(viewModel: viewModel)
+            if viewModel.phase == .fighting {
+                GameHUDView(viewModel: viewModel)
+            }
         }
         .animation(.easeOut(duration: 0.3), value: viewModel.fightState)
         .animation(
@@ -86,13 +99,45 @@ struct VersusView: View {
         }
     }
 
+    private var enemySkinId: String {
+
+        // 1️⃣ HARTE OVERRIDES (Story / Event)
+        switch gameState.pendingMode {
+
+        case .story(_, let section):
+            if section.boss == true {
+                return "boss"
+            }
+            // Non-boss Story Enemy
+            return playerSkinId == "base" ? "red" : "base"
+
+        case .eventMode:
+            return "event"
+
+        default:
+            break
+        }
+
+        // 2️⃣ VERSUS / ARCADE / TRAINING / SURVIVAL
+        if playerSkinId == "base" || playerSkinId.isEmpty {
+        }
+
+        return "base"
+    }
+
+    
+    private var playerSkinId: String {
+        leftCharacter.skinId
+    }
+
     // MARK: - Enemy (safe)
     private var currentEnemy: Character {
         let key = viewModel.currentWave?.enemies.first ?? "kenji"
+        
         return Character(
             key: key,
             isLocked: false,
-            skinId: "red"
+            skinId: enemySkinId
         )
     }
 }

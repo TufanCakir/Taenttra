@@ -18,6 +18,7 @@ struct ArcadeStage: Decodable, Identifiable {
     let music: String
     let enemy: String
     let waves: Int
+    let timeLimit: Int
 }
 
 final class ArcadeLoader {

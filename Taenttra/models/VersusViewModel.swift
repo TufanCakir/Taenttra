@@ -9,6 +9,11 @@ import Combine
 import SwiftUI
 
 final class VersusViewModel: ObservableObject {
+    
+    // MARK: - Timer
+    @Published var timeRemaining: Int = 0
+    @Published var isTimerRunning: Bool = false
+
 
     // MARK: - Animation
     @Published var animationState: FighterAnimation = .idle
@@ -27,6 +32,7 @@ final class VersusViewModel: ObservableObject {
 
     @Published var currentStage: VersusStage
     @Published var currentWaveIndex: Int = 0
+    @Published var phase: VersusPhase = .intro
 
     var currentWave: VersusWave? {
         guard currentWaveIndex < currentStage.waves.count else {
@@ -42,11 +48,14 @@ final class VersusViewModel: ObservableObject {
     // MARK: - Private
     private var isAttacking = false
     private let attacks: [FighterAnimation] = [.punch, .kick]
+    private var timerCancellable: AnyCancellable?
 
     // MARK: - Init
     init(stages: [VersusStage]) {
         self.stages = stages
         self.currentStage = stages.first!
+        self.phase = .intro
+        startTimer() // 🔥 DAS FEHLTE
     }
 
     func loadStage(_ stage: VersusStage) {
@@ -59,6 +68,64 @@ final class VersusViewModel: ObservableObject {
         rightHealth = 1
         fightState = .fighting
         animationState = .idle
+    }
+    
+    func startFight() {
+        phase = .fighting
+        startTimer()
+    }
+    
+    private func resetForNextWave() {
+        fightState = .fighting
+        winner = nil
+        leftHealth = 1
+        rightHealth = 1
+        animationState = .idle
+
+        startTimer()
+    }
+    
+    private func startTimer() {
+        timerCancellable?.cancel()
+
+        let limit = currentWave?.timeLimit
+            ?? currentStage.waves.last?.timeLimit
+            ?? 99
+
+        timeRemaining = limit
+        isTimerRunning = true
+
+        timerCancellable = Timer
+            .publish(every: 1, on: .main, in: .common)
+            .autoconnect()
+            .sink { [weak self] _ in
+                self?.tick()
+            }
+    }
+    
+    private func tick() {
+        guard fightState == .fighting else { return }
+
+        timeRemaining -= 1
+
+        if timeRemaining <= 0 {
+            handleTimeout()
+        }
+    }
+    
+    private func handleTimeout() {
+        timerCancellable?.cancel()
+        isTimerRunning = false
+
+        // Wer hat mehr HP?
+        if leftHealth > rightHealth {
+            handleKO(loser: .right)
+        } else if rightHealth > leftHealth {
+            handleKO(loser: .left)
+        } else {
+            // Draw → Gegner gewinnt oder Sudden Death
+            handleKO(loser: .left)
+        }
     }
 
     private func triggerHitStop(duration: Double) {
@@ -128,6 +195,8 @@ final class VersusViewModel: ObservableObject {
     }
 
     private func handleKO(loser: FighterSide) {
+        timerCancellable?.cancel()
+          isTimerRunning = false
         fightState = .ko
         winner = loser == .left ? .right : .left
 
@@ -158,25 +227,14 @@ final class VersusViewModel: ObservableObject {
 
         handleVictory()
     }
-
-    private func resetForNextWave() {
-        fightState = .fighting
-        winner = nil
-        leftHealth = 1
-        rightHealth = 1
-        animationState = .idle
-    }
-
+    
     private func handleVictory() {
+        timerCancellable?.cancel()
+        isTimerRunning = false
+
         rewards = calculateRewards()
 
-        if let rewards {
-            CoinManager.shared.add(rewards.coins)
-            CrystalManager.shared.add(rewards.crystals)
-        }
-
         let score = calculateLeaderboardScore()
-
         if GameCenterManager.shared.isAuthenticated {
             Task {
                 await GameCenterManager.shared.submitScore(score)

@@ -6,7 +6,8 @@
             "background": "dojo_night",
             "music": "dojo_theme",
             "enemy": "kenji",
-            "waves": 3
+            "waves": 3,
+            "timeLimit": 60
         },
         {
             "id": "arcade_2",
@@ -14,7 +15,8 @@
             "background": "neon_city",
             "music": "neon_theme",
             "enemy": "kenji",
-            "waves": 4
+            "waves": 4,
+            "timeLimit": 45
         }
     ]
 }

@@ -9,27 +9,22 @@ import SwiftUI
 
 struct VictoryView: View {
 
-    @Environment(\.modelContext) private var modelContext  // ✅ HIER
-
     let rewards: VictoryRewards
     let onContinue: () -> Void
 
     var body: some View {
         ZStack {
 
-            // 🖤 Hintergrund
             Color.black.opacity(0.9)
                 .ignoresSafeArea()
 
             VStack(spacing: 36) {
 
-                // TITLE
                 VictoryHeader(
                     title: "STAGE CLEARED",
                     subtitle: nil
                 )
 
-                // REWARDS
                 VStack(spacing: 16) {
                     rewardRow(
                         icon: "icon_coin",
@@ -43,37 +38,21 @@ struct VictoryView: View {
                         value: rewards.crystals
                     )
                 }
-                .padding(.horizontal, 24)
 
-                // CONTINUE
-                Button {
-                    let store = RewardStore(context: modelContext)
-                    store.add(
-                        coins: rewards.coins,
-                        crystals: rewards.crystals
-                    )
-
-                    onContinue()
-                } label: {
+                Button(action: onContinue) {
                     Text("CONTINUE")
                         .font(.headline.weight(.bold))
-                        .tracking(1)
                         .foregroundStyle(.black)
                         .padding(.horizontal, 36)
                         .padding(.vertical, 14)
                         .background(.white)
                         .clipShape(
-                            RoundedRectangle(
-                                cornerRadius: 12,
-                                style: .continuous
-                            )
+                            RoundedRectangle(cornerRadius: 12)
                         )
                 }
-                .buttonStyle(.plain)
             }
             .padding(.vertical, 40)
         }
-        .transition(.opacity.combined(with: .scale))
     }
 
     // MARK: - Reward Row

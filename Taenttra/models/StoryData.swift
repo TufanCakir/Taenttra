@@ -21,9 +21,11 @@ struct StoryChapter: Decodable, Identifiable {
 
 struct StorySection: Decodable, Identifiable {
     let id: String
+    let title: String
     let enemy: String
     let waves: Int
     let boss: Bool?
+    let timeLimit: Int
 }
 
 final class StoryLoader {
