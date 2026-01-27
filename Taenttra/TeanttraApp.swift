@@ -14,7 +14,10 @@ struct TeanttraApp: App {
 
     init() {
         GameCenterManager.shared.authenticate()
-        AudioManager.shared.playAll()
+
+        if AudioManager.shared.musicEnabled {
+            AudioManager.shared.playMenuMusic()
+        }
     }
 
     var body: some Scene {

@@ -23,6 +23,7 @@ final class AudioManager: NSObject, ObservableObject {
     @Published var musicEnabled: Bool = true
     @Published var volume: Float = 0.7 {
         didSet {
+            UserDefaults.standard.set(volume, forKey: AudioDefaults.volume)
             guard let song = currentSong else { return }
             player?.volume = song.volume * volume
         }
@@ -34,6 +35,11 @@ final class AudioManager: NSObject, ObservableObject {
     private var playlist: [Song] = []
     private var playlistIndex: Int = 0
 
+    private enum AudioDefaults {
+        static let musicEnabled = "musicEnabled"
+        static let volume = "musicVolume"
+    }
+
     private enum Mode {
         case single
         case playlist
@@ -43,6 +49,20 @@ final class AudioManager: NSObject, ObservableObject {
 
     private override init() {
         super.init()
+
+        // 🔹 gespeicherte Werte laden
+        let savedEnabled =
+            UserDefaults.standard.object(
+                forKey: AudioDefaults.musicEnabled
+            ) as? Bool ?? true
+
+        let savedVolume =
+            UserDefaults.standard.object(
+                forKey: AudioDefaults.volume
+            ) as? Float ?? 0.7
+
+        musicEnabled = savedEnabled
+        volume = savedVolume
     }
 
     func playMenuMusic() {
@@ -139,6 +159,7 @@ final class AudioManager: NSObject, ObservableObject {
 
     func setEnabled(_ enabled: Bool) {
         musicEnabled = enabled
+        UserDefaults.standard.set(enabled, forKey: AudioDefaults.musicEnabled)
 
         if enabled {
             switch mode {
