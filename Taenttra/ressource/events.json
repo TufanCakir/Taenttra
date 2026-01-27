@@ -1,40 +1,36 @@
 {
     "events": [
         {
-            "id": "event_blood_moon",
-            "title": "BLOOD MOON",
+            "id": "event_dojo_night",
+            "title": "Turnier",
             "background": "dojo_night",
-            "music": "event_blood_theme",
+            "music": "dojo_theme",
             "enemy": "kenji",
             "timeLimit": 45,
-            "expiresAt": "2026-02-01"
         },
         {
-            "id": "event_neon_rush",
-            "title": "NEON RUSH",
+            "id": "event_neon_city",
+            "title": "Ausbildung",
             "background": "neon_city",
-            "music": "event_neon_theme",
+            "music": "dojo_theme_2",
             "enemy": "kenji",
             "timeLimit": 30,
-            "expiresAt": "2026-02-01"
         },
         {
-            "id": "event_neon_rush",
-            "title": "NIGHT MOON",
-            "background": "night",
-            "music": "event_night_theme",
-            "enemy": "kenji",
+            "id": "event_master_rush",
+            "title": "Der alte Meister",
+            "background": "seishin_no_michi_dojo",
+            "music": "master_theme",
+            "enemy": "ren_dao",
             "timeLimit": 30,
-            "expiresAt": "2026-02-01"
         },
         {
-            "id": "event_neon_rush",
-            "title": "NIGHT 2 MOON",
-            "background": "night_2",
-            "music": "event_night_2_theme",
-            "enemy": "kenji",
+            "id": "event_master_2__rush",
+            "title": "Der alte Meister Return",
+            "background": "seishin_no_michi_dojo",
+            "music": "master_theme_2",
+            "enemy": "ren_dao",
             "timeLimit": 30,
-            "expiresAt": "2026-02-01"
         }
     ]
 }

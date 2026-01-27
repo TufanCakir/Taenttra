@@ -14,29 +14,22 @@ struct StoryView: View {
 
     var body: some View {
         NavigationStack {
-            List {
-                ForEach(viewModel.chapters) { chapter in
-                    Section(header: Text(chapter.title)) {
-                        ForEach(chapter.sections) { section in
-                            Button {
-                                viewModel.select(chapter, section)
-                                onStartFight(chapter, section)  // ✅ KORREKT
-                            } label: {
-                                HStack {
-                                    Text(section.title)
-                                    Spacer()
-                                    if section.boss == true {
-                                        Text("BOSS")
-                                            .foregroundStyle(.red)
-                                            .font(.caption.weight(.bold))
-                                    }
-                                }
-                            }
-                        }
+            StoryListView(viewModel: viewModel)
+                .navigationTitle("Story")
+                .navigationDestination(item: $viewModel.activeDialog) {
+                    dialog in
+                    StoryDialogView(dialog: dialog) {
+                        viewModel.continueAfterDialog()
+
+                        guard
+                            let chapter = viewModel.selectedChapter,
+                            let section = viewModel.selectedSection
+                        else { return }
+
+                        // ✅ IMMER nach Section-Dialog → Fight
+                        onStartFight(chapter, section)
                     }
                 }
-            }
-            .navigationTitle("Story")
         }
     }
 }

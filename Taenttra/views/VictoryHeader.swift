@@ -19,7 +19,10 @@ struct VictoryHeader: View {
             Capsule()
                 .fill(
                     LinearGradient(
-                        colors: [.white.opacity(0.05), .white.opacity(0.4), .white.opacity(0.05)],
+                        colors: [
+                            .white.opacity(0.05), .white.opacity(0.4),
+                            .white.opacity(0.05),
+                        ],
                         startPoint: .leading,
                         endPoint: .trailing
                     )

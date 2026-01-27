@@ -99,15 +99,10 @@ struct CharacterGridView: View {
             // ENEMY
             VStack(spacing: 8) {
 
-                Image(
-                    SkinLibrary.previewImage(
-                        for: enemyKey ?? "unknown",
-                        shopSkinId: enemySkinId
-                    )
-                )
-                .resizable()
-                .scaledToFit()
-                .frame(height: 140)
+                Image(enemyPreviewImage)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(height: 140)
 
                 Text(enemyDisplayName.uppercased())
                     .font(.caption.bold())
@@ -120,6 +115,18 @@ struct CharacterGridView: View {
                 }
             }
         }
+    }
+
+    private var enemyPreviewImage: String {
+
+        // ✅ IMMER Enemy-Preview im Grid
+        if let key = enemyKey,
+            let enemy = characters.first(where: { $0.key == key })
+        {
+            return enemy.displayImage
+        }
+
+        return "kenji_base_preview"
     }
 
     private var enemyDisplayName: String {
@@ -177,16 +184,38 @@ struct CharacterGridView: View {
     private func startFight() {
         guard let selected = selectedCharacter, !selected.locked else { return }
 
+        // 🔹 Player-Seite merken
+        gameState.playerSide = selectedSide
+
+        // 🔹 Skin bestimmen
         let spriteSkin = SkinLibrary.spriteVariant(
             from: gameState.wallet?.equippedSkin
         )
 
-        gameState.leftCharacter = Character(
+        // 🔹 Player-Character
+        let playerCharacter = Character(
             key: selected.key,
+            combatSpritePrefix: selected.combatSpritePrefix,
             isLocked: false,
-            skinId: spriteSkin  // ✅ "red" | "base" | "shadow"
+            skinId: spriteSkin
         )
 
+        // 🔹 Enemy-Character
+        let enemyCharacter = Character.enemy(
+            key: enemyKey ?? "kenji",
+            skinId: enemySkinId
+        )
+
+        // 🔥 LINKS / RECHTS ZUWEISUNG (DAS WAR DER FEHLENDE TEIL)
+        if selectedSide == .left {
+            gameState.leftCharacter = playerCharacter
+            gameState.rightCharacter = enemyCharacter
+        } else {
+            gameState.leftCharacter = enemyCharacter
+            gameState.rightCharacter = playerCharacter
+        }
+
+        // 🔹 Modus starten
         switch gameState.pendingMode {
 
         case .eventMode(let event):

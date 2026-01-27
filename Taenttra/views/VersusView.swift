@@ -14,6 +14,7 @@ struct VersusView: View {
     @ObservedObject var viewModel: VersusViewModel
     let onVictoryContinue: (VictoryRewards) -> Void
     let leftCharacter: Character
+    let rightCharacter: Character
 
     var body: some View {
         ZStack {
@@ -28,7 +29,7 @@ struct VersusView: View {
             if viewModel.phase == .intro {
                 VersusIntroView(
                     stage: viewModel.currentStage,
-                    enemyName: currentEnemy.key.uppercased()
+                    enemyName: rightCharacter.key.uppercased()
                 ) {
                     viewModel.startFight()
                 }
@@ -40,30 +41,32 @@ struct VersusView: View {
                 Spacer()
                 HStack(alignment: .bottom) {
 
+                    // 🔵 LEFT SLOT → schaut nach rechts
                     FighterContainerView(
                         alignment: .leading,
                         xInset: 30,
-                        yInset: -100,  // ⬅️ NACH OBEN = weiter hinten
-                        scale: 0.80,  // ⬅️ kleiner = Tiefe
+                        yInset: -100,
+                        scale: 0.80,
                         content: FighterView(
                             character: leftCharacter,
                             state: viewModel.animationState,
                             rotation: 0,
-                            mirrored: false,
+                            mirrored: false,  // ✅ EINMAL
                             attackOffset: viewModel.attackOffset
                         )
                     )
 
+                    // 🔴 RIGHT SLOT → schaut nach links
                     FighterContainerView(
                         alignment: .trailing,
                         xInset: -30,
                         yInset: -100,
-                        scale: 0.80,  // ⬅️ kleiner = Tiefe
+                        scale: 0.80,
                         content: FighterView(
-                            character: currentEnemy,
+                            character: rightCharacter,
                             state: viewModel.animationState,
                             rotation: 0,
-                            mirrored: true,
+                            mirrored: true,  // ✅ EINMAL
                             attackOffset: viewModel.attackOffset
                         )
                     )
@@ -101,9 +104,12 @@ struct VersusView: View {
         }
     }
 
-    private var enemySkinId: String {
+    private var playerOnLeft: Bool {
+        gameState.playerSide == .left
+    }
 
-        // 1️⃣ Story & Event Overrides
+    private var enemySkinId: String? {
+
         switch gameState.pendingMode {
 
         case .story(_, let section):
@@ -116,11 +122,8 @@ struct VersusView: View {
             return "event"
 
         default:
-            break
+            return contrastingSkin(from: playerSkinId)
         }
-
-        // 2️⃣ Alle anderen Modi
-        return contrastingSkin(from: playerSkinId)
     }
 
     private func contrastingSkin(from playerSkin: String) -> String {
@@ -137,50 +140,8 @@ struct VersusView: View {
     }
 
     private var playerSkinId: String {
-        leftCharacter.skinId
+        playerOnLeft
+            ? leftCharacter.skinId ?? "base"
+            : rightCharacter.skinId ?? "base"
     }
-
-    // MARK: - Enemy (safe)
-    private var currentEnemy: Character {
-        let key = viewModel.currentWave?.enemies.first ?? "kenji"
-
-        return Character(
-            key: key,
-            isLocked: false,
-            skinId: enemySkinId
-        )
-    }
-}
-
-#Preview {
-    let mockStage = VersusStage(
-        id: "preview",
-        name: "Preview Stage",
-        background: "night",  // ⬅️ dein BG-Asset
-        music: "preview",
-        waves: [
-            VersusWave(
-                wave: 1,
-                enemies: ["kenji"],
-                timeLimit: 99
-            )
-        ]
-    )
-
-    let mockViewModel = VersusViewModel(stages: [mockStage])
-
-    let gameState = GameState()
-    gameState.pendingMode = .versus
-    gameState.currentStage = mockStage
-
-    return VersusView(
-        viewModel: mockViewModel,
-        onVictoryContinue: { _ in },
-        leftCharacter: Character(
-            key: "kenji",
-            isLocked: false,
-            skinId: "base"
-        )
-    )
-    .environmentObject(gameState)
 }

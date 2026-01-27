@@ -9,9 +9,34 @@ import SwiftUI
 
 struct SettingsView: View {
 
+    @ObservedObject private var audio = AudioManager.shared
+
     var body: some View {
         NavigationStack {
             List {
+
+                // 🎵 AUDIO
+                Section(header: Text("AUDIO")) {
+
+                    Toggle(
+                        "Music",
+                        isOn: Binding(
+                            get: { audio.musicEnabled },
+                            set: { audio.setEnabled($0) }
+                        )
+                    )
+
+                    HStack {
+                        Text("Volume")
+                        Slider(
+                            value: Binding(
+                                get: { Double(audio.volume) },
+                                set: { audio.volume = Float($0) }
+                            ),
+                            in: 0...1
+                        )
+                    }
+                }
 
                 // MARK: - About
                 Section(header: Text("ABOUT")) {

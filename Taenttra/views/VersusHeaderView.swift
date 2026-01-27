@@ -14,13 +14,13 @@ struct VersusHeaderView: View {
     var body: some View {
         HStack {
             Spacer()
-            
+
             HStack(spacing: 40) {
                 currencyView(
                     icon: "icon_coin",
                     value: gameState.wallet.coins
                 )
-                
+
                 currencyView(
                     icon: "icon_crystal",
                     value: gameState.wallet.crystals
@@ -30,7 +30,7 @@ struct VersusHeaderView: View {
         .padding(.horizontal, 20)
         .padding(.top, 8)
     }
-    
+
     // MARK: - Currency View
     private func currencyView(icon: String, value: Int) -> some View {
         HStack(spacing: 8) {
@@ -45,4 +45,3 @@ struct VersusHeaderView: View {
         }
     }
 }
-

@@ -9,12 +9,14 @@ import Foundation
 
 struct CharacterDisplay: Identifiable, Codable {
 
-    // MARK: - Properties
     var id: UUID?
     let key: String
-    let displayImage: String  // z.B. "kenji_front"
+    let displayImage: String
     let name: String
     let locked: Bool
+
+    // 🆕 OPTIONAL: Combat Sprite Mapping
+    let combatSpritePrefix: String?
 
     // MARK: - CodingKeys
     private enum CodingKeys: String, CodingKey {
@@ -23,6 +25,7 @@ struct CharacterDisplay: Identifiable, Codable {
         case displayImage
         case name
         case locked
+        case combatSpritePrefix
     }
 
     // MARK: - Init
@@ -31,13 +34,15 @@ struct CharacterDisplay: Identifiable, Codable {
         key: String,
         displayImage: String,
         name: String,
-        locked: Bool
+        locked: Bool,
+        combatSpritePrefix: String? = nil
     ) {
         self.id = id ?? UUID()
         self.key = key
         self.displayImage = displayImage
         self.name = name
         self.locked = locked
+        self.combatSpritePrefix = combatSpritePrefix
     }
 
     // MARK: - Codable
@@ -53,6 +58,10 @@ struct CharacterDisplay: Identifiable, Codable {
         )
         self.name = try container.decode(String.self, forKey: .name)
         self.locked = try container.decode(Bool.self, forKey: .locked)
+        self.combatSpritePrefix = try container.decodeIfPresent(
+            String.self,
+            forKey: .combatSpritePrefix
+        )
     }
 
     func encode(to encoder: Encoder) throws {
@@ -79,6 +88,7 @@ extension CharacterDisplay {
     func toCharacter(using wallet: PlayerWallet?) -> Character {
         Character(
             key: key,
+            combatSpritePrefix: combatSpritePrefix,  // 🔥 HIER
             isLocked: locked,
             skinId: SkinLibrary.spriteVariant(
                 from: wallet?.equippedSkin

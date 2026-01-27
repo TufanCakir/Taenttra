@@ -35,9 +35,10 @@ enum PendingMode {
 }
 
 final class GameState: ObservableObject {
-    
+
+    @Published var playerSide: PlayerSide = .left
     @Published var wallet: PlayerWallet!
-    
+
     @Published var screen: GameScreen = .start
     @Published var pendingMode: PendingMode?
 
@@ -95,10 +96,17 @@ extension GameState {
 
     func goBack() {
         switch screen {
-        case .shop, .skin, .options:
+
+        case .story, .versus:
+            AudioManager.shared.endFight()
             screen = .home
 
-        case .arcade, .story, .training, .survival, .events:
+        case .shop, .skin, .options:
+            AudioManager.shared.endFight()
+            screen = .home
+
+        case .arcade, .training, .survival, .events:
+            AudioManager.shared.endFight()
             screen = .home
 
         case .characterSelect:
@@ -109,78 +117,78 @@ extension GameState {
         }
     }
 
+    private func startVersusStage(_ stage: VersusStage) {
+
+        // 🎵 Musik via SongLibrary
+        AudioManager.shared.playFightMusic(key: stage.music)
+
+        currentStage = stage
+        versusViewModel = VersusViewModel(stages: [stage])
+        screen = .versus
+    }
+
     func startEvent(mode: EventMode) {
-
-        let wave = VersusWave(
-            wave: 1,
-            enemies: [mode.enemy],
-            timeLimit: mode.timeLimit
-        )
-
         let stage = VersusStage(
             id: mode.id,
             name: mode.title,
             background: mode.background,
             music: mode.music,
-            waves: [wave]
+            waves: [
+                VersusWave(
+                    wave: 1,
+                    enemies: [mode.enemy],
+                    timeLimit: mode.timeLimit
+                )
+            ]
         )
 
-        currentStage = stage
-        versusViewModel = VersusViewModel(stages: [stage])
-        screen = .versus
+        startVersusStage(stage)
     }
 
     func startTraining(mode: TrainingMode) {
-
-        let wave = VersusWave(
-            wave: 1,
-            enemies: [mode.enemy],
-            timeLimit: mode.timeLimit
-        )
-
         let stage = VersusStage(
             id: mode.id,
             name: mode.title,
             background: mode.background,
             music: mode.music,
-            waves: [wave]
+            waves: [
+                VersusWave(
+                    wave: 1,
+                    enemies: [mode.enemy],
+                    timeLimit: mode.timeLimit
+                )
+            ]
         )
 
-        currentStage = stage
-        versusViewModel = VersusViewModel(stages: [stage])
-        screen = .versus
+        startVersusStage(stage)
     }
 
     func startSurvival(mode: SurvivalMode) {
-
-        let randomEnemy = mode.enemyPool.randomElement() ?? "kenji"
-
-        let wave = VersusWave(
-            wave: 1,
-            enemies: [randomEnemy],
-            timeLimit: mode.timeLimit
-        )
+        let enemy = mode.enemyPool.randomElement() ?? "kenji"
 
         let stage = VersusStage(
             id: mode.id,
             name: mode.title,
             background: mode.background,
             music: mode.music,
-            waves: [wave]
+            waves: [
+                VersusWave(
+                    wave: 1,
+                    enemies: [enemy],
+                    timeLimit: mode.timeLimit
+                )
+            ]
         )
 
-        currentStage = stage
-        versusViewModel = VersusViewModel(stages: [stage])
-        screen = .versus
+        startVersusStage(stage)
     }
 
     func startArcade(stage: ArcadeStage) {
-
-        let waves = (0..<stage.waves).map { index in
+        let waves = (0..<stage.waves).map {
             VersusWave(
-                wave: index + 1,
+                wave: $0 + 1,
                 enemies: [stage.enemy],
-                timeLimit: 99
+                timeLimit: stage.timeLimit
             )
         }
 
@@ -192,41 +200,27 @@ extension GameState {
             waves: waves
         )
 
-        currentStage = versusStage
-        versusViewModel = VersusViewModel(stages: [versusStage])
-        screen = .versus
+        startVersusStage(versusStage)
     }
 
     func startVersus(from chapter: StoryChapter, section: StorySection) {
 
-        // 🔒 Skin für den Fight fixieren
-        activeSkin = equippedSkin
+        let music = section.music ?? chapter.music
 
-        // 1️⃣ Stage aus Story-Daten bauen
         let stage = VersusStage(
             id: section.id,
-            name: chapter.title,
+            name: section.title,
             background: chapter.background,
-            music: chapter.music,
-            waves: (0..<section.waves).map { index in
+            music: music,
+            waves: (0..<section.waves).map {
                 VersusWave(
-                    wave: index + 1,
+                    wave: $0 + 1,
                     enemies: [section.enemy],
-                    timeLimit: 99
+                    timeLimit: section.timeLimit
                 )
             }
         )
 
-        // 2️⃣ Stage speichern
-        currentStage = stage
-
-        // 3️⃣ VersusViewModel NEU erzeugen
-        versusViewModel = VersusViewModel(
-            stages: [stage]
-        )
-
-        // 4️⃣ Screen wechseln
-        screen = .versus
+        startVersusStage(stage)
     }
 }
-

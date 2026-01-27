@@ -2,7 +2,13 @@
     {
         "key": "kenji",
         "displayImage": "kenji_base_preview",
-        "name": "KENJI",
+        "name": "Kenji",
         "locked": false
+    },
+    {
+        "key": "ren_dao",
+        "displayImage": "ren_dao_base_preview",
+        "name": "Ren Dao",
+        "locked": true
     }
 ]

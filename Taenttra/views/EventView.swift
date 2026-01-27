@@ -24,14 +24,6 @@ struct EventView: View {
                             VStack(alignment: .leading, spacing: 4) {
                                 Text(event.title)
                                     .font(.headline)
-
-                                Text("TIME: \(event.timeLimit)s")
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-
-                                Text("ENDS: \(event.expiresAt)")
-                                    .font(.caption2)
-                                    .foregroundStyle(.secondary.opacity(0.7))
                             }
                         }
                     }

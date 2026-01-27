@@ -19,8 +19,9 @@ struct SlantedPlayerHUD: View {
             spacing: 4
         ) {
             Text(name)
-                .font(.system(size: 14, weight: .medium))
+                .font(.system(size: 14, weight: .semibold))
                 .foregroundStyle(.white)
+                .textCase(nil)  // ❗️stellt sicher, dass SwiftUI nix umwandelt
 
             SlantedHealthBar(
                 value: health,

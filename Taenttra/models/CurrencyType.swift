@@ -11,4 +11,3 @@ enum CurrencyType {
     case coins
     case crystals
 }
-

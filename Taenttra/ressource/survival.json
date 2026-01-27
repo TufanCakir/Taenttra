@@ -4,7 +4,7 @@
             "id": "survival_basic",
             "title": "ENDURANCE",
             "background": "dojo_night",
-            "music": "survival_theme",
+            "music": "dojo_theme",
             "enemyPool": [
                 "kenji",
                 "kenji",
@@ -16,8 +16,10 @@
             "id": "survival_hard",
             "title": "LAST STAND",
             "background": "neon_city",
-            "music": "survival_hard_theme",
+            "music": "dojo_theme_2",
             "enemyPool": [
+                "kenji",
+                "kenji",
                 "kenji",
                 "kenji"
             ],
@@ -27,10 +29,11 @@
             "id": "survival_challenge",
             "title": "NIGHT CHALLENGE",
             "background": "night",
-            "music": "survival_night_theme",
+            "music": "master_theme",
             "enemyPool": [
-                "kenji",
-                "kenji"
+                "ren_dao",
+                "ren_dao",
+                "ren_dao"
             ],
             "timeLimit": 10
         },
@@ -38,10 +41,12 @@
             "id": "survival_challenge_2",
             "title": "NIGHT CHALLENGE 2",
             "background": "night_2",
-            "music": "survival_night_2_theme",
+            "music": "master_theme_2",
             "enemyPool": [
-                "kenji",
-                "kenji"
+                "ren_dao",
+                "ren_dao",
+                "ren_dao",
+                "ren_dao"
             ],
             "timeLimit": 5
         }

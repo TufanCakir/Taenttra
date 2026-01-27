@@ -16,6 +16,7 @@ struct StoryChapter: Decodable, Identifiable {
     let title: String
     let background: String
     let music: String
+    let introDialog: StoryDialog?  // 👈 NEU
     let sections: [StorySection]
 }
 
@@ -26,6 +27,19 @@ struct StorySection: Decodable, Identifiable {
     let waves: Int
     let boss: Bool?
     let timeLimit: Int
+    let music: String?  // 🆕
+    let introDialog: StoryDialog?  // 👈 NEU
+}
+
+struct StoryDialog: Decodable, Identifiable, Hashable {
+    let id = UUID()
+    let image: String
+    let text: String
+
+    private enum CodingKeys: String, CodingKey {
+        case image
+        case text
+    }
 }
 
 final class StoryLoader {

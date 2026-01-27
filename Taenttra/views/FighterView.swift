@@ -34,19 +34,3 @@ struct FighterView: View {
         )
     }
 }
-
-#Preview {
-    FighterView(
-        character: Character(
-            key: "kenji",
-            isLocked: false,
-            skinId: "base"
-        ),
-        state: .idle,
-        rotation: 0,
-        mirrored: false,
-        attackOffset: 0
-    )
-    .padding()
-    .background(Color.black)
-}

@@ -37,7 +37,7 @@
             "id": "city_rain",
             "name": "Rain Alley",
             "background": "city_rain",
-            "music": "rain_theme",
+            "music": "dojo_theme_2",
 
             "waves": [
                 {
@@ -54,30 +54,6 @@
                         "kenji"
                     ],
                     "timeLimit": 50
-                }
-            ]
-        },
-        {
-            "id": "night",
-            "name": "Night",
-            "background": "night",
-            "music": "night_theme",
-
-            "waves": [
-                {
-                    "wave": 1,
-                    "enemies": [
-                        "kenji"
-                    ],
-                    "timeLimit": 30
-                },
-                {
-                    "wave": 2,
-                    "enemies": [
-                        "kenji",
-                        "kenji"
-                    ],
-                    "timeLimit": 30
                 },
                 {
                     "wave": 3,
@@ -86,7 +62,7 @@
                         "kenji",
                         "kenji"
                     ],
-                    "timeLimit": 30
+                    "timeLimit": 50
                 },
                 {
                     "wave": 4,
@@ -96,59 +72,81 @@
                         "kenji",
                         "kenji"
                     ],
-                    "timeLimit": 30
+                    "timeLimit": 50
                 }
             ]
         },
         {
-            "id": "night_2",
-            "name": "Night 2",
-            "background": "night_2",
-            "music": "rain_theme",
+            "id": "seishin_no_michi_dojo",
+            "name": "Seishin No Michi Dojo",
+            "background": "seishin_no_michi_dojo",
+            "music": "master_theme",
 
             "waves": [
                 {
                     "wave": 1,
                     "enemies": [
-                        "kenji"
+                        "ren_dao"
+                    ],
+                    "timeLimit": 30
+                },
+                {
+                    "wave": 2,
+                    "enemies": [
+                        "ren_dao",
+                        "ren_dao"
+                    ],
+                    "timeLimit": 30
+                },
+                {
+                    "wave": 3,
+                    "enemies": [
+                        "ren_dao",
+                        "ren_dao",
+                        "ren_dao"
+                    ],
+                    "timeLimit": 30
+                }
+            ]
+        },
+        {
+            "id": "seishin_no_michi_dojo_2",
+            "name": "Seishin No Michi Dojo",
+            "background": "seishin_no_michi_dojo",
+            "music": "master_theme_2",
+
+            "waves": [
+                {
+                    "wave": 1,
+                    "enemies": [
+                        "ren_dao"
                     ],
                     "timeLimit": 10
                 },
                 {
                     "wave": 2,
                     "enemies": [
-                        "kenji",
-                        "kenji"
+                        "ren_dao",
+                        "ren_dao"
                     ],
                     "timeLimit": 10
                 },
                 {
                     "wave": 3,
                     "enemies": [
-                        "kenji",
-                        "kenji",
-                        "kenji"
+                        "ren_dao",
+                        "ren_dao",
+                        "ren_dao"
                     ],
                     "timeLimit": 10
                 },
                 {
                     "wave": 4,
                     "enemies": [
-                        "kenji",
-                        "kenji",
-                        "kenji",
-                        "kenji"
-                    ],
-                    "timeLimit": 10
-                },
-                {
-                    "wave": 5,
-                    "enemies": [
-                        "kenji",
-                        "kenji",
-                        "kenji",
-                        "kenji",
-                        "kenji"
+                        "ren_dao",
+                        "ren_dao",
+                        "ren_dao",
+                        "ren_dao"
                     ],
                     "timeLimit": 10
                 }

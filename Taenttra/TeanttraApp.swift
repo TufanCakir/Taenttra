@@ -14,22 +14,17 @@ struct TeanttraApp: App {
 
     init() {
         GameCenterManager.shared.authenticate()
+        AudioManager.shared.playAll()
     }
 
     var body: some Scene {
         WindowGroup {
             Group {
-
-                // ❌ Kein Internet → blockieren
                 if !network.isConnected {
                     ConnectionRequiredView(
-                        message:
-                            "Taenttra requires an internet connection."
+                        message: "Taenttra requires an internet connection."
                     )
-                }
-
-                // ✅ Internet da → Spiel starten
-                else {
+                } else {
                     GameView()
                         .environmentObject(gameState)
                 }

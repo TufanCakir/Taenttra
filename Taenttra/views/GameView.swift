@@ -76,24 +76,21 @@ struct GameView: View {
 
                 case .versus:
                     if let left = gameState.leftCharacter,
+                        let right = gameState.rightCharacter,
                         let vm = gameState.versusViewModel
                     {
-
                         VersusView(
                             viewModel: vm,
                             onVictoryContinue: { rewards in
-                                // ✅ Rewards ins Wallet schreiben
                                 gameState.wallet.coins += rewards.coins
                                 gameState.wallet.crystals += rewards.crystals
 
-                                // optional: Cleanup
                                 gameState.versusViewModel = nil
                                 gameState.screen = .home
                             },
-                            leftCharacter: left
+                            leftCharacter: left,
+                            rightCharacter: right
                         )
-
-                        GameHUDView(viewModel: vm)
                     }
 
                 case .arcade:

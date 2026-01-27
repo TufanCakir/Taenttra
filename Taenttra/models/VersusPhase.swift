@@ -11,4 +11,3 @@ enum VersusPhase {
     case intro
     case fighting
 }
-

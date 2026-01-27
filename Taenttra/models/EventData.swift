@@ -18,7 +18,6 @@ struct EventMode: Decodable, Identifiable {
     let music: String
     let enemy: String
     let timeLimit: Int
-    let expiresAt: String  // später Date
 }
 
 final class EventLoader {

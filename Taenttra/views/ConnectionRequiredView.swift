@@ -32,9 +32,7 @@ struct ConnectionRequiredView: View {
                     .padding(.horizontal, 32)
 
                 Button("Retry") {
-                    Task {
-                        await GameCenterManager.shared.authenticate()
-                    }
+                    GameCenterManager.shared.authenticate()
                 }
                 .padding(.horizontal, 28)
                 .padding(.vertical, 12)

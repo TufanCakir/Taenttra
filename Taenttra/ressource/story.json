@@ -2,31 +2,56 @@
     "chapters": [
         {
             "id": "chapter_1",
-            "title": "Resurrection",
+            "title": "The Tournament",
             "background": "dojo_night",
             "music": "dojo_theme",
+            "introDialog": {
+                "image": "dojo_night",
+                "text":
+                    "Nach Jahren im Exil kehrst du in das Dojo zurück, wo alles begann."
+            },
             "sections": [
                 {
                     "id": "1_1",
-                    "title": "Revenge",
-                    "enemy": "kenji",
-                    "waves": 1,
-                    "timeLimit": 100
-                },
-                {
-                    "id": "1_2",
-                    "title": "The Training",
-                    "enemy": "kenji",
-                    "waves": 3,
-                    "timeLimit": 100
-                },
-                {
-                    "id": "1_boss",
-                    "title": "The Old Master",
+                    "title": "Ein neuer Kämpfer",
                     "enemy": "kenji",
                     "waves": 1,
                     "boss": false,
-                    "timeLimit": 100
+                    "timeLimit": 100,
+                    "music": "dojo_theme",
+                    "introDialog": {
+                        "image": "dojo_night",
+                        "text":
+                            "Ein Junge namens Kenji will am Turnier teilnehmen."
+                    }
+                },
+                {
+                    "id": "1_2",
+                    "title": "Die Ausbildung",
+                    "enemy": "kenji",
+                    "waves": 1,
+                    "boss": false,
+                    "timeLimit": 100,
+                    "music": "dojo_theme_2",
+                    "introDialog": {
+                        "image": "city_rain",
+                        "text":
+                            "Kenji trainierte, um am Turnier teilnehmen zu können."
+                    }
+                },
+                {
+                    "id": "1_3",
+                    "title": "Der alte Meister",
+                    "enemy": "ren_dao",
+                    "waves": 1,
+                    "boss": false,
+                    "timeLimit": 100,
+                    "music": "master_theme",
+                    "introDialog": {
+                        "image": "seishin_no_michi_dojo",
+                        "text":
+                            "Der alte Mann bringt Kenji alles bei, was er weiß, damit er eines Tages der beste Kämpfer wird."
+                    }
                 }
             ]
         }

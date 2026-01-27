@@ -4,32 +4,32 @@
             "id": "training_basic",
             "title": "BASIC TRAINING",
             "background": "dojo_night",
-            "music": "training_theme",
+            "music": "dojo_theme",
             "enemy": "kenji",
             "timeLimit": 999
         },
         {
             "id": "training_combo",
             "title": "COMBO PRACTICE",
-            "background": "neon_city",
-            "music": "training_combo_theme",
-            "enemy": "kenji",
+            "background": "seishin_no_michi_dojo",
+            "music": "master_theme",
+            "enemy": "ren_dao",
             "timeLimit": 999
         },
         {
             "id": "training_skill",
             "title": "COMBO PRACTICE",
             "background": "night",
-            "music": "training_night_theme",
+            "music": "dojo_theme_2",
             "enemy": "kenji",
             "timeLimit": 999
         },
         {
             "id": "training_skill_2",
             "title": "COMBO PRACTICE",
-            "background": "night_2",
-            "music": "training_night_2_theme",
-            "enemy": "kenji",
+            "background": "seishin_no_michi_dojo",
+            "music": "master_theme_2",
+            "enemy": "ren_dao",
             "timeLimit": 999
         }
     ]

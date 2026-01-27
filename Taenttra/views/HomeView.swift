@@ -23,7 +23,6 @@ struct HomeView: View {
             VStack(spacing: 16) {
 
                 VersusHeaderView()
-                
 
                 Text("TAENTTRA")
                     .font(.largeTitle.weight(.semibold))

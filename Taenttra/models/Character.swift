@@ -9,23 +9,43 @@ import Foundation
 import UIKit
 
 struct Character: Identifiable {
+
     let id = UUID()
     let key: String
+    let combatSpritePrefix: String?
     let isLocked: Bool
-    let skinId: String  // "base" | "red" | "shadow"
+    let skinId: String?
+
+    // 🔥 EINZIGE combatKey-Quelle
+    private var combatKey: String {
+        combatSpritePrefix ?? key
+    }
 
     func imageNameSafe(for state: CharacterState) -> String {
-        let name = "char_\(key)_\(skinId)_\(state.rawValue)"
-        if UIImage(named: name) != nil {
-            return name
+
+        // 1️⃣ Skin + State
+        if let skinId {
+            let skinned = "char_\(combatKey)_\(skinId)_\(state.rawValue)"
+            if UIImage(named: skinned) != nil {
+                return skinned
+            }
         }
 
-        let idle = "char_\(key)_\(skinId)_idle"
-        if UIImage(named: idle) != nil {
-            return idle
+        // 2️⃣ Base + State
+        let baseState = "char_\(combatKey)_base_\(state.rawValue)"
+        if UIImage(named: baseState) != nil {
+            return baseState
         }
 
-        fatalError("❌ Missing sprite: \(name)")
+        // 3️⃣ Base Idle
+        let baseIdle = "char_\(combatKey)_base_idle"
+        if UIImage(named: baseIdle) != nil {
+            return baseIdle
+        }
+
+        // 4️⃣ Global fallback
+        print("⚠️ Missing sprite for \(combatKey)")
+        return "char_fallback"
     }
 }
 
@@ -46,18 +66,24 @@ struct CharacterData: Codable {
     let style: String
 }
 
-func loadCharactersFromAssets() -> [Character] {
+func loadCharactersFromAssets(
+    equippedSkin: String?
+) -> [Character] {
 
-    let characterKeys = ["kenji"]
-    let unlockedCount = 2
-
-    return characterKeys.enumerated().map { index, key in
+    [
         Character(
-            key: key,
-            isLocked: index >= unlockedCount,
-            skinId: "base"  // 🔥 Default Skin
-        )
-    }
+            key: "kenji",
+            combatSpritePrefix: nil,
+            isLocked: false,
+            skinId: equippedSkin
+        ),
+        Character(
+            key: "ren_dao",
+            combatSpritePrefix: "kenji",  // 🔥 nutzt Kenji-Sprites
+            isLocked: false,
+            skinId: nil  // Mentor hat keine Skins
+        ),
+    ]
 }
 
 func loadCharacterDisplays() -> [CharacterDisplay] {
@@ -76,4 +102,19 @@ func loadCharacterDisplays() -> [CharacterDisplay] {
     }
 
     return decoded
+}
+
+extension Character {
+
+    static func enemy(
+        key: String,
+        skinId: String?
+    ) -> Character {
+        Character(
+            key: key,
+            combatSpritePrefix: nil,  // ⛔️ kein Sprite-Fallback
+            isLocked: false,
+            skinId: skinId
+        )
+    }
 }

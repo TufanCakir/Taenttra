@@ -1,0 +1,40 @@
+{
+    "songs": [
+        {
+            "key": "intro_theme",
+            "file": "intro_theme",
+            "loop": false,
+            "volume": 0.6
+        },
+        {
+            "key": "intro_theme_2",
+            "file": "intro_theme",
+            "loop": false,
+            "volume": 0.6
+        },
+        {
+            "key": "dojo_theme",
+            "file": "dojo_theme",
+            "loop": true,
+            "volume": 0.7
+        },
+        {
+            "key": "dojo_theme_2",
+            "file": "dojo_theme_2",
+            "loop": true,
+            "volume": 0.7
+        },
+        {
+            "key": "master_theme",
+            "file": "master_theme",
+            "loop": true,
+            "volume": 0.75
+        },
+        {
+            "key": "master_theme",
+            "file": "master_theme",
+            "loop": true,
+            "volume": 0.75
+        }
+    ]
+}
