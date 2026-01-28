@@ -4,6 +4,7 @@
 //
 //  Created by Tufan Cakir on 24.01.26.
 //
+
 import SwiftUI
 
 struct SlantedHealthBar: View {
@@ -12,7 +13,6 @@ struct SlantedHealthBar: View {
     let direction: SlantDirection
 
     private let width: CGFloat = 150
-    private let height: CGFloat = 14
     private let cap: CGFloat = 18
 
     private var v: CGFloat { min(max(value, 0), 1) }
@@ -23,19 +23,18 @@ struct SlantedHealthBar: View {
             // 🔳 Base
             Rectangle()
                 .fill(Color.black.opacity(0.35))
-                .frame(width: width, height: height)
                 .mask(capShape)
 
             // 🟥🟨🟩 Health Fill
             Rectangle()
                 .fill(healthGradient)
-                .frame(width: width, height: innerHeight)
                 .scaleEffect(
                     x: v,
                     y: 1,
                     anchor: direction == .left ? .leading : .trailing
                 )
                 .mask(capShape)
+                .padding(2)
 
             // ✨ Gloss
             Rectangle()
@@ -46,20 +45,19 @@ struct SlantedHealthBar: View {
                         endPoint: .bottom
                     )
                 )
-                .frame(width: width, height: height * 0.45)
+                .frame(maxHeight: .infinity, alignment: .top)
                 .mask(capShape)
 
             // 🧱 Outline
             capShape
                 .stroke(Color.white.opacity(0.7), lineWidth: 1)
-                .frame(width: width, height: height)
         }
+        .frame(width: width)  // ⬅️ nur Breite
+        .fixedSize(horizontal: false, vertical: true)
         .animation(.easeOut(duration: 0.25), value: v)
     }
 
-    private var innerHeight: CGFloat { height - 4 }
-
-    // MARK: - Mask (NICHT transformieren!)
+    // MARK: - Mask
     private var capShape: some Shape {
         Cap(
             mirrored: direction == .right,
@@ -67,7 +65,7 @@ struct SlantedHealthBar: View {
         )
     }
 
-    // MARK: - Gradient (hier spiegeln!)
+    // MARK: - Gradient
     private var healthGradient: LinearGradient {
         direction == .left
             ? LinearGradient(

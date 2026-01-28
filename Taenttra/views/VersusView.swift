@@ -17,91 +17,91 @@ struct VersusView: View {
     let rightCharacter: Character
 
     var body: some View {
-            ZStack {
-                // 🌄 BACKGROUND
-                Image(viewModel.currentStage.background)
-                    .resizable()
-                    .ignoresSafeArea()
+        ZStack {
+            // 🌄 BACKGROUND
+            Image(viewModel.currentStage.background)
+                .resizable()
+                .ignoresSafeArea()
 
-                // 🆕 VERSUS INTRO OVERLAY
-                if viewModel.phase == .intro {
-                    VersusIntroView(
-                        stage: viewModel.currentStage,
-                        enemyName: rightCharacter.key.uppercased()
-                    ) {
-                        viewModel.startFight()
-                    }
-                    .zIndex(20)
+            // 🆕 VERSUS INTRO OVERLAY
+            if viewModel.phase == .intro {
+                VersusIntroView(
+                    stage: viewModel.currentStage,
+                    enemyName: rightCharacter.key.uppercased()
+                ) {
+                    viewModel.startFight()
                 }
-
-                // 🥊 FIGHTERS (unten, unabhängig vom HUD)
-                VStack {  // Use VStack to allow placing fighters and overlays in ZStack orderly
-                    Spacer()
-                    HStack(alignment: .bottom) {
-
-                        // 🔵 LEFT SLOT → schaut nach rechts
-                        FighterContainerView(
-                            alignment: .leading,
-                            xInset: 30,
-                            yInset: -100,
-                            scale: 0.80,
-                            content: FighterView(
-                                character: leftCharacter,
-                                state: viewModel.animationState,
-                                rotation: 0,
-                                mirrored: false,  // ✅ EINMAL
-                                attackOffset: viewModel.attackOffset
-                            )
-                        )
-
-                        // 🔴 RIGHT SLOT → schaut nach links
-                        FighterContainerView(
-                            alignment: .trailing,
-                            xInset: -30,
-                            yInset: -100,
-                            scale: 0.80,
-                            content: FighterView(
-                                character: rightCharacter,
-                                state: viewModel.animationState,
-                                rotation: 0,
-                                mirrored: true,  // ✅ EINMAL
-                                attackOffset: viewModel.attackOffset
-                            )
-                        )
-                    }
-                    .padding()
-                }
-
-                // 🏆 VICTORY OVERLAY
-                if viewModel.fightState == .victory,
-                    let rewards = viewModel.rewards
-                {
-                    VictoryView(rewards: rewards) {
-                        onVictoryContinue(rewards)
-                    }
-                    .zIndex(10)
-                }
+                .zIndex(20)
             }
-            .offset(x: viewModel.hitShakeOffset)
-            // 🧠 HUD LEBT HIER – NICHT IM ZSTACK
-            .safeAreaInset(edge: .top) {
+
+            // 🥊 FIGHTERS (unten, unabhängig vom HUD)
+            VStack {  // Use VStack to allow placing fighters and overlays in ZStack orderly
+                Spacer()
+                HStack(alignment: .bottom) {
+
+                    // 🔵 LEFT SLOT → schaut nach rechts
+                    FighterContainerView(
+                        alignment: .leading,
+                        xInset: 30,
+                        yInset: -100,
+                        scale: 0.80,
+                        content: FighterView(
+                            character: leftCharacter,
+                            state: viewModel.animationState,
+                            rotation: 0,
+                            mirrored: false,  // ✅ EINMAL
+                            attackOffset: viewModel.attackOffset
+                        )
+                    )
+
+                    // 🔴 RIGHT SLOT → schaut nach links
+                    FighterContainerView(
+                        alignment: .trailing,
+                        xInset: -30,
+                        yInset: -100,
+                        scale: 0.80,
+                        content: FighterView(
+                            character: rightCharacter,
+                            state: viewModel.animationState,
+                            rotation: 0,
+                            mirrored: true,  // ✅ EINMAL
+                            attackOffset: viewModel.attackOffset
+                        )
+                    )
+                }
+                .padding()
+            }
+
+            // 🏆 VICTORY OVERLAY
+            if viewModel.fightState == .victory,
+                let rewards = viewModel.rewards
+            {
+                VictoryView(rewards: rewards) {
+                    onVictoryContinue(rewards)
+                }
+                .zIndex(10)
+            }
+        }
+        // 🧠 HUD LEBT HIER – NICHT IM ZSTACK
+        .overlay(
+            Group {
                 if viewModel.phase == .fighting {
                     GameHUDView(viewModel: viewModel)
                 }
             }
-            .animation(.easeOut(duration: 0.3), value: viewModel.fightState)
-            .animation(
-                viewModel.hitStopActive ? .none : .easeOut(duration: 0.1),
-                value: viewModel.hitStopActive
-            )
-            .contentShape(Rectangle())  // sauberes Tap-Handling
-            .onTapGesture {
-                if viewModel.fightState == .fighting {
-                    viewModel.performRandomAttack()
-                }
+        )
+        .animation(.easeOut(duration: 0.3), value: viewModel.fightState)
+        .animation(
+            viewModel.hitStopActive ? .none : .easeOut(duration: 0.1),
+            value: viewModel.hitStopActive
+        )
+        .contentShape(Rectangle())  // sauberes Tap-Handling
+        .onTapGesture {
+            if viewModel.fightState == .fighting {
+                viewModel.performRandomAttack()
             }
         }
-    
+    }
 
     private var playerOnLeft: Bool {
         gameState.playerSide == .left
