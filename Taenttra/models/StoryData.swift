@@ -16,8 +16,14 @@ struct StoryChapter: Decodable, Identifiable {
     let title: String
     let background: String
     let music: String
-    let introDialog: StoryDialog?  // 👈 NEU
+    let odrTags: [String]?
+    let introDialog: StoryDialog?
     let sections: [StorySection]
+
+    private enum CodingKeys: String, CodingKey {
+        case id, title, background, music, introDialog, sections
+        case odrTags = "odr_tags"
+    }
 }
 
 struct StorySection: Decodable, Identifiable {
@@ -27,8 +33,14 @@ struct StorySection: Decodable, Identifiable {
     let waves: Int
     let boss: Bool?
     let timeLimit: Int
-    let music: String?  // 🆕
-    let introDialog: StoryDialog?  // 👈 NEU
+    let music: String?
+    let odrTags: [String]?
+    let introDialog: StoryDialog?
+
+    private enum CodingKeys: String, CodingKey {
+        case id, title, enemy, waves, boss, timeLimit, music, introDialog
+        case odrTags = "odr_tags"
+    }
 }
 
 struct StoryDialog: Decodable, Identifiable, Hashable {
@@ -42,20 +54,20 @@ struct StoryDialog: Decodable, Identifiable, Hashable {
     }
 }
 
-final class StoryLoader {
+enum StoryLoader {
 
-    static func load() -> StoryData {
-        guard
-            let url = Bundle.main.url(
-                forResource: "story",
-                withExtension: "json"
-            ),
-            let data = try? Data(contentsOf: url),
-            let story = try? JSONDecoder().decode(StoryData.self, from: data)
-        else {
-            fatalError("story.json fehlt oder kaputt")
+    static func load() async -> StoryData? {
+        let url = URL(
+            string:
+                "https://raw.githubusercontent.com/TufanCakir/Taenttra/main/Taenttra/ressource/story.json"
+        )!
+
+        do {
+            let (data, _) = try await URLSession.shared.data(from: url)
+            return try JSONDecoder().decode(StoryData.self, from: data)
+        } catch {
+            print("❌ Story load failed:", error)
+            return nil
         }
-
-        return story
     }
 }

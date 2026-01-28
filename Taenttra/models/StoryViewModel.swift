@@ -13,6 +13,7 @@ enum DialogPhase {
     case section
 }
 
+@MainActor
 final class StoryViewModel: ObservableObject {
 
     @Published var activeDialog: StoryDialog?
@@ -22,7 +23,15 @@ final class StoryViewModel: ObservableObject {
     @Published var selectedSection: StorySection?
 
     init() {
-        chapters = StoryLoader.load().chapters
+        Task {
+            await loadStory()
+        }
+    }
+
+    func loadStory() async {
+        if let story = await StoryLoader.load() {
+            self.chapters = story.chapters
+        }
     }
 
     func startSection(_ chapter: StoryChapter, _ section: StorySection) {
@@ -31,15 +40,12 @@ final class StoryViewModel: ObservableObject {
         selectedSection = section
         pendingFight = (chapter, section)
 
-        // 🎵 STORY-MUSIK (Section > Chapter)
-        let music = section.music ?? chapter.music
-        AudioManager.shared.playSong(key: music)
+        let tags = Set((chapter.odrTags ?? []) + (section.odrTags ?? []))
 
-        // 📖 Dialog anzeigen
-        if let dialog = section.introDialog {
-            activeDialog = dialog
-        } else {
-            activeDialog = nil
+        ODRManager.shared.load(tags: tags) { _ in
+            let music = section.music ?? chapter.music
+            AudioManager.shared.playSong(key: music)
+            self.activeDialog = section.introDialog
         }
     }
 
