@@ -74,7 +74,7 @@
                                   "title": "Verzweiflung",
                                   "enemy": "ren_dao",
                                   "waves": 1,
-                                  "boss": false,
+                                  "boss": true,
                                   "timeLimit": 100,
                                   "music": "master_theme",
 
