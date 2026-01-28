@@ -68,7 +68,25 @@
                         "text":
                             "Der alte Mann bringt Kenji alles bei, was er weiß, damit er eines Tages der beste Kämpfer wird."
                     }
-                }
+                },
+                {
+                                  "id": "1_4",
+                                  "title": "Verzweiflung",
+                                  "enemy": "ren_dao",
+                                  "waves": 1,
+                                  "boss": false,
+                                  "timeLimit": 100,
+                                  "music": "master_theme",
+
+                                  "odr_tags": [
+                                      "enemy_ren_dao",
+                                      "music_master_theme"
+                                  ],
+                                  "introDialog": {
+                                      "image": "seishin_no_michi_dojo",
+                                      "text":
+                                          "Kenji denkt er ist bereit und kämpft gegen den den alten Mann und veliert hochhaus gegen ihn."
+                                  }
 
             ]
         }

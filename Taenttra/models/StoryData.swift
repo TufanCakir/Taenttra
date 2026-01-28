@@ -59,7 +59,7 @@ enum StoryLoader {
     static func load() async -> StoryData? {
         let url = URL(
             string:
-                "https://raw.githubusercontent.com/TufanCakir/Taenttra/main/Taenttra/ressource/story.json"
+            "https://raw.githubusercontent.com/TufanCakir/Taenttra/main/Taenttra/ressource/story.json?v=\(Int(Date().timeIntervalSince1970))"
         )!
 
         do {
