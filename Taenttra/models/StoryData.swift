@@ -57,13 +57,26 @@ struct StoryDialog: Decodable, Identifiable, Hashable {
 enum StoryLoader {
 
     static func load() async -> StoryData? {
-        let url = URL(
-            string:
-                "https://raw.githubusercontent.com/TufanCakir/Taenttra/main/Taenttra/ressource/story.json?ts=\(Date().timeIntervalSince1970)"
-        )!
+        let base = "https://raw.githubusercontent.com/TufanCakir/Taenttra/main/Taenttra/ressource/story.json"
+
+        var comps = URLComponents(string: base)!
+        comps.queryItems = [
+            URLQueryItem(name: "v", value: String(Int(Date().timeIntervalSince1970)))
+        ]
+
+        var request = URLRequest(url: comps.url!)
+        request.cachePolicy = .reloadIgnoringLocalCacheData
+        request.setValue("no-cache", forHTTPHeaderField: "Cache-Control")
+        request.setValue("no-cache", forHTTPHeaderField: "Pragma")
 
         do {
-            let (data, _) = try await URLSession.shared.data(from: url)
+            let (data, response) = try await URLSession.shared.data(for: request)
+
+            if let http = response as? HTTPURLResponse {
+                print("🌐 story.json status:", http.statusCode)
+            }
+            print("📦 story.json bytes:", data.count)
+
             return try JSONDecoder().decode(StoryData.self, from: data)
         } catch {
             print("❌ Story load failed:", error)

@@ -23,14 +23,19 @@ final class StoryViewModel: ObservableObject {
     @Published var selectedSection: StorySection?
 
     init() {
-        Task {
-            await loadStory()
-        }
+        Task { await loadStory() }
     }
 
     func loadStory() async {
         if let story = await StoryLoader.load() {
             self.chapters = story.chapters
+            print("✅ loaded chapters:", story.chapters.count)
+            print(
+                "✅ loaded sections:",
+                story.chapters.first?.sections.map(\.id) ?? []
+            )
+        } else {
+            print("❌ story is nil")
         }
     }
 
