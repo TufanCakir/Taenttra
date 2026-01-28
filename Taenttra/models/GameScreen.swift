@@ -58,8 +58,6 @@ final class GameState: ObservableObject {
     @Published var equippedSkin: String?  // frei wechselbar
     @Published var activeSkin: String?  // fight-locked
 
-    private var activeODRTags: Set<String> = []
-
     func loadWallet(context: ModelContext) {
         let fetch = FetchDescriptor<PlayerWallet>()
 
@@ -97,45 +95,36 @@ extension GameState {
     }
 
     func goBack() {
-
-        // 🧹 ODR freigeben (wenn aktiv)
-        if !activeODRTags.isEmpty {
-            ODRManager.shared.release(tags: activeODRTags)
-            activeODRTags.removeAll()
-        }
-
-        // 🎵 Fight-Musik nur beenden, wenn wir aus einem Kampf kommen
         switch screen {
-        case .versus, .story, .arcade, .training, .survival, .events:
-            AudioManager.shared.endFight()
-        default:
-            break
-        }
 
-        // 🏠 Immer zurück ins Home
-        screen = .home
+        case .story, .versus:
+            AudioManager.shared.endFight()
+            screen = .home
+
+        case .shop, .skin, .options:
+            AudioManager.shared.endFight()
+            screen = .home
+
+        case .arcade, .training, .survival, .events:
+            AudioManager.shared.endFight()
+            screen = .home
+
+        case .characterSelect:
+            screen = .home
+
+        default:
+            screen = .home
+        }
     }
 
     private func startVersusStage(_ stage: VersusStage) {
 
-        let tags: Set<String> = [
-            "stage_\(stage.id)",
-            "music_\(stage.music)",
-            "enemy_\(stage.waves.first?.enemies.first ?? "")",
-        ]
+        // 🎵 Musik via SongLibrary
+        AudioManager.shared.playFightMusic(key: stage.music)
 
-        activeODRTags = tags
-
-        ODRManager.shared.load(tags: tags) { success in
-            guard success else { return }
-
-            DispatchQueue.main.async {
-                AudioManager.shared.playFightMusic(key: stage.music)
-                self.currentStage = stage
-                self.versusViewModel = VersusViewModel(stages: [stage])
-                self.screen = .versus
-            }
-        }
+        currentStage = stage
+        versusViewModel = VersusViewModel(stages: [stage])
+        screen = .versus
     }
 
     func startEvent(mode: EventMode) {

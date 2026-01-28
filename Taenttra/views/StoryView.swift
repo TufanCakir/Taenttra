@@ -31,10 +31,5 @@ struct StoryView: View {
                     }
                 }
         }
-        .onAppear {
-            Task {
-                await viewModel.loadStory()
-            }
-        }
     }
 }

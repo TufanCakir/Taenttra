@@ -17,13 +17,10 @@ struct VersusView: View {
     let rightCharacter: Character
 
     var body: some View {
-        GeometryReader { geo in
             ZStack {
                 // 🌄 BACKGROUND
                 Image(viewModel.currentStage.background)
                     .resizable()
-                    .scaledToFill()
-                    .frame(width: geo.size.width, height: geo.size.height)
                     .ignoresSafeArea()
 
                 // 🆕 VERSUS INTRO OVERLAY
@@ -104,7 +101,7 @@ struct VersusView: View {
                 }
             }
         }
-    }
+    
 
     private var playerOnLeft: Bool {
         gameState.playerSide == .left
