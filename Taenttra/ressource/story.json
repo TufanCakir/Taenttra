@@ -5,6 +5,7 @@
             "title": "The Tournament",
             "background": "dojo_night",
             "music": "dojo_theme",
+            "arena": "dojo_night",
             "introDialog": {
                 "image": "dojo_night",
                 "text":
@@ -19,6 +20,7 @@
                     "boss": false,
                     "timeLimit": 100,
                     "music": "dojo_theme",
+                    "arena": "dojo_night",
                     "introDialog": {
                         "image": "dojo_night",
                         "text":
@@ -33,6 +35,7 @@
                     "boss": false,
                     "timeLimit": 100,
                     "music": "dojo_theme_2",
+                    "arena": "city_rain",
                     "introDialog": {
                         "image": "city_rain",
                         "text":
@@ -47,12 +50,88 @@
                     "boss": false,
                     "timeLimit": 100,
                     "music": "master_theme",
+                    "arena": "seishin_no_michi_dojo",
+                    "unlocks": [
+                        "ren_dao"
+                    ],
                     "introDialog": {
                         "image": "seishin_no_michi_dojo",
                         "text":
                             "Der alte Mann bringt Kenji alles bei, was er weiß, damit er eines Tages der beste Kämpfer wird."
                     }
+                },
+                {
+                    "id": "1_4",
+                    "title": "Verzweiflung",
+                    "enemy": "ren_dao",
+                    "waves": 1,
+                    "boss": false,
+                    "timeLimit": 100,
+                    "music": "master_theme",
+                    "arena": "seishin_no_michi_dojo",
+                    "introDialog": {
+                        "image": "seishin_no_michi_dojo",
+                        "text":
+                            "Kenji glaubt, endlich bereit zu sein. Doch der Kampf endet schneller, als er begonnen hat."
+                    }
+                },
+                {
+                    "id": "1_5",
+                    "title": "Die Schwester",
+                    "enemy": "reika",
+                    "waves": 1,
+                    "boss": false,
+                    "timeLimit": 100,
+                    "music": "reika_theme",
+                    "arena": "reika_arena",
+                    "unlocks": [
+                        "reika"
+                    ],
+                    "introDialog": {
+                        "image": "reika_arena",
+                        "text":
+                            "Kenji’s Schwester taucht auf – sie hat genug davon, nur zuzusehen."
+                    }
+                },
+                {
+                    "id": "1_6",
+                    "title": "Der Bruder",
+                    "enemy": "ryuji",
+                    "waves": 1,
+                    "boss": false,
+                    "timeLimit": 100,
+                    "music": "ryuji_theme",
+                    "arena": "ryuji_arena",
+                    "unlocks": [
+                        "ryuji"
+                    ],
+                    "introDialog": {
+                        "image": "ryuji_arena",
+                        "text":
+                            "Sein Bruder stellt sich ihm in den Weg – nicht aus Hass, sondern aus Stolz."
+                    }
+                },
+                {
+                    "id": "1_7",
+                    "title": "Der Wendepunkt",
+                    "enemy": [
+                        "kenji",
+                        "ren_dao",
+                        "reika",
+                        "ryuji"
+                    ],
+                    "waves": 4,
+                    "boss": true,
+                    "timeLimit": 100,
+                    "music": "dojo_theme",
+                    "arena": "dojo_night",
+                    "introDialog": {
+                        "image": "dojo_night",
+                        "text":
+                            "Doch Kenji ahnt nicht, dass das wahre Turnier erst beginnt."
+                    }
                 }
+
             ]
         }
     ]

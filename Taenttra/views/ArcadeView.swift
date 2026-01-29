@@ -18,21 +18,25 @@ struct ArcadeView: View {
                 ForEach(viewModel.stages) { stage in
                     Button {
                         viewModel.select(stage)
-                        onStartArcade(stage)  // ✅ nur Intent
+                        onStartArcade(stage)
                     } label: {
-                        HStack {
-                            VStack(alignment: .leading) {
-                                Text(stage.title)
-                                    .font(.headline)
-                                Text("WAVES: \(stage.waves)")
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-                            }
+                        ArcadeStageRow(stage: stage)
+                    }
+                    .buttonStyle(.plain)
+                    .listRowInsets(EdgeInsets())  // 🔥 volle Breite
+                    .padding(.vertical, 6)
+                    HStack {
+                        VStack(alignment: .leading) {
+                            Text(stage.title)
+                                .font(.headline)
+                            Text("WAVES: \(stage.waves)")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
                         }
                     }
                 }
             }
-            .navigationTitle("Arcade")
         }
+        .navigationTitle("Arcade")
     }
 }

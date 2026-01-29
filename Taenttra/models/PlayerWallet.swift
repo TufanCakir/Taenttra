@@ -25,7 +25,7 @@ final class PlayerWallet {
         equippedSkin: String? = nil,
         xp: Int = 0,
         level: Int = 1,
-        unlockedCharacters: [String] = []
+        unlockedCharacters: [String] = ["kenji"]  // 🔥 HIER
     ) {
         self.coins = coins
         self.crystals = crystals

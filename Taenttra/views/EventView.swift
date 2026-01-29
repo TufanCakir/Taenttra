@@ -18,18 +18,22 @@ struct EventView: View {
                 ForEach(viewModel.events) { event in
                     Button {
                         viewModel.select(event)
-                        onStartEvent(event)  // ✅ nur Intent
+                        onStartEvent(event)
                     } label: {
-                        HStack {
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text(event.title)
-                                    .font(.headline)
-                            }
+                        EventRow(event: event)
+                    }
+                    .buttonStyle(.plain)
+                    .listRowInsets(EdgeInsets())  // 🔥 volle Breite
+                    .padding(.vertical, 6)
+                    HStack {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(event.title)
+                                .font(.headline)
                         }
                     }
                 }
             }
-            .navigationTitle("Events")
         }
+        .navigationTitle("Events")
     }
 }

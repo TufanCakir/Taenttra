@@ -12,7 +12,6 @@ struct HomeView: View {
     @EnvironmentObject var gameState: GameState
 
     @State private var selection: Int = 0
-
     private let items = HomeMenuItem.allCases
 
     var body: some View {
@@ -46,11 +45,9 @@ struct HomeView: View {
                 // 🔥 CONFIRM
                 Text("TAP TO CONFIRM")
                     .padding(.bottom, 12)
-                    .simultaneousGesture(
-                        TapGesture().onEnded {
-                            confirmSelection()
-                        }
-                    )
+                    .onTapGesture {
+                        confirmSelection()
+                    }
             }
             .padding(.top, 8)
         }
@@ -63,6 +60,7 @@ struct HomeView: View {
     ) -> some View {
 
         let isSelected = selection == index
+        let unlocked = isUnlocked(item)
 
         return HStack(spacing: 14) {
 
@@ -73,10 +71,19 @@ struct HomeView: View {
 
             Text(item.title)
                 .font(.title3.weight(isSelected ? .semibold : .regular))
-                .foregroundStyle(isSelected ? item.color : .primary)
-                .opacity(isSelected ? 1 : 0.45)
+                .foregroundStyle(
+                    unlocked
+                    ? (isSelected ? item.color : .primary)
+                    : .secondary
+                )
+                .opacity(unlocked ? (isSelected ? 1 : 0.35) : 0.25)
 
             Spacer()
+
+            if !unlocked {
+                Image(systemName: "lock.fill")
+                    .foregroundColor(.secondary)
+            }
         }
         .frame(height: 44)
         .padding(.horizontal, 24)
@@ -89,17 +96,33 @@ struct HomeView: View {
         .animation(.easeInOut(duration: 0.16), value: isSelected)
         .contentShape(Rectangle())
         .onTapGesture {
+            guard unlocked else { return }
             selection = index
         }
-        .accessibilityAddTraits(isSelected ? .isSelected : [])
     }
 
+
+    // MARK: - Unlock Logic
+    private func isUnlocked(_ item: HomeMenuItem) -> Bool {
+        if !item.requiresUnlock {
+            return true
+        }
+        return gameState.unlockedModes.contains(item.screen)
+    }
+    
     // MARK: - Navigation
     private func confirmSelection() {
-        let selectedItem = items[selection]
+        let item = items[selection]
 
-        switch selectedItem {
+        guard isUnlocked(item) else {
+            gameState.unlockMessage = "🔒 Modus noch gesperrt"
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                gameState.unlockMessage = nil
+            }
+            return
+        }
 
+        switch item {
         case .story:
             gameState.screen = .story
         case .events:

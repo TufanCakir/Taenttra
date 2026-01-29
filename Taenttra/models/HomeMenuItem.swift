@@ -19,18 +19,32 @@ enum HomeMenuItem: CaseIterable {
     case leaderboard
     case options
 
+    /// Muss dieser Modus durch Story freigeschaltet werden?
+    var requiresUnlock: Bool {
+        switch self {
+        case .options:
+            return false  // 🔓 IMMER verfügbar
+        case .story:
+            return false  // 🔓 immer verfügbar
+        default:
+            return true  // 🔒 story-gated
+        }
+    }
+
+    // MARK: - Display
+
     var title: String {
         switch self {
-        case .story: return "STORY"
-        case .versus: return "VERSUS"
-        case .arcade: return "ARCADE"
-        case .survival: return "SURVIVAL"
-        case .events: return "EVENTS"
-        case .training: return "TRAINING"
-        case .shop: return "SHOP"
-        case .skin: return "SKIN"
-        case .leaderboard: return "RANKING"
-        case .options: return "OPTIONS"
+        case .story: return "Story"
+        case .versus: return "Versus"
+        case .arcade: return "Arcade"
+        case .survival: return "Survival"
+        case .events: return "Events"
+        case .training: return "Training"
+        case .shop: return "Shop"
+        case .skin: return "Skin"
+        case .leaderboard: return "Ranking"
+        case .options: return "Options"
         }
     }
 
@@ -47,5 +61,32 @@ enum HomeMenuItem: CaseIterable {
         case .leaderboard: return .mint
         case .options: return .gray
         }
+    }
+
+    // MARK: - Navigation Target
+
+    var screen: GameScreen {
+        switch self {
+        case .story: return .story
+        case .arcade: return .arcade
+        case .survival: return .survival
+        case .events: return .events
+        case .training: return .training
+        case .shop: return .shop
+        case .skin: return .skin
+        case .leaderboard: return .leaderboard
+        case .options: return .options
+
+        case .versus:
+            // Versus geht IMMER über Character Select
+            return .characterSelect
+        }
+    }
+
+    // MARK: - Unlock Rules
+
+    /// Nur Story ist am Anfang freigeschaltet
+    var unlockedByDefault: Bool {
+        self == .story
     }
 }

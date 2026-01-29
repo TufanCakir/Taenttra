@@ -2,38 +2,38 @@
     "stages": [
         {
             "id": "arcade_1",
-            "title": "DOJO TRIAL",
+            "title": "Kenji Trial",
             "background": "dojo_night",
             "music": "dojo_theme",
             "enemy": "kenji",
-            "waves": 3,
+            "waves": 1,
             "timeLimit": 30
         },
         {
             "id": "arcade_2",
-            "title": "NEON NIGHT",
-            "background": "neon_city",
-            "music": "dojo_theme_2",
-            "enemy": "kenji",
-            "waves": 6,
+            "title": "Ren Dao Trial",
+            "background": "seishin_no_michi_dojo",
+            "music": "master_theme",
+            "enemy": "ren_dao",
+            "waves": 1,
             "timeLimit": 60
         },
         {
             "id": "arcade_3",
-            "title": "NIGHT TRIAL",
-            "background": "night",
-            "music": "master_theme",
-            "enemy": "ren_dao",
-            "waves": 9,
+            "title": "reika Trial",
+            "background": "reika_arena",
+            "music": "reika_theme",
+            "enemy": "reika",
+            "waves": 1,
             "timeLimit": 90
         },
         {
             "id": "arcade_4",
-            "title": "NIGHT 2 TRIAL",
-            "background": "night_2",
-            "music": "master_theme_2",
-            "enemy": "ren_dao",
-            "waves": 12,
+            "title": "Ryuji Trial",
+            "background": "ryuji_arena",
+            "music": "ryuji_theme_2",
+            "enemy": "ryuji",
+            "waves": 1,
             "timeLimit": 120
         }
     ]

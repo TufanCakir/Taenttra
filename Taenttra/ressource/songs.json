@@ -35,6 +35,42 @@
             "file": "master_theme",
             "loop": true,
             "volume": 0.75
+        },
+        {
+            "key": "reika_theme",
+            "file": "reika_theme",
+            "loop": true,
+            "volume": 0.75
+        },
+        {
+            "key": "reika_theme_2",
+            "file": "reika_theme_2",
+            "loop": true,
+            "volume": 0.75
+        },
+        {
+            "key": "ryuji_theme",
+            "file": "ryuji_theme",
+            "loop": true,
+            "volume": 0.75
+        },
+        {
+            "key": "ryuji_theme_2",
+            "file": "ryuji_theme_2",
+            "loop": true,
+            "volume": 0.75
+        },
+        {
+            "key": "tournament_theme",
+            "file": "tournament_theme",
+            "loop": true,
+            "volume": 0.75
+        },
+        {
+            "key": "tournament_theme_2",
+            "file": "tournament_theme_2",
+            "loop": true,
+            "volume": 0.75
         }
     ]
 }

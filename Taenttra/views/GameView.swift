@@ -21,8 +21,9 @@ struct GameView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                switch gameState.screen {
 
+                // 🔹 MAIN SCREEN SWITCH
+                switch gameState.screen {
                 case .start:
                     StartView()
 
@@ -82,10 +83,27 @@ struct GameView: View {
                         VersusView(
                             viewModel: vm,
                             onVictoryContinue: { rewards in
+
+                                // 💰 Rewards
                                 gameState.wallet.coins += rewards.coins
                                 gameState.wallet.crystals += rewards.crystals
 
+                                // 🔓 Characters
+                                gameState.unlockStoryRewards()
+
+                                // 🔓 Sections + MODES
+                                if case .story(_, let section) = gameState
+                                    .pendingMode
+                                {
+                                    storyViewModel.unlockNextSection(
+                                        after: section
+                                    )
+                                    gameState.unlockModes(after: section)
+                                }
+
+                                // 🧹 Cleanup
                                 gameState.versusViewModel = nil
+                                gameState.pendingMode = nil
                                 gameState.screen = .home
                             },
                             leftCharacter: left,
@@ -101,11 +119,34 @@ struct GameView: View {
                             gameState.screen = .characterSelect
                         }
                     )
+
                 case .shop:
                     ShopView()
 
                 case .skin:
                     SkinSelectionView()
+                }
+
+                // 🔓 UNLOCK FEEDBACK OVERLAY
+                if let message = gameState.unlockMessage {
+                    VStack {
+                        Spacer()
+
+                        Text(message)
+                            .font(.headline)
+                            .foregroundColor(.white)
+                            .padding(.horizontal, 24)
+                            .padding(.vertical, 12)
+                            .background(.black.opacity(0.85))
+                            .cornerRadius(12)
+                            .padding(.bottom, 60)
+                            .transition(
+                                .move(edge: .bottom)
+                                    .combined(with: .opacity)
+                            )
+                    }
+                    .zIndex(50)  // 🔥 wichtig
+                    .animation(.spring(), value: message)
                 }
             }
             .environmentObject(gameState)
@@ -124,6 +165,13 @@ struct GameView: View {
             if gameState.wallet == nil {
                 gameState.loadWallet(context: modelContext)
             }
+        }
+        .onAppear {
+            if gameState.wallet == nil {
+                gameState.loadWallet(context: modelContext)
+            }
+
+            gameState.loadUnlockedModes()  // ✅ DAS FEHLTE
         }
     }
 }

@@ -13,20 +13,72 @@ struct StorySectionRow: View {
     let section: StorySection
     @ObservedObject var viewModel: StoryViewModel
 
+    private var sectionIsLocked: Bool {
+        !viewModel.isSectionUnlocked(section)
+    }
+
     var body: some View {
         Button {
             viewModel.startSection(chapter, section)
         } label: {
-            HStack {
-                Text(section.title)
-                Spacer()
-                if section.boss == true {
-                    Text("BOSS")
-                        .foregroundStyle(.red)
-                        .font(.caption.bold())
+            ZStack {
+
+                // 🖼 BACKGROUND IMAGE
+                Image(section.arena)
+                    .resizable()
+                    .scaledToFill()
+                    .frame(height: 110)
+                    .clipped()
+
+                // 🌑 GRADIENT OVERLAY
+                LinearGradient(
+                    colors: [
+                        .black.opacity(0.0),
+                        .black.opacity(0.75),
+                    ],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+
+                // 📝 TEXT
+                VStack(alignment: .leading, spacing: 6) {
+                    Spacer()
+
+                    Text(section.title)
+                        .font(.headline)
+                        .foregroundColor(.white)
+
+                    Text("\(section.waves) WAVES")
+                        .font(.caption2)
+                        .foregroundStyle(.white.opacity(0.8))
+
+                    if section.boss == true {
+                        Text("BOSS FIGHT")
+                            .font(.caption.bold())
+                            .foregroundColor(.red)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 4)
+                            .background(Color.black.opacity(0.7))
+                            .cornerRadius(6)
+                    }
+                }
+                .padding()
+
+                // 🔒 LOCK OVERLAY
+                if sectionIsLocked {
+                    Color.black.opacity(0.65)
+
+                    Image(systemName: "lock.fill")
+                        .font(.system(size: 32))
+                        .foregroundColor(.white)
                 }
             }
+            .cornerRadius(12)
         }
         .buttonStyle(.plain)
+        .disabled(sectionIsLocked)  // 🔥 wichtig
+        .listRowInsets(.init())
+        .padding(.vertical, 6)
+        .animation(.easeInOut, value: sectionIsLocked)
     }
 }

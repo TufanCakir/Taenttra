@@ -10,5 +10,17 @@
         "displayImage": "ren_dao_base_preview",
         "name": "Ren Dao",
         "locked": true
+    },
+    {
+        "key": "reika",
+        "displayImage": "reika_base_preview",
+        "name": "Reika",
+        "locked": true
+    },
+    {
+        "key": "ryuji",
+        "displayImage": "ryuji_base_preview",
+        "name": "Ryuji",
+        "locked": true
     }
 ]

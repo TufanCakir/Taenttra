@@ -18,22 +18,26 @@ struct SurvivalView: View {
                 ForEach(viewModel.modes) { mode in
                     Button {
                         viewModel.select(mode)
-                        onStartSurvival(mode)  // ✅ nur Intent
+                        onStartSurvival(mode)
                     } label: {
-                        HStack {
-                            VStack(alignment: .leading, spacing: 4) {
-                                Text(mode.title)
-                                    .font(.headline)
+                        SurvivalModeRow(mode: mode)
+                    }
+                    .buttonStyle(.plain)
+                    .listRowInsets(EdgeInsets())  // 🔥 volle Breite
+                    .padding(.vertical, 6)
+                    HStack {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(mode.title)
+                                .font(.headline)
 
-                                Text("TIME: \(mode.timeLimit)s")
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-                            }
+                            Text("TIME: \(mode.timeLimit)s")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
                         }
                     }
                 }
             }
-            .navigationTitle("Survival")
         }
+        .navigationTitle("Survival")
     }
 }

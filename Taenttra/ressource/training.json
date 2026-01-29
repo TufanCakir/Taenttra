@@ -2,35 +2,35 @@
     "modes": [
         {
             "id": "training_basic",
-            "title": "BASIC TRAINING",
+            "title": "Basic Training: Kenji",
             "background": "dojo_night",
             "music": "dojo_theme",
             "enemy": "kenji",
-            "timeLimit": 999
+            "timeLimit": 99
         },
         {
-            "id": "training_combo",
-            "title": "COMBO PRACTICE",
+            "id": "training_basic_2",
+            "title": "Basic Training: Ren Dao",
             "background": "seishin_no_michi_dojo",
             "music": "master_theme",
             "enemy": "ren_dao",
-            "timeLimit": 999
+            "timeLimit": 99
         },
         {
-            "id": "training_skill",
-            "title": "COMBO PRACTICE",
-            "background": "night",
-            "music": "dojo_theme_2",
-            "enemy": "kenji",
-            "timeLimit": 999
+            "id": "training_basic_3",
+            "title": "Basic Training: Reika",
+            "background": "reika_arena",
+            "music": "reika_theme",
+            "enemy": "reika",
+            "timeLimit": 99
         },
         {
-            "id": "training_skill_2",
-            "title": "COMBO PRACTICE",
-            "background": "seishin_no_michi_dojo",
-            "music": "master_theme_2",
-            "enemy": "ren_dao",
-            "timeLimit": 999
+            "id": "training_basic_4",
+            "title": "Basic Training: Ryuji",
+            "background": "ryuji_arena",
+            "music": "ryuji_theme",
+            "enemy": "ryuji",
+            "timeLimit": 99
         }
     ]
 }

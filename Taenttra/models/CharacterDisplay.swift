@@ -9,40 +9,18 @@ import Foundation
 
 struct CharacterDisplay: Identifiable, Codable {
 
-    var id: UUID?
+    let id: UUID
     let key: String
     let displayImage: String
     let name: String
-    let locked: Bool
-
-    // 🆕 OPTIONAL: Combat Sprite Mapping
     let combatSpritePrefix: String?
 
-    // MARK: - CodingKeys
     private enum CodingKeys: String, CodingKey {
         case id
         case key
         case displayImage
         case name
-        case locked
         case combatSpritePrefix
-    }
-
-    // MARK: - Init
-    init(
-        id: UUID? = nil,
-        key: String,
-        displayImage: String,
-        name: String,
-        locked: Bool,
-        combatSpritePrefix: String? = nil
-    ) {
-        self.id = id ?? UUID()
-        self.key = key
-        self.displayImage = displayImage
-        self.name = name
-        self.locked = locked
-        self.combatSpritePrefix = combatSpritePrefix
     }
 
     // MARK: - Codable
@@ -57,7 +35,6 @@ struct CharacterDisplay: Identifiable, Codable {
             forKey: .displayImage
         )
         self.name = try container.decode(String.self, forKey: .name)
-        self.locked = try container.decode(Bool.self, forKey: .locked)
         self.combatSpritePrefix = try container.decodeIfPresent(
             String.self,
             forKey: .combatSpritePrefix
@@ -70,7 +47,6 @@ struct CharacterDisplay: Identifiable, Codable {
         try container.encode(key, forKey: .key)
         try container.encode(displayImage, forKey: .displayImage)
         try container.encode(name, forKey: .name)
-        try container.encode(locked, forKey: .locked)
     }
 }
 
@@ -78,18 +54,27 @@ extension CharacterDisplay {
 
     /// Preview-Bild für Grid / Auswahl
     func previewImage(using wallet: PlayerWallet?) -> String {
-        SkinLibrary.previewImage(
-            for: key,
-            shopSkinId: wallet?.equippedSkin
-        )
+
+        // 🔥 Skins nur für Kenji
+        if key == "kenji",
+            let skin = wallet?.equippedSkin
+        {
+            return SkinLibrary.previewImage(
+                for: key,
+                shopSkinId: skin
+            )
+        }
+
+        // ✅ Alle anderen: statisches Bild
+        return displayImage
     }
 
     /// Übergang in Fight-Character
     func toCharacter(using wallet: PlayerWallet?) -> Character {
         Character(
             key: key,
-            combatSpritePrefix: combatSpritePrefix,  // 🔥 HIER
-            isLocked: locked,
+            combatSpritePrefix: combatSpritePrefix,
+            isLocked: false,  // 🔥 IM FIGHT IMMER FALSE
             skinId: SkinLibrary.spriteVariant(
                 from: wallet?.equippedSkin
             )
@@ -114,15 +99,17 @@ enum SkinLibrary {
         shopSkinId: String?
     ) -> String {
 
+        guard let shopSkinId else {
+            return "\(characterKey)_base_preview"
+        }
+
         switch shopSkinId {
         case "kenji_red_skin":
             return "kenji_red_preview"
-
         case "kenji_shadow_skin":
             return "kenji_shadow_preview"
-
         default:
-            return "kenji_base_preview"  // 🔥 DAS FEHLTE
+            return "\(characterKey)_base_preview"
         }
     }
 }

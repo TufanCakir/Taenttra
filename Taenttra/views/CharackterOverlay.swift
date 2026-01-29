@@ -10,7 +10,7 @@ import SwiftUI
 struct CharacterGridView: View {
 
     @EnvironmentObject var gameState: GameState
-    @State private var characters: [CharacterDisplay] = loadCharacterDisplays()
+    private let characters: [CharacterDisplay] = loadCharacterDisplays()
     @State private var selectedIndex: Int = 0
     @State private var selectedSide: PlayerSide = .left
 
@@ -47,10 +47,13 @@ struct CharacterGridView: View {
                         character in
                         CharacterSlot(
                             character: character,
-                            isSelected: index == selectedIndex
+                            isSelected: index == selectedIndex,
+                            locked: isLocked(character)
                         )
                         .onTapGesture {
-                            selectedIndex = index
+                            if !isLocked(character) {
+                                selectedIndex = index
+                            }
                         }
                     }
                 }
@@ -67,6 +70,11 @@ struct CharacterGridView: View {
         .onChange(of: characters.count) { oldCount, newCount in
             selectedIndex = min(selectedIndex, max(newCount - 1, 0))
         }
+    }
+
+    private func isLocked(_ character: CharacterDisplay) -> Bool {
+        guard let wallet = gameState.wallet else { return true }
+        return !wallet.unlockedCharacters.contains(character.key)
     }
 
     private var versusPreview: some View {
@@ -176,14 +184,15 @@ struct CharacterGridView: View {
                 )
                 .cornerRadius(8)
         }
-        .disabled(selectedCharacter?.locked ?? true)
-        .opacity((selectedCharacter?.locked ?? true) ? 0.4 : 1)
+        .disabled(selectedCharacter.map(isLocked) ?? true)
+        .opacity((selectedCharacter.map(isLocked) ?? true) ? 0.4 : 1)
     }
 
     // MARK: - Start Logic
     private func startFight() {
-        guard let selected = selectedCharacter, !selected.locked else { return }
-
+        guard let selected = selectedCharacter, !isLocked(selected) else {
+            return
+        }
         // 🔹 Player-Seite merken
         gameState.playerSide = selectedSide
 
@@ -235,7 +244,10 @@ struct CharacterGridView: View {
 
         case .versus:
             let data = VersusLoader.load()
-            gameState.versusViewModel = VersusViewModel(stages: data.stages)
+            gameState.versusViewModel = VersusViewModel(
+                stages: data.stages,
+                gameState: gameState
+            )
             gameState.screen = .versus
 
         case .none:
@@ -246,7 +258,7 @@ struct CharacterGridView: View {
     private var enemyKey: String? {
         switch gameState.pendingMode {
         case .story(_, let section):
-            return section.enemy
+            return section.enemies.first
         case .arcadeStage(let stage):
             return stage.enemy
         case .trainingMode(let mode):
@@ -293,28 +305,20 @@ struct CharacterGridView: View {
 struct CharacterSlot: View {
 
     @EnvironmentObject var gameState: GameState
+
     let character: CharacterDisplay
     let isSelected: Bool
-
-    private var imageName: String {
-        SkinLibrary.previewImage(
-            for: character.key,
-            shopSkinId: gameState.wallet?.equippedSkin
-        )
-    }
+    let locked: Bool
 
     var body: some View {
         ZStack {
-            if character.locked {
+            if locked {
                 Text("???")
                     .foregroundColor(.cyan)
             } else {
-                Image(imageName)
+                Image(character.displayImage)
                     .resizable()
                     .scaledToFill()
-                    .frame(width: 72, height: 72)
-                    .offset(y: 30)
-                    .clipped()
             }
 
             RoundedRectangle(cornerRadius: 6)
@@ -322,11 +326,7 @@ struct CharacterSlot: View {
                     isSelected ? .cyan : .cyan.opacity(0.25),
                     lineWidth: isSelected ? 2.5 : 1
                 )
-                .background(
-                    isSelected ? Color.cyan.opacity(0.1) : Color.clear
-                )
         }
-        .animation(.easeOut(duration: 0.15), value: imageName)
     }
 }
 

@@ -2,53 +2,16 @@
     "modes": [
         {
             "id": "survival_basic",
-            "title": "ENDURANCE",
+            "title": "Endurance",
             "background": "dojo_night",
             "music": "dojo_theme",
             "enemyPool": [
                 "kenji",
-                "kenji",
-                "kenji"
+                "ren_dao",
+                "reika",
+                "ryuji"
             ],
             "timeLimit": 50
-        },
-        {
-            "id": "survival_hard",
-            "title": "LAST STAND",
-            "background": "neon_city",
-            "music": "dojo_theme_2",
-            "enemyPool": [
-                "kenji",
-                "kenji",
-                "kenji",
-                "kenji"
-            ],
-            "timeLimit": 20
-        },
-        {
-            "id": "survival_challenge",
-            "title": "NIGHT CHALLENGE",
-            "background": "night",
-            "music": "master_theme",
-            "enemyPool": [
-                "ren_dao",
-                "ren_dao",
-                "ren_dao"
-            ],
-            "timeLimit": 10
-        },
-        {
-            "id": "survival_challenge_2",
-            "title": "NIGHT CHALLENGE 2",
-            "background": "night_2",
-            "music": "master_theme_2",
-            "enemyPool": [
-                "ren_dao",
-                "ren_dao",
-                "ren_dao",
-                "ren_dao"
-            ],
-            "timeLimit": 5
         }
     ]
 }

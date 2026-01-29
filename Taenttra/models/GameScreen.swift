@@ -9,7 +9,7 @@ import Combine
 import Foundation
 import SwiftData
 
-enum GameScreen {
+enum GameScreen: String, CaseIterable, Codable {
     case start
     case home
     case characterSelect
@@ -36,6 +36,12 @@ enum PendingMode {
 
 final class GameState: ObservableObject {
 
+    private let unlockedModesKey = "unlocked_modes"
+
+    @Published var unlockMessage: String?
+
+    @Published var unlockedModes: Set<GameScreen> = [.story]
+
     @Published var playerSide: PlayerSide = .left
     @Published var wallet: PlayerWallet!
 
@@ -58,11 +64,37 @@ final class GameState: ObservableObject {
     @Published var equippedSkin: String?  // frei wechselbar
     @Published var activeSkin: String?  // fight-locked
 
+    private func saveUnlockedModes() {
+        let rawValues = unlockedModes.map { $0.rawValue }
+        UserDefaults.standard.set(rawValues, forKey: unlockedModesKey)
+    }
+
+    func loadUnlockedModes() {
+        guard
+            let rawValues = UserDefaults.standard.array(
+                forKey: unlockedModesKey
+            ) as? [String]
+        else {
+            unlockedModes = [.story]
+            return
+        }
+
+        unlockedModes = Set(
+            rawValues.compactMap { GameScreen(rawValue: $0) }
+        )
+    }
+
     func loadWallet(context: ModelContext) {
         let fetch = FetchDescriptor<PlayerWallet>()
 
         if let existing = try? context.fetch(fetch).first {
             wallet = existing
+
+            // 🔥 MIGRATION FIX
+            if wallet.unlockedCharacters.isEmpty {
+                wallet.unlockedCharacters.append("kenji")
+            }
+
             return
         }
 
@@ -80,6 +112,20 @@ final class GameState: ObservableObject {
         }
 
         equippedSkinSprite = skin.fighterSprite
+    }
+
+    func unlockStoryRewards() {
+        guard
+            let wallet = wallet,
+            case .story(_, let section) = pendingMode,
+            let unlocks = section.unlocks
+        else { return }
+
+        for key in unlocks {
+            if !wallet.unlockedCharacters.contains(key) {
+                wallet.unlockedCharacters.append(key)
+            }
+        }
     }
 }
 
@@ -123,7 +169,10 @@ extension GameState {
         AudioManager.shared.playFightMusic(key: stage.music)
 
         currentStage = stage
-        versusViewModel = VersusViewModel(stages: [stage])
+        versusViewModel = VersusViewModel(
+            stages: [stage],
+            gameState: self
+        )
         screen = .versus
     }
 
@@ -207,20 +256,70 @@ extension GameState {
 
         let music = section.music ?? chapter.music
 
+        let background =
+            section.arena.isEmpty
+            ? chapter.background
+            : section.arena
+
         let stage = VersusStage(
             id: section.id,
             name: section.title,
-            background: chapter.background,
+            background: background,
             music: music,
-            waves: (0..<section.waves).map {
-                VersusWave(
-                    wave: $0 + 1,
-                    enemies: [section.enemy],
+            waves: (0..<section.waves).map { index in
+                let enemy =
+                    section.enemies.indices.contains(index)
+                    ? section.enemies[index]
+                    : section.enemies.last ?? "kenji"
+
+                return VersusWave(
+                    wave: index + 1,
+                    enemies: [enemy],
                     timeLimit: section.timeLimit
                 )
             }
         )
 
         startVersusStage(stage)
+    }
+}
+
+extension GameState {
+
+    func unlockModes(after section: StorySection) {
+
+        var unlocked: [String] = []
+
+        switch section.id {
+        case "1_2":
+            unlockedModes.insert(.training)
+            unlocked.append("Training")
+        case "1_3":
+            unlockedModes.insert(.arcade)
+            unlocked.append("Arcade")
+        case "1_4":
+            unlockedModes.insert(.versus)
+            unlocked.append("Versus")
+        case "1_5":
+            unlockedModes.insert(.events)
+            unlocked.append("Events")
+        case "1_6":
+            unlockedModes.insert(.survival)
+            unlocked.append("Survival")
+        case "1_7":
+            unlockedModes.formUnion([.shop, .skin, .leaderboard])
+            unlocked.append(contentsOf: ["Shop", "Skins", "Ranking"])
+        default:
+            break
+        }
+
+        guard !unlocked.isEmpty else { return }
+
+        saveUnlockedModes()  // ✅ WICHTIG
+
+        unlockMessage = "Freigeschaltet: " + unlocked.joined(separator: ", ")
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2.2) {
+            self.unlockMessage = nil
+        }
     }
 }

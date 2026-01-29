@@ -49,12 +49,15 @@ final class VersusViewModel: ObservableObject {
     private let attacks: [FighterAnimation] = [.punch, .kick]
     private var timerCancellable: AnyCancellable?
 
+    private let gameState: GameState  // 🔥 NEU
+
     // MARK: - Init
-    init(stages: [VersusStage]) {
+    init(stages: [VersusStage], gameState: GameState) {
         self.stages = stages
         self.currentStage = stages.first!
+        self.gameState = gameState
         self.phase = .intro
-        startTimer()  // 🔥 DAS FEHLTE
+        startTimer()
     }
 
     func loadStage(_ stage: VersusStage) {
@@ -301,6 +304,24 @@ final class VersusViewModel: ObservableObject {
     // MARK: - Wave
     func nextWave() {
         guard currentWaveIndex + 1 < currentStage.waves.count else { return }
+
         currentWaveIndex += 1
+
+        guard let wave = currentWave else { return }
+
+        let enemyKey = wave.enemies.first ?? "kenji"
+
+        let enemyCharacter = Character.enemy(
+            key: enemyKey,
+            skinId: nil
+        )
+
+        // 🔥 Seite beachten
+        if gameState.playerSide == .left {
+            gameState.rightCharacter = enemyCharacter
+        } else {
+            gameState.leftCharacter = enemyCharacter
+        }
+        print("👊 Wave:", currentWaveIndex, "Enemy:", enemyKey)
     }
 }

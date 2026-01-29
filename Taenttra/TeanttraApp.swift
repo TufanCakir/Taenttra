@@ -33,6 +33,7 @@ struct TeanttraApp: App {
                 }
             }
         }
+        // ✅ EINZIGER Container – persistent auf Disk
         .modelContainer(for: PlayerWallet.self)
     }
 }

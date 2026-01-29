@@ -83,6 +83,18 @@ func loadCharactersFromAssets(
             isLocked: false,
             skinId: nil  // Mentor hat keine Skins
         ),
+        Character(
+            key: "reika",
+            combatSpritePrefix: "kenji",  // 🔥 nutzt Kenji-Sprites
+            isLocked: false,
+            skinId: nil  // Mentor hat keine Skins
+        ),
+        Character(
+            key: "ryuji",
+            combatSpritePrefix: "kenji",  // 🔥 nutzt Kenji-Sprites
+            isLocked: false,
+            skinId: nil  // Mentor hat keine Skins
+        ),
     ]
 }
 
