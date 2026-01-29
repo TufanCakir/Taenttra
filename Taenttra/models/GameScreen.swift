@@ -38,6 +38,10 @@ final class GameState: ObservableObject {
 
     private let unlockedModesKey = "unlocked_modes"
 
+    private let lastStorySectionKey = "last_story_section"
+
+    @Published var lastCompletedStorySectionId: String?
+
     @Published var unlockMessage: String?
 
     @Published var unlockedModes: Set<GameScreen> = [.story]
@@ -67,6 +71,18 @@ final class GameState: ObservableObject {
     private func saveUnlockedModes() {
         let rawValues = unlockedModes.map { $0.rawValue }
         UserDefaults.standard.set(rawValues, forKey: unlockedModesKey)
+    }
+
+    func saveLastCompletedStorySection() {
+        UserDefaults.standard.set(
+            lastCompletedStorySectionId,
+            forKey: lastStorySectionKey
+        )
+    }
+
+    func loadLastCompletedStorySection() {
+        lastCompletedStorySectionId =
+            UserDefaults.standard.string(forKey: lastStorySectionKey)
     }
 
     func loadUnlockedModes() {
@@ -306,9 +322,6 @@ extension GameState {
         case "1_6":
             unlockedModes.insert(.survival)
             unlocked.append("Survival")
-        case "1_7":
-            unlockedModes.formUnion([.shop, .skin, .leaderboard])
-            unlocked.append(contentsOf: ["Shop", "Skins", "Ranking"])
         default:
             break
         }

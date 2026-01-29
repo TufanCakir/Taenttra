@@ -274,15 +274,25 @@ final class VersusViewModel: ObservableObject {
 
     // MARK: - Rewards
     private func calculateRewards() -> VictoryRewards {
+
         let baseCoins = 100
         let baseCrystals = 5
 
         let waveBonus = currentStage.waves.count * 25
         let flawlessBonus = leftHealth > 0.8 ? 50 : 0
 
+        // 🏆 NUR EVENT → SHARDS
+        let shards: Int = {
+            guard case .eventMode(let event) = gameState.pendingMode else {
+                return 0
+            }
+            return event.rewardShards
+        }()
+
         return VictoryRewards(
             coins: baseCoins + waveBonus + flawlessBonus,
-            crystals: baseCrystals + currentStage.waves.count
+            crystals: baseCrystals + currentStage.waves.count,
+            tournamentShards: shards
         )
     }
 

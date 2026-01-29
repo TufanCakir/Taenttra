@@ -52,6 +52,15 @@ struct ShopView: View {
                 categoryTabs
             }
 
+            if selectedCategory?.id == "event_skins" {
+                Text(
+                    "Event Skins can only be unlocked by winning Tournaments 🏆"
+                )
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                .padding(.top, 4)
+            }
+
             if let category = selectedCategory {
                 shopCards(category: category, wallet: wallet)
             } else {
@@ -82,43 +91,137 @@ struct ShopView: View {
         _ item: ShopItem,
         wallet: PlayerWallet
     ) -> some View {
+        let isEventItem = item.currency == .tournamentShards
 
-        let canAfford = wallet.coins >= item.price
+        let canAfford: Bool = {
+            switch item.currency {
+            case .coins:
+                return wallet.coins >= item.price
+            case .crystals:
+                return wallet.crystals >= item.price
+            case .tournamentShards:
+                return wallet.tournamentShards >= item.price
+            }
+        }()
 
         return VStack(spacing: 14) {
 
             // 🖼️ Preview
-            Image(item.preview)
-                .resizable()
-                .scaledToFit()
-                .frame(height: 140)
-                .padding()
-                .background(
-                    RoundedRectangle(cornerRadius: 16)
-                        .fill(Color(.tertiarySystemBackground))
-                )
+            ZStack(alignment: .topTrailing) {
+                Image(item.preview)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(height: 140)
+                    .padding()
+                    .background(
+                        RoundedRectangle(cornerRadius: 22)
+                            .fill(Color(.secondarySystemBackground))
+                            .overlay {
+                                if isEventItem {
+                                    RoundedRectangle(cornerRadius: 22)
+                                        .stroke(
+                                            LinearGradient(
+                                                colors: [.yellow, .orange],
+                                                startPoint: .topLeading,
+                                                endPoint: .bottomTrailing
+                                            ),
+                                            lineWidth: 3
+                                        )
+                                }
+                            }
+                            .shadow(
+                                color: isEventItem
+                                    ? Color.yellow.opacity(0.35)
+                                    : Color.black.opacity(0.15),
+                                radius: isEventItem ? 18 : 6,
+                                y: isEventItem ? 8 : 2
+                            )
+                    )
+
+                if isEventItem {
+                    Text("EVENT")
+                        .font(.caption2.weight(.bold))
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(
+                            Capsule().fill(Color.yellow)
+                        )
+                        .foregroundColor(.black)
+                        .padding(8)
+                }
+            }
 
             // 🏷️ Name
-            Text(item.name)
-                .font(.headline)
-                .multilineTextAlignment(.center)
+            VStack(spacing: 4) {
+                Text(item.name)
+                    .font(.headline)
+                    .multilineTextAlignment(.center)
+
+                if wallet.ownedSkins.contains(item.skinId) {
+                    Text(
+                        wallet.equippedSkin == item.skinId
+                            ? "EQUIPPED"
+                            : "OWNED"
+                    )
+                    .font(.caption2.weight(.bold))
+                    .foregroundColor(
+                        wallet.equippedSkin == item.skinId
+                            ? .cyan
+                            : .secondary
+                    )
+                }
+            }
 
             // 💰 Price
-            HStack(spacing: 8) {
-                CoinPriceView(value: item.price)
+            HStack(spacing: 6) {
+                Image(currencyIcon(for: item.currency))
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 18, height: 18)
 
+                Text("\(item.price)")
+                    .font(.caption.weight(.bold))
+                    .monospacedDigit()
             }
+            .padding(.horizontal, 10)
+            .padding(.vertical, 6)
+            .background(
+                RoundedRectangle(cornerRadius: 16)
+                    .fill(Color(.secondarySystemBackground))
+                    .overlay {
+                        if isEventItem {
+                            RoundedRectangle(cornerRadius: 16)
+                                .stroke(Color.yellow, lineWidth: 2)
+                        }
+                    }
+                    .shadow(
+                        color: isEventItem
+                            ? Color.yellow.opacity(0.3)
+                            : .clear,
+                        radius: isEventItem ? 10 : 0,
+                        y: isEventItem ? 4 : 0
+                    )
+            )
 
             // 🛒 Buy Button
             Button {
-                withAnimation(.easeInOut(duration: 0.15)) {
-                    if wallet.coins >= item.price {
+                withAnimation {
+                    guard canAfford else { return }
+
+                    switch item.currency {
+                    case .coins:
                         wallet.coins -= item.price
-                        if !wallet.ownedSkins.contains(item.skinId) {
-                            wallet.ownedSkins.append(item.skinId)
-                        }
+                    case .crystals:
+                        wallet.crystals -= item.price
+                    case .tournamentShards:
+                        wallet.tournamentShards -= item.price
+                    }
+
+                    if !wallet.ownedSkins.contains(item.skinId) {
+                        wallet.ownedSkins.append(item.skinId)
                     }
                 }
+
             } label: {
                 Text(canAfford ? "BUY" : "NOT ENOUGH")
                     .font(.caption.weight(.semibold))
@@ -140,6 +243,14 @@ struct ShopView: View {
             RoundedRectangle(cornerRadius: 22)
                 .fill(Color(.secondarySystemBackground))
         )
+    }
+
+    private func currencyIcon(for currency: Currency) -> String {
+        switch currency {
+        case .coins: return "icon_coin"
+        case .crystals: return "icon_crystal"
+        case .tournamentShards: return "icon_tournament"
+        }
     }
 
     // MARK: - Tabs

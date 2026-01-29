@@ -28,6 +28,10 @@ final class SkinService {
         case .crystals:
             guard wallet.crystals >= skin.price else { return false }
             wallet.crystals -= skin.price
+
+        case .tournamentShards:  // 🏆 NEU
+            guard wallet.tournamentShards >= skin.price else { return false }
+            wallet.tournamentShards -= skin.price
         }
 
         wallet.ownedSkins.append(skin.id)

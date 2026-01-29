@@ -54,8 +54,6 @@ extension CharacterDisplay {
 
     /// Preview-Bild für Grid / Auswahl
     func previewImage(using wallet: PlayerWallet?) -> String {
-
-        // 🔥 Skins nur für Kenji
         if key == "kenji",
             let skin = wallet?.equippedSkin
         {
@@ -64,8 +62,6 @@ extension CharacterDisplay {
                 shopSkinId: skin
             )
         }
-
-        // ✅ Alle anderen: statisches Bild
         return displayImage
     }
 
@@ -89,6 +85,7 @@ enum SkinLibrary {
         switch shopSkinId {
         case "kenji_red_skin": return "red"
         case "kenji_shadow_skin": return "shadow"
+        case "kenji_tournament_skin": return "tournament"  // 🏆 NEU
         default: return "base"
         }
     }

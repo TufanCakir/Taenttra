@@ -18,6 +18,7 @@ struct EventMode: Decodable, Identifiable {
     let music: String
     let enemy: String
     let timeLimit: Int
+    let rewardShards: Int
 }
 
 final class EventLoader {

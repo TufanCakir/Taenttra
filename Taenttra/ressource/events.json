@@ -1,12 +1,13 @@
 {
     "events": [
         {
-            "id": "event_tournament",
-            "title": "Turnier",
-            "background": "tournament",
-            "music": "dojo_theme",
-            "enemy": "kenji",
-            "timeLimit": 35,
+            "id": "tournament_1",
+            "title": "Tournament of Dawn",
+            "background": "arena_sunrise",
+            "music": "tournament_theme",
+            "enemy": "ryuji",
+            "timeLimit": 120,
+            "rewardShards": 5
         }
     ]
 }

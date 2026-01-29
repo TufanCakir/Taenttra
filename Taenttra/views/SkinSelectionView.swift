@@ -14,7 +14,9 @@ struct SkinSelectionView: View {
     private let data = ShopLoader.load()
 
     private var skins: [ShopItem] {
-        data.categories.first { $0.id.lowercased() == "skins" }?.items ?? []
+        data.categories
+            .filter { $0.id == "skins" || $0.id == "event_skins" }
+            .flatMap { $0.items }
     }
 
     var body: some View {
@@ -57,27 +59,45 @@ struct SkinSelectionView: View {
 
         let owned = wallet.ownedSkins.contains(skin.skinId)
         let equipped = wallet.equippedSkin == skin.skinId
+        let isEventSkin = skin.currency == .tournamentShards
 
         return VStack(spacing: 12) {
 
-            // 🖼️ Preview
-            Image(skin.preview)
-                .resizable()
-                .scaledToFit()
-                .frame(height: 160)
-                .padding()
-                .background(
-                    RoundedRectangle(cornerRadius: 16)
-                        .fill(Color(.tertiarySystemBackground))
-                )
-                .overlay {
-                    if !owned {
-                        Color.black.opacity(0.4)
-                        Image(systemName: "lock.fill")
-                            .font(.title)
-                            .foregroundStyle(.white)
+            ZStack(alignment: .topTrailing) {
+
+                // 🖼️ Preview
+                Image(skin.preview)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(height: 160)
+                    .padding()
+                    .background(
+                        RoundedRectangle(cornerRadius: 16)
+                            .fill(Color(.tertiarySystemBackground))
+                    )
+                    .overlay {
+                        if !owned {
+                            Color.black.opacity(0.45)
+                            Image(systemName: "lock.fill")
+                                .font(.title)
+                                .foregroundStyle(.white)
+                        }
                     }
+
+                // 🏆 EVENT BADGE
+                if isEventSkin {
+                    Text("EVENT")
+                        .font(.caption2.weight(.bold))
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(
+                            Capsule()
+                                .fill(Color.yellow)
+                        )
+                        .foregroundColor(.black)
+                        .padding(8)
                 }
+            }
 
             // 🏷️ Name + Status
             VStack(spacing: 4) {
@@ -85,9 +105,9 @@ struct SkinSelectionView: View {
                     .font(.headline)
 
                 if equipped {
-                    tag("EquIPPED")
+                    statusTag("EQUIPPED", color: .cyan)
                 } else if owned {
-                    tag("OWNED")
+                    statusTag("OWNED", color: .secondary)
                 } else {
                     Text("Locked")
                         .font(.caption)
@@ -99,14 +119,14 @@ struct SkinSelectionView: View {
             Button {
                 withAnimation(.easeInOut(duration: 0.15)) {
                     if equipped {
-                        wallet.equippedSkin = nil  // BASE
+                        wallet.equippedSkin = nil
                     } else if owned {
                         wallet.equippedSkin = skin.skinId
                     }
                 }
             } label: {
                 Text(equipped ? "USE BASE" : "EQUIP")
-                    .font(.caption.weight(.semibold))
+                    .font(.caption.weight(.bold))
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 10)
                     .background(
@@ -122,9 +142,41 @@ struct SkinSelectionView: View {
         .background(
             RoundedRectangle(cornerRadius: 22)
                 .fill(Color(.secondarySystemBackground))
+                .overlay {
+                    if isEventSkin {
+                        RoundedRectangle(cornerRadius: 22)
+                            .stroke(
+                                LinearGradient(
+                                    colors: [.yellow, .orange],
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                ),
+                                lineWidth: 3
+                            )
+                    }
+                }
+                .shadow(
+                    color: isEventSkin
+                        ? Color.yellow.opacity(0.35)
+                        : Color.black.opacity(0.15),
+                    radius: isEventSkin ? 16 : 6,
+                    y: isEventSkin ? 6 : 2
+                )
         )
         .scaleEffect(equipped ? 1.05 : 1.0)
         .animation(.easeOut(duration: 0.2), value: equipped)
+    }
+
+    private func statusTag(_ text: String, color: Color) -> some View {
+        Text(text)
+            .font(.caption2.weight(.bold))
+            .padding(.horizontal, 8)
+            .padding(.vertical, 4)
+            .background(
+                Capsule()
+                    .fill(color.opacity(0.15))
+            )
+            .foregroundColor(color)
     }
 
     // MARK: - Header

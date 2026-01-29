@@ -8,9 +8,24 @@
                 {
                     "skinId": "kenji_red_skin",
                     "name": "Red Kenji",
-                    "price": 250,
+                    "price": 350,
                     "currency": "coins",
                     "preview": "kenji_red_skin"
+                }
+            ]
+        },
+        {
+            "id": "event_skins",
+            "title": "Event Skins",
+            "icon": "tshirt",
+            "items": [
+                {
+                    "skinId": "kenji_tournament_skin",
+                    "spriteSkinId": "kenji_event",
+                    "name": "Tournament Kenji",
+                    "price": 150,
+                    "currency": "tournamentShards",
+                    "preview": "kenji_tournament_skin"
                 }
             ]
         }

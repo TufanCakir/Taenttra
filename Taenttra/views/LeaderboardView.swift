@@ -10,6 +10,8 @@ import SwiftUI
 
 struct LeaderboardView: View {
 
+    @EnvironmentObject var gameState: GameState
+
     @ObservedObject private var gameCenter = GameCenterManager.shared
 
     var body: some View {
@@ -53,19 +55,36 @@ struct LeaderboardView: View {
         }
     }
 
-    // MARK: - Fighters Stage
+    private var playerCharacter: Character {
+        Character(
+            key: "kenji",
+            combatSpritePrefix: nil,
+            isLocked: false,
+            skinId: gameState.wallet?.equippedSkin
+        )
+    }
 
+    private var rivalCharacter: Character {
+        Character(
+            key: "kenji",
+            combatSpritePrefix: nil,
+            isLocked: false,
+            skinId: "kenji_red_skin"
+        )
+    }
+
+    // MARK: - Fighters Stage
     private var fightersStage: some View {
         HStack(alignment: .bottom, spacing: 24) {
 
-            Image("char_kenji_base_idle")
+            Image(playerCharacter.imageNameSafe(for: .idle))
                 .resizable()
                 .scaledToFit()
                 .frame(width: 100)
                 .opacity(0.85)
                 .shadow(color: .black.opacity(0.6), radius: 20)
 
-            Image("char_kenji_red_idle")
+            Image(rivalCharacter.imageNameSafe(for: .idle))
                 .resizable()
                 .scaledToFit()
                 .frame(width: 100)

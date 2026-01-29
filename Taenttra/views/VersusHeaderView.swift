@@ -25,6 +25,10 @@ struct VersusHeaderView: View {
                     icon: "icon_crystal",
                     value: gameState.wallet.crystals
                 )
+                currencyView(
+                    icon: "icon_tournament",
+                    value: gameState.wallet.tournamentShards
+                )
             }
         }
         .padding(.horizontal, 20)

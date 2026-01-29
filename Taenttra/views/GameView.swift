@@ -87,6 +87,8 @@ struct GameView: View {
                                 // 💰 Rewards
                                 gameState.wallet.coins += rewards.coins
                                 gameState.wallet.crystals += rewards.crystals
+                                gameState.wallet.tournamentShards +=
+                                    rewards.tournamentShards
 
                                 // 🔓 Characters
                                 gameState.unlockStoryRewards()
@@ -99,6 +101,9 @@ struct GameView: View {
                                         after: section
                                     )
                                     gameState.unlockModes(after: section)
+                                    gameState.lastCompletedStorySectionId =
+                                        section.id
+                                    gameState.saveLastCompletedStorySection()
                                 }
 
                                 // 🧹 Cleanup
@@ -165,17 +170,9 @@ struct GameView: View {
             if gameState.wallet == nil {
                 gameState.loadWallet(context: modelContext)
             }
-        }
-        .onAppear {
-            if gameState.wallet == nil {
-                gameState.loadWallet(context: modelContext)
-            }
 
-            gameState.loadUnlockedModes()  // ✅ DAS FEHLTE
+            gameState.loadUnlockedModes()
+            gameState.loadLastCompletedStorySection()
         }
     }
-}
-
-#Preview {
-    GameView()
 }

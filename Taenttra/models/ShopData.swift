@@ -27,6 +27,7 @@ struct ShopItem: Codable, Identifiable {
     let price: Int
     let currency: Currency
     let preview: String
+    let spriteSkinId: String?
 
     init(
         id: UUID = UUID(),
@@ -34,7 +35,8 @@ struct ShopItem: Codable, Identifiable {
         name: String,
         price: Int,
         currency: Currency,
-        preview: String
+        preview: String,
+        spriteSkinId: String? = nil
     ) {
         self.id = id
         self.skinId = skinId
@@ -42,6 +44,7 @@ struct ShopItem: Codable, Identifiable {
         self.price = price
         self.currency = currency
         self.preview = preview
+        self.spriteSkinId = spriteSkinId
     }
 
     init(from decoder: Decoder) throws {
@@ -52,16 +55,21 @@ struct ShopItem: Codable, Identifiable {
         self.price = try container.decode(Int.self, forKey: .price)
         self.currency = try container.decode(Currency.self, forKey: .currency)
         self.preview = try container.decode(String.self, forKey: .preview)
+        self.spriteSkinId = try container.decodeIfPresent(
+            String.self,
+            forKey: .spriteSkinId
+        )
     }
 
     private enum CodingKeys: String, CodingKey {
-        case skinId, name, price, currency, preview
+        case skinId, name, price, currency, preview, spriteSkinId
     }
 }
 
 enum Currency: String, Codable {
     case coins
     case crystals
+    case tournamentShards  // 🏆 EVENT-WÄHRUNG
 }
 
 extension ShopItem {

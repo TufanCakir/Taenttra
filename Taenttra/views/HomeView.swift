@@ -23,13 +23,9 @@ struct HomeView: View {
 
                 VersusHeaderView()
 
-                Text("TAENTTRA")
-                    .font(.largeTitle.weight(.semibold))
-                    .padding(.top, 4)
-
                 // MARK: - Scrollable Menu
                 ScrollView(showsIndicators: false) {
-                    VStack(spacing: 6) {
+                    VStack(spacing: 10) {
                         ForEach(items.indices, id: \.self) { index in
                             menuItem(
                                 item: items[index],
@@ -37,19 +33,37 @@ struct HomeView: View {
                             )
                         }
                     }
-                    .padding(.top, 4)
+                    .padding(.horizontal, 16)
+                    .padding(.top, 8)
                 }
 
                 Spacer()
 
                 // 🔥 CONFIRM
-                Text("TAP TO CONFIRM")
-                    .padding(.bottom, 12)
-                    .onTapGesture {
-                        confirmSelection()
-                    }
+                Text(
+                    isUnlocked(items[selection])
+                        ? "START \(items[selection].title.uppercased())"
+                        : lockedReason(for: items[selection])
+                )
+                .font(.caption.bold())
+                .foregroundStyle(
+                    isUnlocked(items[selection])
+                        ? items[selection].color
+                        : .secondary
+                )
+                .padding(.vertical, 12)
+                .frame(maxWidth: .infinity)
+                .animation(.easeInOut(duration: 0.15), value: selection)
+                .background(
+                    RoundedRectangle(cornerRadius: 14)
+                        .fill(Color.primary.opacity(0.06))
+                )
+                .padding(.horizontal, 24)
+                .padding(.bottom, 12)
+                .onTapGesture {
+                    confirmSelection()
+                }
             }
-            .padding(.top, 8)
         }
     }
 
@@ -62,60 +76,95 @@ struct HomeView: View {
         let isSelected = selection == index
         let unlocked = isUnlocked(item)
 
-        return HStack(spacing: 14) {
+        return HStack(spacing: 16) {
 
-            Rectangle()
-                .fill(isSelected ? item.color : item.color.opacity(0.3))
+            // 🔹 Indicator
+            Circle()
+                .fill(unlocked ? item.color : .gray)
                 .frame(width: 10, height: 10)
-                .cornerRadius(2)
+                .opacity(isSelected ? 1 : 0.4)
 
+            // 📝 Title
             Text(item.title)
-                .font(.title3.weight(isSelected ? .semibold : .regular))
+                .font(
+                    .system(size: 18, weight: isSelected ? .semibold : .regular)
+                )
                 .foregroundStyle(
                     unlocked
-                    ? (isSelected ? item.color : .primary)
-                    : .secondary
+                        ? (isSelected ? item.color : .primary)
+                        : .secondary
                 )
-                .opacity(unlocked ? (isSelected ? 1 : 0.35) : 0.25)
 
             Spacer()
 
-            if !unlocked {
+            // 🔒 / ➜
+            if unlocked {
+                Image(systemName: "chevron.right")
+                    .font(.caption)
+                    .foregroundStyle(isSelected ? item.color : .secondary)
+            } else {
                 Image(systemName: "lock.fill")
-                    .foregroundColor(.secondary)
+                    .foregroundStyle(.secondary)
             }
         }
-        .frame(height: 44)
-        .padding(.horizontal, 24)
-        .background(
-            isSelected
-                ? item.color.opacity(0.12)
-                : Color.clear
-        )
+        .padding(.horizontal, 20)
+        .frame(height: 52)
+        .background {
+            RoundedRectangle(cornerRadius: 12)
+                .fill(
+                    isSelected
+                        ? item.color.opacity(0.14)
+                        : Color.secondary.opacity(0.06)
+                )
+        }
+        .overlay {
+            if !unlocked {
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(.black.opacity(0.15))
+            }
+        }
         .scaleEffect(isSelected ? 1.02 : 1.0)
-        .animation(.easeInOut(duration: 0.16), value: isSelected)
+        .animation(.easeInOut(duration: 0.18), value: isSelected)
         .contentShape(Rectangle())
         .onTapGesture {
-            guard unlocked else { return }
             selection = index
         }
     }
 
-
     // MARK: - Unlock Logic
     private func isUnlocked(_ item: HomeMenuItem) -> Bool {
-        if !item.requiresUnlock {
+        // Immer frei, wenn keine Story-Bedingung existiert
+        guard item.requiredStorySectionId != nil else {
             return true
         }
+
+        // Story selbst ist immer spielbar
+        if item == .story {
+            return true
+        }
+
+        // Modus ist freigeschaltet, wenn er bereits in unlockedModes ist
         return gameState.unlockedModes.contains(item.screen)
     }
-    
+
+    private func lockedReason(for item: HomeMenuItem) -> String {
+        guard let required = item.requiredStorySectionId else {
+            return "🔒 Modus gesperrt"
+        }
+
+        if gameState.lastCompletedStorySectionId != nil {
+            return "📖 Schließe Story Abschnitt \(required) ab"
+        } else {
+            return "📖 Starte zuerst die Story"
+        }
+    }
+
     // MARK: - Navigation
     private func confirmSelection() {
         let item = items[selection]
 
         guard isUnlocked(item) else {
-            gameState.unlockMessage = "🔒 Modus noch gesperrt"
+            gameState.unlockMessage = "📖 Schließe erst die Story ab"
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
                 gameState.unlockMessage = nil
             }

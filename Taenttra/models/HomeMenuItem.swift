@@ -20,17 +20,19 @@ enum HomeMenuItem: CaseIterable {
     case options
 
     /// Muss dieser Modus durch Story freigeschaltet werden?
-    var requiresUnlock: Bool {
+    var requiredStorySectionId: String? {
         switch self {
-        case .options:
-            return false  // 🔓 IMMER verfügbar
-        case .story:
-            return false  // 🔓 immer verfügbar
-        default:
-            return true  // 🔒 story-gated
+        case .training: return "1_2"
+        case .arcade: return "1_3"
+        case .versus: return "1_4"
+        case .events: return "1_5"
+        case .survival: return "1_6"
+
+        // ✅ Meta & Kosmetik IMMER frei
+        case .shop, .skin, .leaderboard, .story, .options:
+            return nil
         }
     }
-
     // MARK: - Display
 
     var title: String {

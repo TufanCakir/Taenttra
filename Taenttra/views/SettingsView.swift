@@ -125,3 +125,7 @@ struct SettingsView: View {
         ProcessInfo.processInfo.operatingSystemVersionString
     }
 }
+
+#Preview {
+    SettingsView()
+}

@@ -14,12 +14,10 @@ struct VictoryView: View {
 
     var body: some View {
         ZStack {
-
             Color.black.opacity(0.9)
                 .ignoresSafeArea()
 
             VStack(spacing: 36) {
-
                 VictoryHeader(
                     title: "STAGE CLEARED",
                     subtitle: nil
@@ -37,21 +35,30 @@ struct VictoryView: View {
                         title: "Crystals",
                         value: rewards.crystals
                     )
-                }
 
-                Button(action: onContinue) {
-                    Text("CONTINUE")
-                        .font(.headline.weight(.bold))
-                        .foregroundStyle(.black)
-                        .padding(.horizontal, 36)
-                        .padding(.vertical, 14)
-                        .background(.white)
-                        .clipShape(
-                            RoundedRectangle(cornerRadius: 12)
+                    // 🏆 Only show when event shards are present
+                    if rewards.tournamentShards > 0 {
+                        rewardRow(
+                            icon: "icon_tournament",
+                            title: "Tournament Shards",
+                            value: rewards.tournamentShards
                         )
+                    }
+
+                    Button(action: onContinue) {
+                        Text("CONTINUE")
+                            .font(.headline.weight(.bold))
+                            .foregroundStyle(.black)
+                            .padding(.horizontal, 36)
+                            .padding(.vertical, 14)
+                            .background(.white)
+                            .clipShape(
+                                RoundedRectangle(cornerRadius: 12)
+                            )
+                    }
                 }
+                .padding(.vertical, 40)
             }
-            .padding(.vertical, 40)
         }
     }
 
@@ -62,7 +69,6 @@ struct VictoryView: View {
         value: Int
     ) -> some View {
         HStack(spacing: 16) {
-
             Image(icon)
                 .resizable()
                 .scaledToFit()
@@ -93,7 +99,11 @@ struct VictoryView: View {
 }
 #Preview {
     VictoryView(
-        rewards: VictoryRewards(coins: 100, crystals: 50),
+        rewards: VictoryRewards(
+            coins: 100,
+            crystals: 20,
+            tournamentShards: 25
+        ),
         onContinue: {}
     )
 }

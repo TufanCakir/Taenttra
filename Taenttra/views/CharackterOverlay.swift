@@ -84,10 +84,7 @@ struct CharacterGridView: View {
             VStack(spacing: 8) {
                 if let selected = selectedCharacter {
                     Image(
-                        SkinLibrary.previewImage(
-                            for: selected.key,
-                            shopSkinId: gameState.wallet?.equippedSkin
-                        )
+                        selected.previewImage(using: gameState.wallet)
                     )
                     .resizable()
                     .scaledToFit()
