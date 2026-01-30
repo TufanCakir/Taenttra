@@ -101,15 +101,31 @@ struct ShopItemRow: View {
     }
 
     // MARK: - Buttons
-
     private var actionButton: some View {
         Group {
-            if isOwned {
-                equipButton
+            if isEquipped {
+                statusBadge("EQUIPPED", color: .cyan)
+            } else if isOwned {
+                statusBadge("OWNED", color: .secondary)
             } else {
                 buyButton
             }
         }
+    }
+
+    private func statusBadge(
+        _ text: String,
+        color: Color
+    ) -> some View {
+        Text(text)
+            .font(.caption.weight(.bold))
+            .padding(.horizontal, 12)
+            .padding(.vertical, 6)
+            .background(
+                Capsule()
+                    .fill(color.opacity(0.15))
+            )
+            .foregroundColor(color)
     }
 
     private var buyButton: some View {
@@ -132,22 +148,6 @@ struct ShopItemRow: View {
                 )
                 .foregroundColor(.black)
         }
-    }
-
-    private var equipButton: some View {
-        Button(isEquipped ? "EQUIPPED" : "EQUIP") {
-            equip()
-        }
-        .font(.caption.weight(.bold))
-        .padding(.horizontal, 12)
-        .padding(.vertical, 6)
-        .background(
-            Capsule()
-                .stroke(Color.cyan, lineWidth: 1.5)
-        )
-        .foregroundColor(.cyan)
-        .disabled(isEquipped)
-        .opacity(isEquipped ? 0.6 : 1)
     }
 
     // MARK: - Helpers

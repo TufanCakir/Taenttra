@@ -12,60 +12,190 @@ struct HomeView: View {
     @EnvironmentObject var gameState: GameState
 
     @State private var selection: Int = 0
-    private let items = HomeMenuItem.allCases
+
+    // Ordered list of menu items used by the menu and confirmSelection
+    private let items: [HomeMenuItem] = [
+        .story,
+        .events,
+        .training,
+        .arcade,
+        .survival,
+        .versus,
+        .shop,
+        .skin,
+        .leaderboard,
+        .options,
+    ]
+
+    private let characters: [CharacterDisplay] = loadCharacterDisplays()
 
     var body: some View {
         ZStack {
-            Color(.systemBackground)
-                .ignoresSafeArea()
+            Color.black.ignoresSafeArea()
 
             VStack(spacing: 16) {
-
+                
                 VersusHeaderView()
 
-                // MARK: - Scrollable Menu
-                ScrollView(showsIndicators: false) {
-                    VStack(spacing: 10) {
-                        ForEach(items.indices, id: \.self) { index in
-                            menuItem(
-                                item: items[index],
-                                index: index
-                            )
-                        }
-                    }
-                    .padding(.horizontal, 16)
-                    .padding(.top, 8)
-                }
+                Spacer(minLength: 8)
+
+                mainCharacterView
+
+                characterRoster
 
                 Spacer()
 
-                // 🔥 CONFIRM
-                Text(
-                    isUnlocked(items[selection])
-                        ? "START \(items[selection].title.uppercased())"
-                        : lockedReason(for: items[selection])
-                )
-                .font(.caption.bold())
-                .foregroundStyle(
-                    isUnlocked(items[selection])
-                        ? items[selection].color
-                        : .secondary
-                )
-                .padding(.vertical, 12)
-                .frame(maxWidth: .infinity)
-                .animation(.easeInOut(duration: 0.15), value: selection)
-                .background(
-                    RoundedRectangle(cornerRadius: 14)
-                        .fill(Color.primary.opacity(0.06))
-                )
-                .padding(.horizontal, 24)
-                .padding(.bottom, 12)
-                .onTapGesture {
-                    confirmSelection()
-                }
+                footerMenu
             }
         }
     }
+
+    private var mainCharacterView: some View {
+        ZStack {
+            RadialGradient(
+                colors: [.cyan.opacity(0.25), .clear],
+                center: .center,
+                startRadius: 20,
+                endRadius: 220
+            )
+
+            VStack(spacing: 10) {
+                if let display = characters.first(where: {
+                    $0.key == gameState.selectedCharacterKey
+                }) {
+                    Image(display.previewImage(using: gameState.wallet))
+                        .resizable()
+                        .scaledToFit()
+                        .frame(height: 260)
+                        .shadow(color: Color.black.opacity(0.6), radius: 24)
+                } else {
+                    // Placeholder when no character matches
+                    Rectangle()
+                        .fill(Color.clear)
+                        .frame(height: 260)
+                }
+
+                Text(gameState.selectedCharacterName.uppercased())
+                    .font(.title3.weight(.bold))
+                    .foregroundColor(.white)
+            }
+        }
+        .frame(maxWidth: .infinity)
+    }
+
+    private var characterRoster: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 10) {
+                ForEach(characters) { character in
+                    rosterItem(character)
+                }
+            }
+            .padding(.horizontal, 16)
+        }
+    }
+
+    private func rosterItem(_ character: CharacterDisplay) -> some View {
+        let isSelected = character.key == gameState.selectedCharacterKey
+        let locked = !gameState.wallet!.unlockedCharacters.contains(
+            character.key
+        )
+
+        return Image(character.displayImage)
+            .resizable()
+            .scaledToFit()
+            .frame(width: isSelected ? 68 : 56, height: isSelected ? 68 : 56)
+            .clipShape(RoundedRectangle(cornerRadius: 10))
+            .overlay(
+                RoundedRectangle(cornerRadius: 10)
+                    .stroke(isSelected ? Color.cyan : Color.clear, lineWidth: 3)
+            )
+            .opacity(locked ? 0.3 : 1)
+            .onTapGesture {
+                guard !locked else { return }
+                withAnimation(.spring()) {
+                    gameState.selectedCharacterKey = character.key
+                }
+            }
+    }
+
+    private func footerButton(
+        _ title: String,
+        _ icon: String,
+        _ screen: GameScreen
+    ) -> some View {
+        Button {
+            gameState.screen = screen
+        } label: {
+            VStack(spacing: 6) {
+                Image(systemName: icon)
+                    .font(.title3)
+
+                Text(title)
+                    .font(.caption.weight(.bold))
+            }
+            .foregroundColor(.white)
+            .frame(width: 72)
+            .padding(.vertical, 6)
+            .background(
+                Capsule()
+                    .fill(Color.white.opacity(0.08))
+            )
+        }
+    }
+
+    private var footerMenu: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 16) {
+                ForEach(items, id: \.self) { item in
+                    footerItem(item)
+                }
+            }
+            .padding(.horizontal, 20)
+            .padding(.vertical, 14)
+        }
+        .background(.ultraThinMaterial)
+    }
+
+    private func footerItem(_ item: HomeMenuItem) -> some View {
+        let unlocked = isUnlocked(item)
+
+        return Button {
+            guard unlocked else { return }
+
+            if item == .versus {
+                gameState.pendingMode = .versus
+                gameState.screen = .characterSelect
+            } else {
+                gameState.screen = item.screen
+            }
+        } label: {
+            Text(item.title)
+                .font(.system(size: 13, weight: .heavy))
+                .foregroundColor(unlocked ? .white : .gray)
+                .padding(.horizontal, 18)
+                .padding(.vertical, 10)
+                .background(
+                    Capsule()
+                        .fill(
+                            unlocked
+                            ? item.color.opacity(0.35)
+                            : Color.white.opacity(0.06)
+                        )
+                )
+                .overlay(
+                    Capsule()
+                        .stroke(
+                            unlocked
+                            ? item.color.opacity(0.6)
+                            : Color.clear,
+                            lineWidth: 1
+                        )
+                )
+                .opacity(unlocked ? 1 : 0.45)
+        }
+        .buttonStyle(.plain)
+    }
+
 
     // MARK: - Menu Item
     private func menuItem(

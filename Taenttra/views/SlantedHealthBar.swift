@@ -8,26 +8,46 @@
 import SwiftUI
 
 struct SlantedHealthBar: View {
-
+    
     let value: CGFloat
     let direction: SlantDirection
-
+    
     private let width: CGFloat = 150
     private let cap: CGFloat = 18
-
+    @State private var flash = false
+    
     private var v: CGFloat { min(max(value, 0), 1) }
-
+    
     var body: some View {
         ZStack {
-
+            
             // 🔳 Base
             Rectangle()
-                .fill(Color.black.opacity(0.35))
+                .fill(flash ? Color.white.opacity(0.6) : Color.black.opacity(0.35))
                 .mask(capShape)
-
+            
             // 🟥🟨🟩 Health Fill
             Rectangle()
                 .fill(healthGradient)
+                .overlay(
+                    HStack(spacing: 6) {
+                        ForEach(0..<6) { _ in
+                            Rectangle()
+                                .fill(Color.black.opacity(0.25))
+                                .frame(width: 2)
+                        }
+                    }
+                        .padding(.horizontal, 10)
+                        .mask(capShape)
+                )
+                .opacity(v < 0.2 ? 0.85 : 1)
+                .scaleEffect(v < 0.2 ? 1.02 : 1)
+                .animation(
+                    v < 0.2
+                    ? .easeInOut(duration: 0.4).repeatForever(autoreverses: true)
+                    : .default,
+                    value: v < 0.2
+                )
                 .scaleEffect(
                     x: v,
                     y: 1,
@@ -35,7 +55,7 @@ struct SlantedHealthBar: View {
                 )
                 .mask(capShape)
                 .padding(2)
-
+            
             // ✨ Gloss
             Rectangle()
                 .fill(
@@ -47,16 +67,33 @@ struct SlantedHealthBar: View {
                 )
                 .frame(maxHeight: .infinity, alignment: .top)
                 .mask(capShape)
-
-            // 🧱 Outline
+            
+            // ✨ Glow
             capShape
-                .stroke(Color.white.opacity(0.7), lineWidth: 1)
+                .stroke(
+                    v < 0.25 ? Color.red : Color.cyan,
+                    lineWidth: 2
+                )
+                .blur(radius: 4)
+            
+            // 🧱 Inner Outline
+            capShape
+                .stroke(Color.white.opacity(0.9), lineWidth: 1)
         }
-        .frame(width: width)  // ⬅️ nur Breite
+        .frame(width: width, height: 20)
         .fixedSize(horizontal: false, vertical: true)
         .animation(.easeOut(duration: 0.25), value: v)
+        .onChange(of: v) { old, new in
+            if new < old {
+                flash = true
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.08) {
+                    flash = false
+                }
+            }
+        }
     }
-
+    
+    
     // MARK: - Mask
     private var capShape: some Shape {
         Cap(
@@ -64,20 +101,19 @@ struct SlantedHealthBar: View {
             cap: cap
         )
     }
-
+    
     // MARK: - Gradient
     private var healthGradient: LinearGradient {
-        direction == .left
-            ? LinearGradient(
-                colors: [.green, .yellow, .red],
-                startPoint: .leading,
-                endPoint: .trailing
-            )
-            : LinearGradient(
-                colors: [.green, .yellow, .red],
-                startPoint: .trailing,
-                endPoint: .leading
-            )
+        LinearGradient(
+            colors: [
+                .green,
+                .yellow,
+                .orange,
+                .red
+            ],
+            startPoint: direction == .left ? .leading : .trailing,
+            endPoint: direction == .left ? .trailing : .leading
+        )
     }
 }
 

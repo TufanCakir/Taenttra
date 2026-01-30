@@ -10,21 +10,74 @@ import SwiftUI
 struct CreditsView: View {
 
     var body: some View {
-        List {
-            Section {
-                Text("Taenttra ist ein Fighting-Game-Projekt.")
-                Text("Ein Experiment über Spielgefühl, Klarheit und Fokus.")
-                    .foregroundStyle(.secondary)
+        ScrollView {
+            VStack(spacing: 20) {
 
-                Divider()
+                // MARK: - Project
+                sectionCard {
+                    VStack(alignment: .leading, spacing: 8) {
 
-                Text("Design, Code & Art")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+                        Text("TAENTTRA")
+                            .font(.title2.weight(.bold))
 
-                Text("Tufan Cakir")
+                        Text(
+                            """
+                            Ein Fighting-Game-Projekt.
+                            Ein Experiment über Spielgefühl, Klarheit und Fokus.
+                            """
+                        )
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                    }
+                }
+
+                // MARK: - Creator
+                sectionCard {
+                    VStack(alignment: .leading, spacing: 10) {
+
+                        Text("DESIGN · CODE · ART")
+                            .font(.headline.weight(.semibold))
+
+                        Text("Tufan Cakir")
+                            .font(.body.weight(.medium))
+                    }
+                }
+
+                // MARK: - Thank You
+                sectionCard {
+                    VStack(alignment: .leading, spacing: 8) {
+
+                        Text("DANKE")
+                            .font(.headline.weight(.semibold))
+
+                        Text(
+                            "Danke fürs Spielen und fürs Unterstützen unabhängiger Spieleentwicklung."
+                        )
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                    }
+                }
+
+                Spacer(minLength: 20)
             }
+            .padding(.horizontal, 16)
+            .padding(.top, 16)
         }
+        .background(Color.black.opacity(0.03))
         .navigationTitle("Credits")
+        .navigationBarTitleDisplayMode(.inline)
+    }
+
+    // MARK: - Card Wrapper
+    private func sectionCard<Content: View>(
+        @ViewBuilder content: () -> Content
+    ) -> some View {
+        content()
+            .padding(16)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(
+                RoundedRectangle(cornerRadius: 16)
+                    .fill(.ultraThinMaterial)
+            )
     }
 }

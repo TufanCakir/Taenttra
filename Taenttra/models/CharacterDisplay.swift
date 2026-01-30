@@ -103,8 +103,13 @@ enum SkinLibrary {
         switch shopSkinId {
         case "kenji_red_skin":
             return "kenji_red_preview"
+
         case "kenji_shadow_skin":
             return "kenji_shadow_preview"
+
+        case "kenji_tournament_skin":  // 🏆 FIX
+            return "kenji_tournament_preview"  // 🔥 MUSS EXISTIEREN
+
         default:
             return "\(characterKey)_base_preview"
         }

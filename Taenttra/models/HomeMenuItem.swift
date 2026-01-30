@@ -33,6 +33,7 @@ enum HomeMenuItem: CaseIterable {
             return nil
         }
     }
+
     // MARK: - Display
 
     var title: String {

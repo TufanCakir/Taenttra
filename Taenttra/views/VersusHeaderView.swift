@@ -46,6 +46,7 @@ struct VersusHeaderView: View {
             Text("\(value)")
                 .font(.system(size: 18, weight: .bold))
                 .monospacedDigit()
+                .foregroundStyle(.white)
         }
     }
 }

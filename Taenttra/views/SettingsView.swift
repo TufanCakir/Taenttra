@@ -12,11 +12,11 @@ struct SettingsView: View {
     @ObservedObject private var audio = AudioManager.shared
 
     var body: some View {
-        NavigationStack {
-            List {
+        ScrollView {
+            VStack(spacing: 20) {
 
                 // 🎵 AUDIO
-                Section(header: Text("AUDIO")) {
+                sectionCard(title: "AUDIO") {
 
                     Toggle(
                         "Music",
@@ -26,8 +26,11 @@ struct SettingsView: View {
                         )
                     )
 
-                    HStack {
-                        Text("Volume")
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text("VOLUME")
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(.secondary)
+
                         Slider(
                             value: Binding(
                                 get: { Double(audio.volume) },
@@ -38,70 +41,93 @@ struct SettingsView: View {
                     }
                 }
 
-                // MARK: - About
-                Section(header: Text("ABOUT")) {
-                    HStack {
-                        Text("Game")
-                        Spacer()
-                        Text("TAENTTRA")
-                            .foregroundStyle(.secondary)
-                    }
-
-                    HStack {
-                        Text("Version")
-                        Spacer()
-                        Text(appVersion)
-                            .foregroundStyle(.secondary)
-                    }
-
-                    HStack {
-                        Text("Build")
-                        Spacer()
-                        Text(appBuild)
-                            .foregroundStyle(.secondary)
-                    }
-
-                    HStack {
-                        Text("Developer")
-                        Spacer()
-                        Text("Tufan Cakir")
-                            .foregroundStyle(.secondary)
-                    }
+                // ℹ️ ABOUT
+                sectionCard(title: "ABOUT") {
+                    infoRow("Game", "Taenttra")
+                    infoRow("Version", appVersion)
+                    infoRow("Build", appBuild)
+                    infoRow("Developer", "Tufan Cakir")
                 }
 
-                // MARK: - Info
-                Section(header: Text("INFO")) {
-                    NavigationLink("Credits") {
+                // 📄 INFO
+                sectionCard(title: "INFO") {
+
+                    navigationRow("Credits") {
                         CreditsView()
                     }
 
-                    NavigationLink("Licenses") {
+                    navigationRow("Licenses") {
                         LicensesView()
                     }
                 }
 
-                // MARK: - System
-                Section(header: Text("SYSTEM")) {
-                    HStack {
-                        Text("Platform")
-                        Spacer()
-                        Text(platformName)
-                            .foregroundStyle(.secondary)
-                    }
-
-                    HStack {
-                        Text("OS Version")
-                        Spacer()
-                        Text(osVersion)
-                            .foregroundStyle(.secondary)
-                    }
+                // ⚙️ SYSTEM
+                sectionCard(title: "SYSTEM") {
+                    infoRow("Platform", platformName)
+                    infoRow("OS Version", osVersion)
                 }
+
+                Spacer(minLength: 20)
             }
-            .navigationTitle("Options")
+            .padding(.horizontal, 16)
+            .padding(.top, 16)
+        }
+        .background(Color.black.opacity(0.03))
+        .navigationTitle("Options")
+        .navigationBarTitleDisplayMode(.inline)
+    }
+
+    // MARK: - UI Helpers
+
+    private func sectionCard<Content: View>(
+        title: String,
+        @ViewBuilder content: () -> Content
+    ) -> some View {
+
+        VStack(alignment: .leading, spacing: 14) {
+
+            Text(title)
+                .font(.headline.weight(.bold))
+
+            content()
+        }
+        .padding(16)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(
+            RoundedRectangle(cornerRadius: 18)
+                .fill(.ultraThinMaterial)
+        )
+    }
+
+    private func infoRow(_ title: String, _ value: String) -> some View {
+        HStack {
+            Text(title)
+            Spacer()
+            Text(value)
+                .foregroundStyle(.secondary)
+        }
+        .font(.body)
+    }
+
+    private func navigationRow<Destination: View>(
+        _ title: String,
+        destination: @escaping () -> Destination
+    ) -> some View {
+        NavigationLink {
+            destination()
+        } label: {
+            HStack {
+                Text(title)
+                Spacer()
+                Text("›")
+                    .foregroundStyle(.secondary)
+            }
+            .contentShape(Rectangle())
         }
     }
 
     // MARK: - App Info
+
     private var appVersion: String {
         Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String
             ?? "—"
@@ -127,5 +153,7 @@ struct SettingsView: View {
 }
 
 #Preview {
-    SettingsView()
+    NavigationStack {
+        SettingsView()
+    }
 }

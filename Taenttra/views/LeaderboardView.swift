@@ -44,12 +44,12 @@ struct LeaderboardView: View {
 
     private var header: some View {
         VStack(spacing: 8) {
-            Text("GLOBAL RANKING")
+            Text("Global Ranking")
                 .font(.system(size: 22, weight: .bold))
                 .foregroundColor(.white)
                 .tracking(1.2)
 
-            Text("Who is the strongest fighter?")
+            Text("Wer ist der stärkste Kämpfer?")
                 .font(.caption)
                 .foregroundColor(.white.opacity(0.6))
         }

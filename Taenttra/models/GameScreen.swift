@@ -36,6 +36,14 @@ enum PendingMode {
 
 final class GameState: ObservableObject {
 
+    @Published var selectedCharacterKey: String = "kenji"
+
+    var selectedCharacterName: String {
+        loadCharacterDisplays()
+            .first(where: { $0.key == selectedCharacterKey })?
+            .name ?? "UNKNOWN"
+    }
+
     private let unlockedModesKey = "unlocked_modes"
 
     private let lastStorySectionKey = "last_story_section"

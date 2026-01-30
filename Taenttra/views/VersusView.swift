@@ -18,12 +18,32 @@ struct VersusView: View {
 
     var body: some View {
         ZStack {
+
+            // 🏆 VICTORY – ALLES ANDERE IST TOT
+            if viewModel.fightState == .victory, let rewards = viewModel.rewards
+            {
+                VictoryView(rewards: rewards) {
+                    onVictoryContinue(rewards)
+                }
+                .transition(.opacity)
+                .zIndex(100)
+            } else {
+                // 🥊 FIGHT (nur solange NICHT Victory)
+                fightView
+                    .transition(.opacity)
+            }
+        }
+        .animation(.easeInOut(duration: 0.35), value: viewModel.fightState)
+    }
+
+    private var fightView: some View {
+        ZStack {
             // 🌄 BACKGROUND
             Image(viewModel.currentStage.background)
                 .resizable()
                 .ignoresSafeArea()
 
-            // 🆕 VERSUS INTRO OVERLAY
+            // 🆕 INTRO
             if viewModel.phase == .intro {
                 VersusIntroView(
                     stage: viewModel.currentStage,
@@ -34,12 +54,11 @@ struct VersusView: View {
                 .zIndex(20)
             }
 
-            // 🥊 FIGHTERS (unten, unabhängig vom HUD)
-            VStack {  // Use VStack to allow placing fighters and overlays in ZStack orderly
+            // 🥊 FIGHTERS
+            VStack {
                 Spacer()
                 HStack(alignment: .bottom) {
 
-                    // 🔵 LEFT SLOT → schaut nach rechts
                     FighterContainerView(
                         alignment: .leading,
                         xInset: 30,
@@ -49,12 +68,11 @@ struct VersusView: View {
                             character: leftCharacter,
                             state: viewModel.animationState,
                             rotation: 0,
-                            mirrored: false,  // ✅ EINMAL
+                            mirrored: false,
                             attackOffset: viewModel.attackOffset
                         )
                     )
 
-                    // 🔴 RIGHT SLOT → schaut nach links
                     FighterContainerView(
                         alignment: .trailing,
                         xInset: -30,
@@ -64,38 +82,26 @@ struct VersusView: View {
                             character: rightCharacter,
                             state: viewModel.animationState,
                             rotation: 0,
-                            mirrored: true,  // ✅ EINMAL
+                            mirrored: true,
                             attackOffset: viewModel.attackOffset
                         )
                     )
                 }
                 .padding()
             }
-
-            // 🏆 VICTORY OVERLAY
-            if viewModel.fightState == .victory,
-                let rewards = viewModel.rewards
-            {
-                VictoryView(rewards: rewards) {
-                    onVictoryContinue(rewards)
-                }
-                .zIndex(10)
+        }
+        // 🧠 HUD NUR IM FIGHT
+        .overlay {
+            if viewModel.phase == .fighting {
+                GameHUDView(viewModel: viewModel)
             }
         }
-        // 🧠 HUD LEBT HIER – NICHT IM ZSTACK
-        .overlay(
-            Group {
-                if viewModel.phase == .fighting {
-                    GameHUDView(viewModel: viewModel)
-                }
-            }
-        )
         .animation(.easeOut(duration: 0.3), value: viewModel.fightState)
         .animation(
             viewModel.hitStopActive ? .none : .easeOut(duration: 0.1),
             value: viewModel.hitStopActive
         )
-        .contentShape(Rectangle())  // sauberes Tap-Handling
+        .contentShape(Rectangle())
         .onTapGesture {
             if viewModel.fightState == .fighting {
                 viewModel.performRandomAttack()
@@ -108,18 +114,14 @@ struct VersusView: View {
     }
 
     private var enemySkinId: String? {
-
         switch gameState.pendingMode {
-
         case .story(_, let section):
             if section.boss == true {
                 return "boss"
             }
             return contrastingSkin(from: playerSkinId)
-
         case .eventMode:
             return "event"
-
         default:
             return contrastingSkin(from: playerSkinId)
         }

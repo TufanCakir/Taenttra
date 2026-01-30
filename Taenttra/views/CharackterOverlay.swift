@@ -11,15 +11,9 @@ struct CharacterGridView: View {
 
     @EnvironmentObject var gameState: GameState
     private let characters: [CharacterDisplay] = loadCharacterDisplays()
+
     @State private var selectedIndex: Int = 0
     @State private var selectedSide: PlayerSide = .left
-
-    private let columns = Array(
-        repeating: GridItem(.fixed(72), spacing: 12),
-        count: 3
-    )
-
-    // MARK: - Derived State
 
     private var selectedCharacter: CharacterDisplay? {
         guard characters.indices.contains(selectedIndex) else { return nil }
@@ -38,25 +32,7 @@ struct CharacterGridView: View {
 
                 versusPreview
 
-                Divider()
-                    .background(Color.cyan.opacity(0.3))
-
-                LazyVGrid(columns: columns, spacing: 14) {
-                    ForEach(Array(characters.enumerated()), id: \.element.id) {
-                        index,
-                        character in
-                        CharacterSlot(
-                            character: character,
-                            isSelected: index == selectedIndex,
-                            locked: isLocked(character)
-                        )
-                        .onTapGesture {
-                            if !isLocked(character) {
-                                selectedIndex = index
-                            }
-                        }
-                    }
-                }
+                characterRoster
 
                 Spacer()
 
@@ -67,85 +43,88 @@ struct CharacterGridView: View {
             .padding(.horizontal, 16)
             .padding(.top, 12)
         }
-        .onChange(of: characters.count) { oldCount, newCount in
-            selectedIndex = min(selectedIndex, max(newCount - 1, 0))
-        }
     }
 
-    private func isLocked(_ character: CharacterDisplay) -> Bool {
-        guard let wallet = gameState.wallet else { return true }
-        return !wallet.unlockedCharacters.contains(character.key)
-    }
-
+    // MARK: - VS Preview
     private var versusPreview: some View {
         HStack(spacing: 24) {
 
             // PLAYER
             VStack(spacing: 8) {
                 if let selected = selectedCharacter {
-                    Image(
-                        selected.previewImage(using: gameState.wallet)
-                    )
-                    .resizable()
-                    .scaledToFit()
-                    .frame(height: 140)
+                    Image(selected.previewImage(using: gameState.wallet))
+                        .resizable()
+                        .scaledToFit()
+                        .frame(height: 160)
                 }
 
-                Text(selectedCharacter?.name ?? "PLAYER")
+                Text(selectedCharacter?.name.uppercased() ?? "PLAYER")
                     .font(.caption.bold())
                     .foregroundStyle(.cyan)
             }
 
-            // VS
             Text("VS")
                 .font(.system(size: 42, weight: .heavy))
                 .foregroundStyle(.red)
 
             // ENEMY
             VStack(spacing: 8) {
-
                 Image(enemyPreviewImage)
                     .resizable()
                     .scaledToFit()
-                    .frame(height: 140)
+                    .frame(height: 160)
 
                 Text(enemyDisplayName.uppercased())
                     .font(.caption.bold())
                     .foregroundStyle(.red)
-
-                if let waveCount = gameState.currentStage?.waves.count {
-                    Text("\(waveCount) WAVES")
-                        .font(.caption2)
-                        .foregroundStyle(.secondary)
-                }
             }
         }
     }
 
-    private var enemyPreviewImage: String {
-
-        // ✅ IMMER Enemy-Preview im Grid
-        if let key = enemyKey,
-            let enemy = characters.first(where: { $0.key == key })
-        {
-            return enemy.displayImage
+    // MARK: - Character Roster (wie Home)
+    private var characterRoster: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 10) {
+                ForEach(Array(characters.enumerated()), id: \.element.id) {
+                    index,
+                    character in
+                    rosterItem(character, index: index)
+                }
+            }
+            .padding(.horizontal, 16)
         }
-
-        return "kenji_base_preview"
     }
 
-    private var enemyDisplayName: String {
-        guard
-            let key = enemyKey,
-            let enemy = characters.first(where: { $0.key == key })
-        else {
-            return "RIVAL"
-        }
-        return enemy.name
+    private func rosterItem(
+        _ character: CharacterDisplay,
+        index: Int
+    ) -> some View {
+
+        let isSelected = index == selectedIndex
+        let locked = isLocked(character)
+
+        return Image(character.displayImage)
+            .resizable()
+            .scaledToFill()
+            .frame(
+                width: isSelected ? 68 : 56,
+                height: isSelected ? 68 : 56
+            )
+            .clipShape(RoundedRectangle(cornerRadius: 10))
+            .overlay(
+                RoundedRectangle(cornerRadius: 10)
+                    .stroke(isSelected ? Color.cyan : .clear, lineWidth: 3)
+            )
+            .opacity(locked ? 0.3 : 1)
+            .onTapGesture {
+                guard !locked else { return }
+                withAnimation(.spring()) {
+                    selectedIndex = index
+                }
+            }
     }
 
     // MARK: - Side Selector
-
     private var sideSelector: some View {
         HStack(spacing: 24) {
             SideButton(
@@ -160,11 +139,9 @@ struct CharacterGridView: View {
                 selectedSide: $selectedSide
             )
         }
-        .padding(.bottom, 8)
     }
 
     // MARK: - Start Button
-
     private var startButton: some View {
         Button(action: startFight) {
             Text("START FIGHT")
@@ -185,20 +162,56 @@ struct CharacterGridView: View {
         .opacity((selectedCharacter.map(isLocked) ?? true) ? 0.4 : 1)
     }
 
-    // MARK: - Start Logic
+    // MARK: - Helpers
+    private func isLocked(_ character: CharacterDisplay) -> Bool {
+        guard let wallet = gameState.wallet else { return true }
+        return !wallet.unlockedCharacters.contains(character.key)
+    }
+
+    private var enemyPreviewImage: String {
+        if let key = enemyKey,
+            let enemy = characters.first(where: { $0.key == key })
+        {
+            return enemy.displayImage
+        }
+        return "kenji_base_preview"
+    }
+
+    private var enemyDisplayName: String {
+        guard
+            let key = enemyKey,
+            let enemy = characters.first(where: { $0.key == key })
+        else {
+            return "RIVAL"
+        }
+        return enemy.name
+    }
+
+    private var enemyKey: String? {
+        switch gameState.pendingMode {
+        case .story(_, let section): return section.enemies.first
+        case .arcadeStage(let stage): return stage.enemy
+        case .trainingMode(let mode): return mode.enemy
+        case .eventMode(let mode): return mode.enemy
+        case .survivalMode(let mode): return mode.enemyPool.first
+        case .versus:
+            return gameState.currentStage?.waves.first?.enemies.first
+        case .none:
+            return nil
+        }
+    }
+
     private func startFight() {
         guard let selected = selectedCharacter, !isLocked(selected) else {
             return
         }
-        // 🔹 Player-Seite merken
+
         gameState.playerSide = selectedSide
 
-        // 🔹 Skin bestimmen
         let spriteSkin = SkinLibrary.spriteVariant(
             from: gameState.wallet?.equippedSkin
         )
 
-        // 🔹 Player-Character
         let playerCharacter = Character(
             key: selected.key,
             combatSpritePrefix: selected.combatSpritePrefix,
@@ -206,13 +219,11 @@ struct CharacterGridView: View {
             skinId: spriteSkin
         )
 
-        // 🔹 Enemy-Character
         let enemyCharacter = Character.enemy(
             key: enemyKey ?? "kenji",
-            skinId: enemySkinId
+            skinId: nil
         )
 
-        // 🔥 LINKS / RECHTS ZUWEISUNG (DAS WAR DER FEHLENDE TEIL)
         if selectedSide == .left {
             gameState.leftCharacter = playerCharacter
             gameState.rightCharacter = enemyCharacter
@@ -221,24 +232,13 @@ struct CharacterGridView: View {
             gameState.rightCharacter = playerCharacter
         }
 
-        // 🔹 Modus starten
         switch gameState.pendingMode {
-
-        case .eventMode(let event):
-            gameState.startEvent(mode: event)
-
-        case .trainingMode(let mode):
-            gameState.startTraining(mode: mode)
-
-        case .survivalMode(let mode):
-            gameState.startSurvival(mode: mode)
-
-        case .arcadeStage(let stage):
-            gameState.startArcade(stage: stage)
-
+        case .eventMode(let event): gameState.startEvent(mode: event)
+        case .trainingMode(let mode): gameState.startTraining(mode: mode)
+        case .survivalMode(let mode): gameState.startSurvival(mode: mode)
+        case .arcadeStage(let stage): gameState.startArcade(stage: stage)
         case .story(let chapter, let section):
             gameState.startVersus(from: chapter, section: section)
-
         case .versus:
             let data = VersusLoader.load()
             gameState.versusViewModel = VersusViewModel(
@@ -246,28 +246,8 @@ struct CharacterGridView: View {
                 gameState: gameState
             )
             gameState.screen = .versus
-
         case .none:
             break
-        }
-    }
-
-    private var enemyKey: String? {
-        switch gameState.pendingMode {
-        case .story(_, let section):
-            return section.enemies.first
-        case .arcadeStage(let stage):
-            return stage.enemy
-        case .trainingMode(let mode):
-            return mode.enemy
-        case .eventMode(let mode):
-            return mode.enemy
-        case .survivalMode(let mode):
-            return mode.enemyPool.first
-        case .versus:
-            return gameState.currentStage?.waves.first?.enemies.first
-        case .none:
-            return nil
         }
     }
 
