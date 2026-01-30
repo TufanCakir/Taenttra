@@ -189,8 +189,7 @@ struct HomeView: View {
             guard unlocked else { return }
 
             if item == .versus {
-                gameState.pendingMode = .versus
-                gameState.screen = .characterSelect
+                gameState.screen = .versus
             } else {
                 gameState.screen = item.screen
             }

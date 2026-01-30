@@ -13,52 +13,51 @@ struct GameHUDView: View {
     @EnvironmentObject var gameState: GameState
 
     var body: some View {
-        VStack(spacing: 0) {
+        ZStack(alignment: .top) {
 
-            ZStack {
+            // Game Content läuft dahinter
+            Color.clear
 
-                // 🌑 HUD BACKPLATE
-                LinearGradient(
-                    colors: [
-                        Color.black.opacity(0.9),
-                        Color.black.opacity(0.65),
-                        Color.clear,
-                    ],
-                    startPoint: .top,
-                    endPoint: .bottom
+            hudBar
+        }
+    }
+
+    private var hudBar: some View {
+        ZStack {
+
+            // 🌑 BACKPLATE
+            LinearGradient(
+                colors: [
+                    Color.black.opacity(0.9),
+                    Color.black.opacity(0.65),
+                    Color.clear,
+                ],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+            .frame(height: 96)
+
+            HStack {
+
+                SlantedPlayerHUD(
+                    name: displayName(for: gameState.leftCharacter),
+                    health: viewModel.leftHealth,
+                    direction: .left
                 )
-                .frame(height: 96)
-                .ignoresSafeArea(edges: .top)
 
-                // 🧱 CONTENT
-                HStack(spacing: 12) {
+                Spacer()
 
-                    // 🟦 PLAYER
-                    SlantedPlayerHUD(
-                        name: displayName(for: gameState.leftCharacter),
-                        health: viewModel.leftHealth,
-                        direction: .left
-                    )
+                timerView
 
-                    Spacer()
+                Spacer()
 
-                    // ⏱ TIMER
-                    timerView
-
-                    Spacer()
-
-                    // 🟥 ENEMY
-                    SlantedPlayerHUD(
-                        name: displayName(for: gameState.rightCharacter),
-                        health: viewModel.rightHealth,
-                        direction: .right
-                    )
-                }
-                .padding(.horizontal, 16)
-                .padding(.top, 12)
+                SlantedPlayerHUD(
+                    name: displayName(for: gameState.rightCharacter),
+                    health: viewModel.rightHealth,
+                    direction: .right
+                )
             }
 
-            Spacer()
         }
     }
 

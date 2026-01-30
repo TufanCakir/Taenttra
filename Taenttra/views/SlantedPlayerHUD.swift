@@ -16,10 +16,9 @@ struct SlantedPlayerHUD: View {
     var body: some View {
         VStack(
             alignment: direction == .left ? .leading : .trailing,
-            spacing: 6
+            spacing: 8
         ) {
 
-            // 🏷 NAME PLATE
             Text(name.uppercased())
                 .font(.system(size: 13, weight: .heavy))
                 .tracking(1)
@@ -39,23 +38,12 @@ struct SlantedPlayerHUD: View {
                                 )
                         )
                 )
-                .shadow(
-                    color: (direction == .left ? Color.cyan : Color.red)
-                        .opacity(0.5),
-                    radius: 6,
-                    y: 2
-                )
 
-            // ❤️ HEALTH BAR
             SlantedHealthBar(
                 value: health,
                 direction: direction
             )
         }
-        .frame(
-            maxWidth: 180,
-            alignment: direction == .left ? .leading : .trailing
-        )
     }
 }
 

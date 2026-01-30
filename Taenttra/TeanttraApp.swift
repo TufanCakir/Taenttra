@@ -7,12 +7,15 @@ import SwiftData
 import SwiftUI
 
 @main
-struct TeanttraApp: App {
+struct TaenttraApp: App {
 
     @StateObject private var gameState = GameState()
     @StateObject private var network = NetworkMonitor.shared
 
     @State private var showSplash = true
+
+    private let splashDuration: Double = 1.6
+    private let transitionDuration: Double = 0.6
 
     init() {
         GameCenterManager.shared.authenticate()
@@ -28,36 +31,43 @@ struct TeanttraApp: App {
                 Color.black.ignoresSafeArea()
 
                 if !network.isConnected {
+
                     ConnectionRequiredView(
                         message: "Taenttra requires an internet connection."
                     )
+                    .transition(.opacity)
+
                 } else if showSplash {
+
                     SplashView()
-                        .transition(
-                            .opacity
-                                .combined(with: .scale(scale: 1.03))
-                        )
-                        .blur(radius: showSplash ? 12 : 0)
-                        .onAppear {
-                            DispatchQueue.main.asyncAfter(
-                                deadline: .now() + 1.6
-                            ) {
-                                withAnimation(.easeInOut(duration: 0.6)) {
-                                    showSplash = false
-                                }
-                            }
-                        }
+                        .transition(.opacity)
+                        .zIndex(10)
+
                 } else {
+
                     GameView()
                         .environmentObject(gameState)
-                        .transition(
-                            .opacity
-                                .combined(with: .scale(scale: 1.05))
-                        )
+                        .transition(.opacity)
+                        .zIndex(0)
                 }
             }
-            .animation(.easeOut(duration: 0.45), value: showSplash)
+            .onAppear(perform: startSplashTimer)
+            .animation(
+                .easeInOut(duration: transitionDuration),
+                value: showSplash
+            )
         }
         .modelContainer(for: PlayerWallet.self)
+    }
+
+    // MARK: - Splash Control
+    private func startSplashTimer() {
+        guard showSplash else { return }
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + splashDuration) {
+            withAnimation {
+                showSplash = false
+            }
+        }
     }
 }

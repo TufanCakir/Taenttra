@@ -34,7 +34,7 @@ final class VersusLoader {
 
         guard
             let url = Bundle.main.url(
-                forResource: "versus_waves",
+                forResource: "versus_stages",
                 withExtension: "json"
             )
         else {

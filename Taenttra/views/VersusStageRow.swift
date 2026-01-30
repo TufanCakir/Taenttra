@@ -1,15 +1,15 @@
 //
-//  ArcadeStageRow.swift
+//  VersusStageRow.swift
 //  Taenttra
 //
-//  Created by Tufan Cakir on 29.01.26.
+//  Created by Tufan Cakir on 31.01.26.
 //
 
 import SwiftUI
 
-struct ArcadeStageRow: View {
+struct VersusStageRow: View {
 
-    let stage: ArcadeStage
+    let stage: VersusStage
 
     var body: some View {
         ZStack(alignment: .bottomLeading) {
@@ -31,11 +31,10 @@ struct ArcadeStageRow: View {
                 )
                 .clipped()
 
-            // 📝 CONTENT
             VStack(alignment: .leading, spacing: 10) {
 
                 // 🏷 TITLE
-                Text(stage.title.uppercased())
+                Text(stage.name.uppercased())
                     .font(.system(size: 16, weight: .heavy))
                     .tracking(1.4)
                     .foregroundColor(.white)
@@ -52,14 +51,16 @@ struct ArcadeStageRow: View {
                                     )
                             )
                     )
-                    .shadow(color: .orange.opacity(0.5), radius: 8)
 
                 // 📊 STATS
                 HStack(spacing: 10) {
-
-                    statChip("ENEMY", stage.enemy.uppercased(), color: .red)
-                    statChip("WAVES", "\(stage.waves)", color: .orange)
-                    statChip("TIME", "\(stage.timeLimit)s", color: .cyan)
+                    statChip("WAVES", "\(stage.waves.count)", color: .orange)
+                    statChip("ENEMIES", "\(totalEnemies)", color: .red)
+                    statChip(
+                        "TIME",
+                        "\(stage.waves.first?.timeLimit ?? 0)s",
+                        color: .cyan
+                    )
                 }
             }
             .padding(16)
@@ -69,14 +70,12 @@ struct ArcadeStageRow: View {
             RoundedRectangle(cornerRadius: 16)
                 .stroke(Color.white.opacity(0.12), lineWidth: 1)
         )
-        .shadow(
-            color: Color.black.opacity(0.65),
-            radius: 14,
-            y: 8
-        )
+        .shadow(color: .black.opacity(0.65), radius: 14, y: 8)
     }
 
-    // MARK: - Stat Chip
+    private var totalEnemies: Int {
+        stage.waves.reduce(0) { $0 + $1.enemies.count }
+    }
 
     private func statChip(
         _ label: String,
@@ -84,11 +83,8 @@ struct ArcadeStageRow: View {
         color: Color
     ) -> some View {
         HStack(spacing: 4) {
-            Text(label)
-                .opacity(0.7)
-
-            Text(value)
-                .fontWeight(.bold)
+            Text(label).opacity(0.7)
+            Text(value).fontWeight(.bold)
         }
         .font(.caption2)
         .foregroundColor(.white)

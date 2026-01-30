@@ -81,8 +81,7 @@ enum HomeMenuItem: CaseIterable {
         case .options: return .options
 
         case .versus:
-            // Versus geht IMMER über Character Select
-            return .characterSelect
+            return .versus
         }
     }
 

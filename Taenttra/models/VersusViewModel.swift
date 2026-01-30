@@ -43,6 +43,7 @@ final class VersusViewModel: ObservableObject {
     // MARK: - Health
     @Published var leftHealth: CGFloat = 1.0
     @Published var rightHealth: CGFloat = 1.0
+    @Published var enemyIndexInWave: Int = 0
 
     // MARK: - Private
     private var isAttacking = false
@@ -73,8 +74,43 @@ final class VersusViewModel: ObservableObject {
     }
 
     func startFight() {
+        currentWaveIndex = 0
+        enemyIndexInWave = 0
+        loadCurrentEnemy()
         phase = .fighting
         startTimer()
+    }
+
+    func loadCurrentEnemy() {
+        guard let wave = currentWave else { return }
+        guard enemyIndexInWave < wave.enemies.count else { return }
+
+        let enemyKey = wave.enemies[enemyIndexInWave]
+
+        let enemyCharacter = Character.enemy(
+            key: enemyKey,
+            skinId: nil
+        )
+
+        if gameState.playerSide == .left {
+            gameState.rightCharacter = enemyCharacter
+        } else {
+            gameState.leftCharacter = enemyCharacter
+        }
+
+        print(
+            "👊 Wave:",
+            currentWaveIndex,
+            "EnemyIndex:",
+            enemyIndexInWave,
+            "Enemy:",
+            enemyKey
+        )
+    }
+
+    func advanceWave() {
+        guard currentWaveIndex + 1 < currentStage.waves.count else { return }
+        currentWaveIndex += 1
     }
 
     private func resetForNextWave() {
@@ -228,9 +264,22 @@ final class VersusViewModel: ObservableObject {
 
     private func advanceAfterKO() {
 
+        // 🔁 nächster Enemy in derselben Wave
+        if let wave = currentWave,
+            enemyIndexInWave + 1 < wave.enemies.count
+        {
+
+            enemyIndexInWave += 1
+            loadCurrentEnemy()
+            resetForNextWave()
+            return
+        }
+
         // 🟢 nächste Wave
         if currentWaveIndex + 1 < currentStage.waves.count {
-            nextWave()
+            currentWaveIndex += 1
+            enemyIndexInWave = 0
+            loadCurrentEnemy()
             resetForNextWave()
             return
         }
@@ -249,6 +298,9 @@ final class VersusViewModel: ObservableObject {
         timerCancellable?.cancel()
         isTimerRunning = false
 
+        phase = .victory  // 🔒 Input & UI blocken
+        fightState = .victory
+
         rewards = calculateRewards()
 
         let score = calculateLeaderboardScore()
@@ -256,10 +308,6 @@ final class VersusViewModel: ObservableObject {
             Task {
                 await GameCenterManager.shared.submitScore(score)
             }
-        }
-
-        withAnimation(.easeOut(duration: 0.3)) {
-            fightState = .victory
         }
     }
 
@@ -309,29 +357,5 @@ final class VersusViewModel: ObservableObject {
                 rightHealth = value
             }
         }
-    }
-
-    // MARK: - Wave
-    func nextWave() {
-        guard currentWaveIndex + 1 < currentStage.waves.count else { return }
-
-        currentWaveIndex += 1
-
-        guard let wave = currentWave else { return }
-
-        let enemyKey = wave.enemies.first ?? "kenji"
-
-        let enemyCharacter = Character.enemy(
-            key: enemyKey,
-            skinId: nil
-        )
-
-        // 🔥 Seite beachten
-        if gameState.playerSide == .left {
-            gameState.rightCharacter = enemyCharacter
-        } else {
-            gameState.leftCharacter = enemyCharacter
-        }
-        print("👊 Wave:", currentWaveIndex, "Enemy:", enemyKey)
     }
 }

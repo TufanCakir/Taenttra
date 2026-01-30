@@ -13,7 +13,7 @@ struct SlantedHealthBar: View {
     let direction: SlantDirection
 
     private let width: CGFloat = 150
-    private let height: CGFloat = 20
+    private let height: CGFloat = 26
     private let cap: CGFloat = 18
 
     @State private var damageFlash = false
@@ -31,17 +31,24 @@ struct SlantedHealthBar: View {
             // 🟥🟨🟩 HEALTH FILL
             GeometryReader { geo in
                 healthGradient
-                    .frame(width: geo.size.width * v)
+                    .frame(
+                        width: geo.size.width * v,
+                        alignment: direction == .left ? .leading : .trailing
+                    )
+                    .frame(
+                        maxWidth: .infinity,
+                        alignment: direction == .left ? .leading : .trailing
+                    )
                     .mask(capShape)
                     .animation(.easeOut(duration: 0.25), value: v)
             }
-            .padding(2)
+            .padding(.horizontal, 3)
+            .padding(.vertical, 3)
 
             // ⚡ DAMAGE FLASH
             if damageFlash {
                 capShape
                     .fill(Color.white.opacity(0.6))
-                    .transition(.opacity)
             }
 
             // ✨ GLOSS
@@ -66,12 +73,6 @@ struct SlantedHealthBar: View {
                 )
                 .blur(radius: v < 0.25 ? 6 : 3)
                 .opacity(lowPulse ? 0.9 : 0.5)
-                .animation(
-                    v < 0.25
-                        ? .easeInOut(duration: 0.6)
-                        : .default,
-                    value: lowPulse
-                )
 
             // 🧱 INNER OUTLINE
             capShape
@@ -147,28 +148,12 @@ struct Cap: Shape {
 }
 
 #Preview {
-    VStack(spacing: 24) {
-
-        SlantedHealthBar(
-            value: 1.0,
-            direction: .left
-        )
-
-        SlantedHealthBar(
-            value: 1.0,
-            direction: .right
-        )
-
-        SlantedHealthBar(
-            value: 1.0,
-            direction: .left
-        )
-
-        SlantedHealthBar(
-            value: 1.0,
-            direction: .right
-        )
+    VStack(spacing: 28) {
+        SlantedHealthBar(value: 1.0, direction: .left)
+        SlantedHealthBar(value: 0.72, direction: .right)
+        SlantedHealthBar(value: 0.34, direction: .left)
+        SlantedHealthBar(value: 0.15, direction: .right)
     }
-    .padding()
+    .padding(32)  // 👈 HUD-Rand
     .background(Color.black)
 }

@@ -17,15 +17,15 @@
                 {
                     "wave": 2,
                     "enemies": [
-                        "kenji",
-                        "ren_dao"
+                        "ren_dao",
+                        "reika"
                     ],
                     "timeLimit": 70
                 },
                 {
                     "wave": 3,
                     "enemies": [
-                        "kenji",
+                        "ryuji",
                         "reika"
                     ],
                     "timeLimit": 70

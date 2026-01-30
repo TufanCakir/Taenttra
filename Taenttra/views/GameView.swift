@@ -107,9 +107,10 @@ struct GameView: View {
     }
 
     // MARK: - Versus Screen
-
     @ViewBuilder
     private var versusScreen: some View {
+
+        // 🥊 FIGHT
         if let left = gameState.leftCharacter,
             let right = gameState.rightCharacter,
             let vm = gameState.versusViewModel
@@ -121,6 +122,13 @@ struct GameView: View {
                 leftCharacter: left,
                 rightCharacter: right
             )
+
+            // 📜 SELECT
+        } else {
+            VersusSelectView(
+                stages: VersusLoader.load().stages
+            )
+            .environmentObject(gameState)
         }
     }
 
