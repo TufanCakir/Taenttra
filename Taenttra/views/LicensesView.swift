@@ -10,79 +10,90 @@ import SwiftUI
 struct LicensesView: View {
 
     var body: some View {
-        ScrollView {
-            VStack(spacing: 20) {
+        ZStack {
+            // 🖤 GAME BACKGROUND
+            Color.black.ignoresSafeArea()
 
-                // MARK: - App Info
-                sectionCard {
-                    VStack(alignment: .leading, spacing: 6) {
-                        Text("TAENTTRA")
-                            .font(.title2.weight(.bold))
+            ScrollView {
+                VStack(spacing: 20) {
 
-                        Text("© 2026 Tufan Cakir")
+                    // MARK: - App Info
+                    sectionCard {
+                        VStack(alignment: .leading, spacing: 6) {
+
+                            Text("TAENTTRA")
+                                .font(.title2.weight(.bold))
+                                .foregroundColor(.white)
+
+                            Text("© 2026 Tufan Cakir")
+                                .font(.caption)
+                                .foregroundColor(.white.opacity(0.7))
+
+                            Text("Alle Rechte vorbehalten.")
+                                .font(.caption2)
+                                .foregroundColor(.white.opacity(0.55))
+                        }
+                    }
+
+                    // MARK: - Open Source Info
+                    sectionCard {
+                        VStack(alignment: .leading, spacing: 10) {
+
+                            Text("OPEN-SOURCE-SOFTWARE")
+                                .font(.headline.weight(.semibold))
+                                .foregroundColor(.cyan)
+
+                            Text(
+                                """
+                                Taenttra verwendet Open-Source-Software.
+                                Die folgenden Lizenzbedingungen gelten für enthaltene Komponenten.
+                                """
+                            )
                             .font(.caption)
-                            .foregroundStyle(.secondary)
-
-                        Text("Alle Rechte vorbehalten.")
-                            .font(.caption2)
-                            .foregroundStyle(.secondary)
+                            .foregroundColor(.white.opacity(0.75))
+                        }
                     }
-                }
 
-                // MARK: - Open Source Info
-                sectionCard {
-                    VStack(alignment: .leading, spacing: 10) {
+                    // MARK: - Libraries
+                    sectionCard {
+                        VStack(alignment: .leading, spacing: 8) {
 
-                        Text("OPEN-SOURCE-SOFTWARE")
-                            .font(.headline.weight(.semibold))
+                            Text("DRITTANBIETER-BIBLIOTHEKEN")
+                                .font(.headline.weight(.semibold))
+                                .foregroundColor(.white)
 
-                        Text(
-                            """
-                            Taenttra verwendet Open-Source-Software.
-                            Die folgenden Lizenzbedingungen gelten für enthaltene Komponenten.
-                            """
-                        )
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                            Text(
+                                "Derzeit werden keine externen Drittanbieter-Bibliotheken verwendet."
+                            )
+                            .font(.caption)
+                            .foregroundColor(.white.opacity(0.75))
+                        }
                     }
+
+                    Spacer(minLength: 24)
                 }
-
-                // MARK: - Libraries
-                sectionCard {
-                    VStack(alignment: .leading, spacing: 8) {
-
-                        Text("DRITTANBIETER-BIBLIOTHEKEN")
-                            .font(.headline.weight(.semibold))
-
-                        Text(
-                            "Derzeit werden keine externen Drittanbieter-Bibliotheken verwendet."
-                        )
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                    }
-                }
-
-                Spacer(minLength: 20)
+                .padding(.horizontal, 16)
+                .padding(.top, 16)
             }
-            .padding(.horizontal, 16)
-            .padding(.top, 16)
         }
-        .background(Color.black.opacity(0.03))
-        .navigationTitle("Lizenzen")
+        .navigationTitle("LIZENZEN")
         .navigationBarTitleDisplayMode(.inline)
     }
 
-    // MARK: - Card Wrapper
+    // MARK: - Card Wrapper (Game Panels)
     private func sectionCard<Content: View>(
         @ViewBuilder content: () -> Content
     ) -> some View {
         content()
-            .padding(16)
+            .padding(18)
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(
-                RoundedRectangle(cornerRadius: 16)
-                    .fill(.ultraThinMaterial)
+                RoundedRectangle(cornerRadius: 18)
+                    .fill(Color.white.opacity(0.06))
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 18)
+                    .stroke(Color.white.opacity(0.08), lineWidth: 1)
             )
     }
 }
-

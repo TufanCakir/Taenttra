@@ -68,14 +68,25 @@ struct StorySectionRow: View {
                 if sectionIsLocked {
                     Color.black.opacity(0.65)
 
-                    Image(systemName: "lock.fill")
-                        .font(.system(size: 32))
+                    Text("LOCKED")
+                        .font(.caption.weight(.bold))
                         .foregroundColor(.white)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 6)
+                        .background(
+                            Capsule()
+                                .fill(Color.black.opacity(0.7))
+                                .overlay(
+                                    Capsule()
+                                        .stroke(
+                                            Color.red.opacity(0.6),
+                                            lineWidth: 1
+                                        )
+                                )
+                        )
                 }
             }
-            .cornerRadius(12)
         }
-        .buttonStyle(.plain)
         .disabled(sectionIsLocked)  // 🔥 wichtig
         .listRowInsets(.init())
         .padding(.vertical, 6)

@@ -16,18 +16,46 @@ struct SlantedPlayerHUD: View {
     var body: some View {
         VStack(
             alignment: direction == .left ? .leading : .trailing,
-            spacing: 4
+            spacing: 6
         ) {
-            Text(name)
-                .font(.system(size: 14, weight: .semibold))
-                .foregroundStyle(.white)
-                .textCase(nil)  // ❗️stellt sicher, dass SwiftUI nix umwandelt
 
+            // 🏷 NAME PLATE
+            Text(name.uppercased())
+                .font(.system(size: 13, weight: .heavy))
+                .tracking(1)
+                .foregroundColor(.white)
+                .padding(.horizontal, 10)
+                .padding(.vertical, 4)
+                .background(
+                    Capsule()
+                        .fill(Color.black.opacity(0.6))
+                        .overlay(
+                            Capsule()
+                                .stroke(
+                                    direction == .left
+                                        ? Color.cyan.opacity(0.6)
+                                        : Color.red.opacity(0.6),
+                                    lineWidth: 1
+                                )
+                        )
+                )
+                .shadow(
+                    color: (direction == .left ? Color.cyan : Color.red)
+                        .opacity(0.5),
+                    radius: 6,
+                    y: 2
+                )
+
+            // ❤️ HEALTH BAR
             SlantedHealthBar(
                 value: health,
                 direction: direction
             )
         }
+        .frame(
+            maxWidth: 180,
+            alignment: direction == .left ? .leading : .trailing
+        )
     }
 }
 

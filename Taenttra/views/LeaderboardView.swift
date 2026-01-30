@@ -11,14 +11,21 @@ import SwiftUI
 struct LeaderboardView: View {
 
     @EnvironmentObject var gameState: GameState
-
     @ObservedObject private var gameCenter = GameCenterManager.shared
 
     var body: some View {
-        ZStack {
+        ZStack(alignment: .topLeading) {
 
             // 🌌 Background
             Color.black.ignoresSafeArea()
+
+            // ⬅️ BACK BUTTON (GAME STYLE)
+            GameBackButton {
+                gameState.goBack()
+            }
+            .padding(.leading, 16)
+            .padding(.top, 12)
+            .zIndex(10)
 
             VStack(spacing: 24) {
 
@@ -26,7 +33,7 @@ struct LeaderboardView: View {
 
                 Spacer()
 
-                fightersStage  // 🔥 NEU
+                fightersStage
 
                 Spacer()
 
@@ -37,21 +44,26 @@ struct LeaderboardView: View {
                 }
             }
             .padding()
+            .padding(.top, 48)  // 🔥 Platz für BackButton
         }
     }
 
     // MARK: - Header
-
     private var header: some View {
-        VStack(spacing: 8) {
-            Text("Global Ranking")
-                .font(.system(size: 22, weight: .bold))
-                .foregroundColor(.white)
-                .tracking(1.2)
+        VStack(spacing: 6) {
+            Text("GLOBAL CONFEDERATION")
+                .font(.system(size: 14, weight: .heavy))
+                .tracking(2)
+                .foregroundStyle(.cyan.opacity(0.85))
+
+            Text("WORLD RANKING")
+                .font(.system(size: 28, weight: .heavy))
+                .tracking(2)
+                .foregroundStyle(.white)
 
             Text("Wer ist der stärkste Kämpfer?")
                 .font(.caption)
-                .foregroundColor(.white.opacity(0.6))
+                .foregroundStyle(.white.opacity(0.6))
         }
     }
 
@@ -75,21 +87,60 @@ struct LeaderboardView: View {
 
     // MARK: - Fighters Stage
     private var fightersStage: some View {
-        HStack(alignment: .bottom, spacing: 24) {
+        ZStack {
 
-            Image(playerCharacter.imageNameSafe(for: .idle))
+            // 🔥 Floor Glow
+            LinearGradient(
+                colors: [
+                    .clear,
+                    Color.white.opacity(0.08),
+                    .clear,
+                ],
+                startPoint: .leading,
+                endPoint: .trailing
+            )
+            .frame(height: 120)
+            .offset(y: 40)
+
+            HStack(alignment: .bottom, spacing: 32) {
+
+                fighterSlot(
+                    image: playerCharacter.imageNameSafe(for: .idle),
+                    name: "YOU",
+                    color: .cyan
+                )
+
+                Text("VS")
+                    .font(.system(size: 42, weight: .heavy))
+                    .foregroundStyle(.red)
+                    .shadow(color: .red.opacity(0.8), radius: 12)
+
+                fighterSlot(
+                    image: rivalCharacter.imageNameSafe(for: .idle),
+                    name: "RIVAL",
+                    color: .red
+                )
+            }
+        }
+    }
+
+    private func fighterSlot(
+        image: String,
+        name: String,
+        color: Color
+    ) -> some View {
+        VStack(spacing: 6) {
+
+            Image(image)
                 .resizable()
                 .scaledToFit()
-                .frame(width: 100)
-                .opacity(0.85)
-                .shadow(color: .black.opacity(0.6), radius: 20)
+                .frame(width: 110)
+                .shadow(color: color.opacity(0.6), radius: 20)
 
-            Image(rivalCharacter.imageNameSafe(for: .idle))
-                .resizable()
-                .scaledToFit()
-                .frame(width: 100)
-                .opacity(0.85)
-                .shadow(color: .black.opacity(0.6), radius: 20)
+            Text(name)
+                .font(.caption.bold())
+                .tracking(1)
+                .foregroundStyle(color)
         }
     }
 
@@ -99,38 +150,41 @@ struct LeaderboardView: View {
         Button {
             GameCenterManager.shared.showLeaderboard()
         } label: {
-            HStack(spacing: 12) {
-                Image(systemName: "trophy.fill")
-                    .font(.headline)
-
-                Text("OPEN LEADERBOARD")
-                    .font(.system(size: 15, weight: .bold))
-                    .tracking(1)
-            }
-            .foregroundColor(.black)
-            .padding(.horizontal, 28)
-            .padding(.vertical, 14)
-            .background(Color.mint)
-            .cornerRadius(10)
+            Text("ENTER WORLD RANKING")
+                .font(.system(size: 16, weight: .heavy))
+                .tracking(1)
+                .foregroundColor(.black)
+                .padding(.horizontal, 40)
+                .padding(.vertical, 16)
+                .background(
+                    LinearGradient(
+                        colors: [.cyan, .blue],
+                        startPoint: .leading,
+                        endPoint: .trailing
+                    )
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(Color.white.opacity(0.4), lineWidth: 1)
+                )
+                .cornerRadius(12)
+                .shadow(color: .cyan.opacity(0.7), radius: 18)
         }
         .buttonStyle(.plain)
     }
 
     // MARK: - Not Authenticated
-
     private var notAuthenticatedState: some View {
-        VStack(spacing: 14) {
-            Image(systemName: "person.crop.circle.badge.exclamationmark")
-                .font(.system(size: 36))
-                .foregroundColor(.white.opacity(0.6))
+        VStack(spacing: 12) {
 
-            Text("Game Center not available")
-                .font(.headline)
-                .foregroundColor(.white)
+            Text("GAME CENTER OFFLINE")
+                .font(.headline.weight(.bold))
+                .foregroundStyle(.white)
 
-            Text("Sign in to Game Center to see rankings")
+            Text("Melde dich an, um dich mit anderen Kämpfern zu messen.")
                 .font(.caption)
-                .foregroundColor(.white.opacity(0.6))
+                .multilineTextAlignment(.center)
+                .foregroundStyle(.white.opacity(0.6))
         }
     }
 }

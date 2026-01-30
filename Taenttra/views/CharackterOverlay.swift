@@ -27,8 +27,16 @@ struct CharacterGridView: View {
             VStack(spacing: 20) {
 
                 Text("CHOOSE YOUR FIGHTER")
-                    .font(.system(size: 18, weight: .bold))
-                    .foregroundColor(.cyan)
+                    .font(.system(size: 20, weight: .heavy))
+                    .tracking(2)
+                    .foregroundStyle(
+                        LinearGradient(
+                            colors: [.cyan, .white],
+                            startPoint: .top,
+                            endPoint: .bottom
+                        )
+                    )
+                    .shadow(color: .cyan.opacity(0.6), radius: 12)
 
                 versusPreview
 
@@ -47,37 +55,61 @@ struct CharacterGridView: View {
 
     // MARK: - VS Preview
     private var versusPreview: some View {
-        HStack(spacing: 24) {
+        ZStack {
+            RadialGradient(
+                colors: [
+                    Color.cyan.opacity(0.25),
+                    Color.red.opacity(0.15),
+                    .clear,
+                ],
+                center: .center,
+                startRadius: 40,
+                endRadius: 260
+            )
 
-            // PLAYER
-            VStack(spacing: 8) {
-                if let selected = selectedCharacter {
-                    Image(selected.previewImage(using: gameState.wallet))
-                        .resizable()
-                        .scaledToFit()
-                        .frame(height: 160)
-                }
+            HStack(spacing: 32) {
 
-                Text(selectedCharacter?.name.uppercased() ?? "PLAYER")
-                    .font(.caption.bold())
-                    .foregroundStyle(.cyan)
+                fighterPreview(
+                    image: selectedCharacter?.previewImage(
+                        using: gameState.wallet
+                    ),
+                    name: selectedCharacter?.name ?? "PLAYER",
+                    color: .cyan
+                )
+
+                Text("VS")
+                    .font(.system(size: 56, weight: .heavy))
+                    .foregroundStyle(.red)
+                    .shadow(color: .red.opacity(0.8), radius: 16)
+
+                fighterPreview(
+                    image: enemyPreviewImage,
+                    name: enemyDisplayName,
+                    color: .red
+                )
             }
+            .padding(.vertical, 16)
+        }
+    }
 
-            Text("VS")
-                .font(.system(size: 42, weight: .heavy))
-                .foregroundStyle(.red)
-
-            // ENEMY
-            VStack(spacing: 8) {
-                Image(enemyPreviewImage)
+    private func fighterPreview(
+        image: String?,
+        name: String,
+        color: Color
+    ) -> some View {
+        VStack(spacing: 8) {
+            if let image {
+                Image(image)
                     .resizable()
                     .scaledToFit()
-                    .frame(height: 160)
-
-                Text(enemyDisplayName.uppercased())
-                    .font(.caption.bold())
-                    .foregroundStyle(.red)
+                    .frame(height: 170)
+                    .shadow(color: color.opacity(0.6), radius: 16)
             }
+
+            Text(name.uppercased())
+                .font(.caption.bold())
+                .foregroundStyle(color)
+                .tracking(1)
         }
     }
 
@@ -145,18 +177,24 @@ struct CharacterGridView: View {
     private var startButton: some View {
         Button(action: startFight) {
             Text("START FIGHT")
-                .font(.system(size: 18, weight: .heavy))
+                .font(.system(size: 20, weight: .heavy))
+                .tracking(1)
                 .foregroundColor(.black)
-                .padding(.horizontal, 48)
-                .padding(.vertical, 14)
+                .padding(.horizontal, 56)
+                .padding(.vertical, 16)
                 .background(
                     LinearGradient(
                         colors: [.cyan, .blue],
-                        startPoint: .leading,
-                        endPoint: .trailing
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
                     )
                 )
-                .cornerRadius(8)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 10)
+                        .stroke(Color.white.opacity(0.4), lineWidth: 1)
+                )
+                .cornerRadius(10)
+                .shadow(color: .cyan.opacity(0.8), radius: 20)
         }
         .disabled(selectedCharacter.map(isLocked) ?? true)
         .opacity((selectedCharacter.map(isLocked) ?? true) ? 0.4 : 1)
@@ -317,11 +355,22 @@ struct SideButton: View {
     var body: some View {
         Button(action: { selectedSide = side }) {
             Text(title)
-                .font(.system(size: 14, weight: .bold))
+                .font(.system(size: 14, weight: .heavy))
+                .tracking(1)
                 .foregroundColor(isSelected ? .black : .cyan)
                 .padding(.horizontal, 20)
                 .padding(.vertical, 10)
-                .background(isSelected ? Color.cyan : Color.clear)
+                .background(
+                    isSelected
+                        ? AnyShapeStyle(
+                            LinearGradient(
+                                colors: [.cyan, .blue],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                        : AnyShapeStyle(Color.clear)
+                )
                 .overlay(
                     RoundedRectangle(cornerRadius: 6)
                         .stroke(

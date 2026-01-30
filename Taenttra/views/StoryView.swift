@@ -13,23 +13,27 @@ struct StoryView: View {
     let onStartFight: (StoryChapter, StorySection) -> Void
 
     var body: some View {
-        NavigationStack {
+        ZStack {
+            Color.black.ignoresSafeArea()
+
             StoryListView(viewModel: viewModel)
-                .navigationTitle("Story")
-                .navigationDestination(item: $viewModel.activeDialog) {
-                    dialog in
-                    StoryDialogView(dialog: dialog) {
-                        viewModel.continueAfterDialog()
 
-                        guard
-                            let chapter = viewModel.selectedChapter,
-                            let section = viewModel.selectedSection
-                        else { return }
+            // 📖 DIALOG OVERLAY (GAME-STYLE)
+            if let dialog = viewModel.activeDialog {
+                StoryDialogView(dialog: dialog) {
+                    viewModel.continueAfterDialog()
 
-                        // ✅ IMMER nach Section-Dialog → Fight
-                        onStartFight(chapter, section)
-                    }
+                    guard
+                        let chapter = viewModel.selectedChapter,
+                        let section = viewModel.selectedSection
+                    else { return }
+
+                    // 🔥 HIER ist der entscheidende Übergang
+                    onStartFight(chapter, section)
                 }
+                .transition(.opacity)
+                .zIndex(10)
+            }
         }
     }
 }

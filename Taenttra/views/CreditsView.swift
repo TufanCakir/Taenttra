@@ -10,61 +10,69 @@ import SwiftUI
 struct CreditsView: View {
 
     var body: some View {
-        ScrollView {
-            VStack(spacing: 20) {
+        ZStack {
+            // 🖤 GAME BACKGROUND
+            Color.black.ignoresSafeArea()
 
-                // MARK: - Project
-                sectionCard {
-                    VStack(alignment: .leading, spacing: 8) {
+            ScrollView {
+                VStack(spacing: 20) {
 
-                        Text("TAENTTRA")
-                            .font(.title2.weight(.bold))
+                    // MARK: - Project
+                    sectionCard {
+                        VStack(alignment: .leading, spacing: 8) {
 
-                        Text(
-                            """
-                            Ein Fighting-Game-Projekt.
-                            Ein Experiment über Spielgefühl, Klarheit und Fokus.
-                            """
-                        )
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                            Text("TAENTTRA")
+                                .font(.title2.weight(.bold))
+                                .foregroundColor(.white)
+
+                            Text(
+                                """
+                                Ein Fighting-Game-Projekt.
+                                Ein Experiment über Spielgefühl, Klarheit und Fokus.
+                                """
+                            )
+                            .font(.caption)
+                            .foregroundColor(.white.opacity(0.75))
+                        }
                     }
-                }
 
-                // MARK: - Creator
-                sectionCard {
-                    VStack(alignment: .leading, spacing: 10) {
+                    // MARK: - Creator
+                    sectionCard {
+                        VStack(alignment: .leading, spacing: 10) {
 
-                        Text("DESIGN · CODE · ART")
-                            .font(.headline.weight(.semibold))
+                            Text("DESIGN · CODE · ART")
+                                .font(.headline.weight(.semibold))
+                                .foregroundColor(.cyan)
 
-                        Text("Tufan Cakir")
-                            .font(.body.weight(.medium))
+                            Text("Tufan Cakir")
+                                .font(.body.weight(.medium))
+                                .foregroundColor(.white)
+                        }
                     }
-                }
 
-                // MARK: - Thank You
-                sectionCard {
-                    VStack(alignment: .leading, spacing: 8) {
+                    // MARK: - Thank You
+                    sectionCard {
+                        VStack(alignment: .leading, spacing: 8) {
 
-                        Text("DANKE")
-                            .font(.headline.weight(.semibold))
+                            Text("DANKE")
+                                .font(.headline.weight(.semibold))
+                                .foregroundColor(.white)
 
-                        Text(
-                            "Danke fürs Spielen und fürs Unterstützen unabhängiger Spieleentwicklung."
-                        )
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                            Text(
+                                "Danke fürs Spielen und fürs Unterstützen unabhängiger Spieleentwicklung."
+                            )
+                            .font(.caption)
+                            .foregroundColor(.white.opacity(0.75))
+                        }
                     }
-                }
 
-                Spacer(minLength: 20)
+                    Spacer(minLength: 24)
+                }
+                .padding(.horizontal, 16)
+                .padding(.top, 16)
             }
-            .padding(.horizontal, 16)
-            .padding(.top, 16)
         }
-        .background(Color.black.opacity(0.03))
-        .navigationTitle("Credits")
+        .navigationTitle("CREDITS")
         .navigationBarTitleDisplayMode(.inline)
     }
 
@@ -73,11 +81,15 @@ struct CreditsView: View {
         @ViewBuilder content: () -> Content
     ) -> some View {
         content()
-            .padding(16)
+            .padding(18)
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(
-                RoundedRectangle(cornerRadius: 16)
-                    .fill(.ultraThinMaterial)
+                RoundedRectangle(cornerRadius: 18)
+                    .fill(Color.white.opacity(0.06))  // 🎮 Game-Card
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 18)
+                    .stroke(Color.white.opacity(0.08), lineWidth: 1)
             )
     }
 }

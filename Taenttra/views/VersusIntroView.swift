@@ -13,41 +13,84 @@ struct VersusIntroView: View {
     let enemyName: String
     let onStart: () -> Void
 
+    @State private var show = false
+
     var body: some View {
         ZStack {
-            Color.black.opacity(0.75)
+            // 🖤 Dark Backdrop
+            Color.black.opacity(0.9)
                 .ignoresSafeArea()
 
-            VStack(spacing: 24) {
+            VStack(spacing: 28) {
 
+                // MARK: - STAGE
+                Text(stage.name.uppercased())
+                    .font(.caption.weight(.bold))
+                    .foregroundColor(.white.opacity(0.6))
+                    .tracking(1.2)
+                    .opacity(show ? 1 : 0)
+                    .offset(y: show ? 0 : -10)
+
+                // MARK: - VERSUS
                 Text("VERSUS")
-                    .font(.largeTitle.bold())
-                    .foregroundStyle(.red)
+                    .font(.system(size: 56, weight: .heavy))
+                    .foregroundStyle(
+                        LinearGradient(
+                            colors: [.red, .orange],
+                            startPoint: .top,
+                            endPoint: .bottom
+                        )
+                    )
+                    .scaleEffect(show ? 1 : 0.7)
+                    .opacity(show ? 1 : 0)
 
-                VStack(spacing: 8) {
-                    Text(stage.name.uppercased())
-                        .font(.title2.weight(.semibold))
+                // MARK: - ENEMY
+                VStack(spacing: 6) {
 
                     Text("VS")
                         .font(.headline)
-                        .foregroundStyle(.secondary)
+                        .foregroundColor(.white.opacity(0.4))
 
-                    Text(enemyName)
-                        .font(.title3)
-                        .foregroundStyle(.cyan)
+                    Text(enemyName.uppercased())
+                        .font(.title2.weight(.bold))
+                        .foregroundColor(.cyan)
+                        .tracking(1.4)
                 }
+                .opacity(show ? 1 : 0)
+                .offset(y: show ? 0 : 10)
 
+                // MARK: - START BUTTON
                 Button {
                     onStart()
                 } label: {
                     Text("START FIGHT")
-                        .font(.headline.bold())
-                        .padding(.horizontal, 36)
-                        .padding(.vertical, 14)
-                        .background(Color.red)
-                        .foregroundStyle(.black)
-                        .cornerRadius(8)
+                        .font(.system(size: 16, weight: .heavy))
+                        .foregroundColor(.black)
+                        .padding(.horizontal, 44)
+                        .padding(.vertical, 16)
+                        .background(
+                            Capsule()
+                                .fill(
+                                    LinearGradient(
+                                        colors: [.cyan, .blue],
+                                        startPoint: .leading,
+                                        endPoint: .trailing
+                                    )
+                                )
+                        )
+                        .overlay(
+                            Capsule()
+                                .stroke(Color.white.opacity(0.25), lineWidth: 1)
+                        )
                 }
+                .scaleEffect(show ? 1 : 0.85)
+                .opacity(show ? 1 : 0)
+            }
+            .padding(.vertical, 40)
+        }
+        .onAppear {
+            withAnimation(.easeOut(duration: 0.45)) {
+                show = true
             }
         }
     }

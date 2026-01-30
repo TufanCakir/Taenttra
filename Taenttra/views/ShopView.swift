@@ -29,18 +29,26 @@ struct ShopView: View {
     }
 
     var body: some View {
-        ZStack {
-            Color(.systemBackground)
-                .ignoresSafeArea()
+        ZStack(alignment: .topLeading) {
+
+            Color.black.ignoresSafeArea()
+
+            // ⬅️ BACK
+            GameBackButton {
+                gameState.goBack()
+            }
+            .padding(.leading, 16)
+            .padding(.top, 12)
+            .zIndex(10)
 
             if let wallet = gameState.wallet {
                 content(wallet: wallet)
+                    .padding(.top, 48)  // 🔥 Platz für Button
             } else {
                 ProgressView("Loading Shop…")
+                    .foregroundColor(.white)
             }
         }
-        .navigationTitle("Shop")
-        .navigationBarTitleDisplayMode(.inline)
     }
 
     // MARK: - Content
@@ -115,40 +123,46 @@ struct ShopView: View {
                     .padding()
                     .background(
                         RoundedRectangle(cornerRadius: 22)
-                            .fill(Color(.secondarySystemBackground))
+                            .fill(Color.black)
                             .overlay {
-                                if isEventItem {
-                                    RoundedRectangle(cornerRadius: 22)
-                                        .stroke(
-                                            LinearGradient(
+                                RoundedRectangle(cornerRadius: 22)
+                                    .stroke(
+                                        isEventItem
+                                            ? LinearGradient(
                                                 colors: [.yellow, .orange],
                                                 startPoint: .topLeading,
                                                 endPoint: .bottomTrailing
+                                            )
+                                            : LinearGradient(
+                                                colors: [
+                                                    Color.cyan.opacity(0.8),
+                                                    Color.cyan.opacity(0.8),
+                                                ],
+                                                startPoint: .topLeading,
+                                                endPoint: .bottomTrailing
                                             ),
-                                            lineWidth: 3
-                                        )
-                                }
+                                        lineWidth: isEventItem ? 3 : 2
+                                    )
                             }
                             .shadow(
                                 color: isEventItem
-                                    ? Color.yellow.opacity(0.35)
-                                    : Color.black.opacity(0.15),
-                                radius: isEventItem ? 18 : 6,
-                                y: isEventItem ? 8 : 2
+                                    ? Color.yellow.opacity(0.4)
+                                    : Color.cyan.opacity(0.35),
+                                radius: isEventItem ? 18 : 12,
+                                y: isEventItem ? 8 : 4
                             )
                     )
 
-                if isEventItem {
-                    Text("EVENT")
-                        .font(.caption2.weight(.bold))
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 4)
-                        .background(
-                            Capsule().fill(Color.yellow)
-                        )
-                        .foregroundColor(.black)
-                        .padding(8)
-                }
+                Text(isEventItem ? "EVENT" : "ITEM")
+                    .font(.caption2.weight(.bold))
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .background(
+                        Capsule()
+                            .fill(isEventItem ? Color.yellow : Color.cyan)
+                    )
+                    .foregroundColor(.black)
+                    .padding(8)
             }
 
             // 🏷️ Name
@@ -182,25 +196,33 @@ struct ShopView: View {
                 Text("\(item.price)")
                     .font(.caption.weight(.bold))
                     .monospacedDigit()
+                    .foregroundStyle(.white)
             }
             .padding(.horizontal, 10)
             .padding(.vertical, 6)
             .background(
-                RoundedRectangle(cornerRadius: 16)
-                    .fill(Color(.secondarySystemBackground))
-                    .overlay {
-                        if isEventItem {
-                            RoundedRectangle(cornerRadius: 16)
-                                .stroke(Color.yellow, lineWidth: 2)
-                        }
-                    }
-                    .shadow(
-                        color: isEventItem
-                            ? Color.yellow.opacity(0.3)
-                            : .clear,
-                        radius: isEventItem ? 10 : 0,
-                        y: isEventItem ? 4 : 0
+                RoundedRectangle(cornerRadius: 22)
+                    .fill(Color.black)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 22)
+                            .stroke(
+                                isEventItem
+                                    ? Color.yellow.opacity(0.4)
+                                    : Color.cyan.opacity(0.25),
+                                lineWidth: 1
+                            )
                     )
+            )
+            .overlay {
+                if isEventItem {
+                    RoundedRectangle(cornerRadius: 16)
+                        .stroke(Color.yellow, lineWidth: 2)
+                }
+            }
+            .shadow(
+                color: isEventItem ? Color.yellow.opacity(0.3) : .clear,
+                radius: isEventItem ? 10 : 0,
+                y: isEventItem ? 4 : 0
             )
 
             // 🛒 Buy Button
@@ -230,7 +252,9 @@ struct ShopView: View {
                     .background(
                         Capsule()
                             .fill(
-                                canAfford ? Color.cyan : Color.gray.opacity(0.3)
+                                canAfford
+                                    ? (isEventItem ? Color.yellow : Color.cyan)
+                                    : Color.gray.opacity(0.25)
                             )
                     )
                     .foregroundColor(.black)
@@ -240,8 +264,8 @@ struct ShopView: View {
         .frame(width: 220)
         .padding(16)
         .background(
-            RoundedRectangle(cornerRadius: 22)
-                .fill(Color(.secondarySystemBackground))
+            RoundedRectangle(cornerRadius: 16)
+                .fill(Color(.black))
         )
     }
 

@@ -11,45 +11,78 @@ struct StartView: View {
 
     @EnvironmentObject var gameState: GameState
 
-    @State private var showPrompt = true
-    @State private var scale: CGFloat = 1.0
+    @State private var pulse = false
+    @State private var glow = false
 
     var body: some View {
         ZStack {
-            Color(.systemBackground)
-                .ignoresSafeArea()
 
+            // 🌑 BASE
+            Color.black.ignoresSafeArea()
+
+            // ✨ BACK GLOW
+            RadialGradient(
+                colors: [
+                    Color.cyan.opacity(glow ? 0.25 : 0.12),
+                    .clear,
+                ],
+                center: .center,
+                startRadius: 40,
+                endRadius: 320
+            )
+            .ignoresSafeArea()
+            .animation(
+                .easeInOut(duration: 2.2)
+                    .repeatForever(autoreverses: true),
+                value: glow
+            )
+
+            // 🥊 CHARACTER
             Image("kenji_base_preview")
                 .resizable()
                 .scaledToFit()
-                .frame(height: 500)
-                .offset(y: -50)
+                .frame(height: 520)
+                .offset(y: -40)
+                .shadow(color: .cyan.opacity(0.35), radius: 40)
+                .scaleEffect(pulse ? 1.01 : 1.0)
+                .animation(
+                    .easeInOut(duration: 1.8)
+                        .repeatForever(autoreverses: true),
+                    value: pulse
+                )
 
-            VStack {
+            // 🕹️ UI
+            VStack(spacing: 12) {
                 Spacer()
 
+                Text("TAENTTRA")
+                    .font(.system(size: 36, weight: .heavy))
+                    .tracking(4)
+                    .foregroundStyle(.white)
+                    .shadow(color: .cyan.opacity(0.6), radius: 12)
+
                 Text("PRESS TO START")
-                    .font(.system(size: 18, weight: .semibold))
-                    .tracking(2)
-                    .foregroundColor(.primary)
-                    .opacity(showPrompt ? 1 : 0.3)
-                    .scaleEffect(scale)
-                    .padding(.bottom, 50)
+                    .font(.system(size: 16, weight: .bold))
+                    .tracking(3)
+                    .foregroundStyle(.cyan)
+                    .opacity(pulse ? 1 : 0.35)
+                    .scaleEffect(pulse ? 1.05 : 0.95)
+                    .animation(
+                        .easeInOut(duration: 1.1)
+                            .repeatForever(autoreverses: true),
+                        value: pulse
+                    )
+                    .padding(.bottom, 40)
             }
         }
-        .onAppear { startPulse() }
-        .onTapGesture {
-            gameState.screen = .home
+        .onAppear {
+            pulse = true
+            glow = true
         }
-    }
-
-    private func startPulse() {
-        withAnimation(
-            .easeInOut(duration: 1.2)
-                .repeatForever(autoreverses: true)
-        ) {
-            showPrompt.toggle()
-            scale = 1.05
+        .onTapGesture {
+            withAnimation(.easeOut(duration: 0.25)) {
+                gameState.screen = .home
+            }
         }
     }
 }

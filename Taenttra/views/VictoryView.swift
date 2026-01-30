@@ -29,13 +29,14 @@ struct VictoryView: View {
             // ✨ GLOW
             RadialGradient(
                 colors: [
-                    Color.cyan.opacity(glowPulse ? 0.35 : 0.15),
+                    Color.cyan.opacity(glowPulse ? 0.45 : 0.2),
                     .clear,
                 ],
                 center: .center,
-                startRadius: 40,
-                endRadius: 260
+                startRadius: 30,
+                endRadius: 220
             )
+            .blendMode(.screen)
             .ignoresSafeArea()
             .animation(
                 .easeInOut(duration: 1.8).repeatForever(autoreverses: true),
@@ -45,15 +46,23 @@ struct VictoryView: View {
             VStack(spacing: 28) {
 
                 // 🏆 HEADER
-                VStack(spacing: 6) {
+                VStack(spacing: 4) {
                     Text("STAGE CLEARED")
-                        .font(.system(size: 32, weight: .heavy))
-                        .foregroundStyle(.white)
-                        .tracking(2)
+                        .font(.system(size: 34, weight: .heavy))
+                        .foregroundStyle(
+                            LinearGradient(
+                                colors: [.white, .cyan.opacity(0.8)],
+                                startPoint: .top,
+                                endPoint: .bottom
+                            )
+                        )
+                        .tracking(3)
+                        .shadow(color: .cyan.opacity(0.6), radius: 12)
 
                     Text("YOU WIN")
-                        .font(.system(size: 16, weight: .bold))
-                        .foregroundStyle(.cyan.opacity(0.85))
+                        .font(.system(size: 14, weight: .bold))
+                        .foregroundStyle(.cyan.opacity(0.9))
+                        .tracking(2)
                 }
                 .scaleEffect(showRewards ? 1 : 0.8)
                 .opacity(showRewards ? 1 : 0)
@@ -97,18 +106,23 @@ struct VictoryView: View {
                 Button(action: onContinue) {
                     Text("CONTINUE")
                         .font(.system(size: 18, weight: .heavy))
+                        .tracking(1)
                         .foregroundColor(.black)
-                        .padding(.horizontal, 48)
+                        .padding(.horizontal, 52)
                         .padding(.vertical, 16)
                         .background(
                             LinearGradient(
                                 colors: [.cyan, .blue],
-                                startPoint: .leading,
-                                endPoint: .trailing
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
                             )
                         )
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 14)
+                                .stroke(Color.white.opacity(0.35), lineWidth: 1)
+                        )
                         .cornerRadius(14)
-                        .shadow(color: .cyan.opacity(0.6), radius: 12)
+                        .shadow(color: .cyan.opacity(0.8), radius: 16)
                 }
                 .scaleEffect(showRewards ? 1 : 0.7)
                 .opacity(showRewards ? 1 : 0)
@@ -164,11 +178,16 @@ struct VictoryView: View {
         .padding(.horizontal, 18)
         .padding(.vertical, 14)
         .background(
-            RoundedRectangle(cornerRadius: 14, style: .continuous)
-                .fill(
-                    highlight
-                        ? Color.yellow.opacity(0.15)
-                        : Color.white.opacity(0.08)
+            RoundedRectangle(cornerRadius: 12)
+                .fill(Color.black.opacity(0.6))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(
+                            highlight
+                                ? Color.yellow.opacity(0.7)
+                                : Color.cyan.opacity(0.25),
+                            lineWidth: highlight ? 2 : 1
+                        )
                 )
                 .overlay(
                     RoundedRectangle(cornerRadius: 14)

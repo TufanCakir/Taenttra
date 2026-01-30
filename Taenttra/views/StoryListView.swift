@@ -13,33 +13,40 @@ struct StoryListView: View {
     @State private var expandedChapterId: String?
 
     var body: some View {
-        List {
-            ForEach(viewModel.chapters) { chapter in
+        ScrollView {
+            VStack(spacing: 14) {
 
-                Section {
-                    if expandedChapterId == chapter.id {
-                        ForEach(chapter.sections) { section in
-                            StorySectionRow(
-                                chapter: chapter,
-                                section: section,
-                                viewModel: viewModel
-                            )
-                        }
-                    }
-                } header: {
+                ForEach(viewModel.chapters) { chapter in
+
                     ChapterHeader(
                         chapter: chapter,
                         isExpanded: expandedChapterId == chapter.id
                     ) {
-                        withAnimation {
+                        withAnimation(.easeInOut(duration: 0.25)) {
                             expandedChapterId =
                                 expandedChapterId == chapter.id
                                 ? nil
                                 : chapter.id
                         }
                     }
+
+                    if expandedChapterId == chapter.id {
+                        VStack(spacing: 12) {
+                            ForEach(chapter.sections) { section in
+                                StorySectionRow(
+                                    chapter: chapter,
+                                    section: section,
+                                    viewModel: viewModel
+                                )
+                            }
+                        }
+                        .transition(.opacity.combined(with: .move(edge: .top)))
+                    }
                 }
             }
+            .padding(.vertical, 16)
+            .padding(.horizontal, 12)
         }
+        .background(Color.black)
     }
 }

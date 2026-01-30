@@ -20,15 +20,24 @@ struct SkinSelectionView: View {
     }
 
     var body: some View {
-        ZStack {
-            Color(.systemBackground)
-                .ignoresSafeArea()
+        ZStack(alignment: .topLeading) {
+
+            Color.black.ignoresSafeArea()
+
+            // ⬅️ BACK
+            GameBackButton {
+                gameState.goBack()
+            }
+            .padding(.leading, 16)
+            .padding(.top, 12)
+            .zIndex(10)
 
             if let wallet = gameState.wallet {
                 content(wallet: wallet)
+                    .padding(.top, 48)  // 🔥 Platz für Button
             } else {
                 ProgressView("Loading Skins…")
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .foregroundColor(.white)
             }
         }
     }
@@ -60,6 +69,7 @@ struct SkinSelectionView: View {
         let owned = wallet.ownedSkins.contains(skin.skinId)
         let equipped = wallet.equippedSkin == skin.skinId
         let isEventSkin = skin.currency == .tournamentShards
+        let isNormalSkin = !isEventSkin
 
         return VStack(spacing: 12) {
 
@@ -131,9 +141,13 @@ struct SkinSelectionView: View {
                     .padding(.vertical, 10)
                     .background(
                         Capsule()
-                            .fill(owned ? Color.cyan : Color.gray.opacity(0.3))
+                            .fill(
+                                owned
+                                    ? (isEventSkin ? Color.yellow : Color.cyan)
+                                    : Color.gray.opacity(0.3)
+                            )
                     )
-                    .foregroundColor(.black)
+                    .foregroundColor(.white)
             }
             .disabled(!owned)
         }
@@ -141,28 +155,31 @@ struct SkinSelectionView: View {
         .padding(16)
         .background(
             RoundedRectangle(cornerRadius: 22)
-                .fill(Color(.secondarySystemBackground))
+                .fill(Color.black)
                 .overlay {
-                    if isEventSkin {
-                        RoundedRectangle(cornerRadius: 22)
-                            .stroke(
-                                LinearGradient(
-                                    colors: [.yellow, .orange],
-                                    startPoint: .topLeading,
-                                    endPoint: .bottomTrailing
-                                ),
-                                lineWidth: 3
-                            )
-                    }
+                    RoundedRectangle(cornerRadius: 22)
+                        .stroke(
+                            (isEventSkin
+                                ? AnyShapeStyle(
+                                    LinearGradient(
+                                        colors: [.yellow, .orange],
+                                        startPoint: .topLeading,
+                                        endPoint: .bottomTrailing
+                                    )
+                                )
+                                : AnyShapeStyle(Color.cyan.opacity(0.8))),
+                            lineWidth: isEventSkin ? 3 : 2
+                        )
                 }
                 .shadow(
                     color: isEventSkin
                         ? Color.yellow.opacity(0.35)
-                        : Color.black.opacity(0.15),
-                    radius: isEventSkin ? 16 : 6,
-                    y: isEventSkin ? 6 : 2
+                        : Color.cyan.opacity(0.35),
+                    radius: equipped ? 18 : 10,
+                    y: equipped ? 6 : 3
                 )
         )
+
         .scaleEffect(equipped ? 1.05 : 1.0)
         .animation(.easeOut(duration: 0.2), value: equipped)
     }

@@ -15,38 +15,73 @@ struct VersusHeaderView: View {
         HStack {
             Spacer()
 
-            HStack(spacing: 40) {
+            HStack(spacing: 20) {
                 currencyView(
                     icon: "icon_coin",
-                    value: gameState.wallet.coins
+                    value: gameState.wallet.coins,
+                    accent: .yellow
                 )
 
                 currencyView(
                     icon: "icon_crystal",
-                    value: gameState.wallet.crystals
+                    value: gameState.wallet.crystals,
+                    accent: .cyan
                 )
+
                 currencyView(
                     icon: "icon_tournament",
-                    value: gameState.wallet.tournamentShards
+                    value: gameState.wallet.tournamentShards,
+                    accent: .orange
                 )
             }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 10)
+            .background(
+                Capsule()
+                    .fill(Color.black.opacity(0.65))
+                    .overlay(
+                        Capsule()
+                            .stroke(Color.white.opacity(0.12), lineWidth: 1)
+                    )
+            )
         }
-        .padding(.horizontal, 20)
-        .padding(.top, 8)
+        .padding(.horizontal, 16)
+        .padding(.top, 10)
     }
 
     // MARK: - Currency View
-    private func currencyView(icon: String, value: Int) -> some View {
-        HStack(spacing: 8) {
+    private func currencyView(
+        icon: String,
+        value: Int,
+        accent: Color
+    ) -> some View {
+
+        HStack(spacing: 6) {
+
             Image(icon)
                 .resizable()
                 .scaledToFit()
-                .frame(width: 28, height: 28)
+                .frame(width: 22, height: 22)
 
             Text("\(value)")
-                .font(.system(size: 18, weight: .bold))
+                .font(.system(size: 16, weight: .heavy))
                 .monospacedDigit()
-                .foregroundStyle(.white)
+                .foregroundColor(.white)
         }
+        .padding(.horizontal, 10)
+        .padding(.vertical, 6)
+        .background(
+            RoundedRectangle(cornerRadius: 10)
+                .fill(Color.black.opacity(0.4))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 10)
+                        .stroke(accent.opacity(0.6), lineWidth: 1)
+                )
+        )
+        .shadow(
+            color: accent.opacity(0.25),
+            radius: 6,
+            y: 2
+        )
     }
 }

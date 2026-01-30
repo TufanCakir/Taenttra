@@ -18,34 +18,60 @@ struct SurvivalModeRow: View {
             Image(mode.background)
                 .resizable()
                 .scaledToFill()
-                .frame(height: 120)
+                .frame(height: 130)
                 .clipped()
 
-            // 🌑 GRADIENT
+            // 🌑 HEAVY GRADIENT
             LinearGradient(
                 colors: [
-                    .black.opacity(0.15),
-                    .black.opacity(0.85),
+                    .black.opacity(0.25),
+                    .black.opacity(0.9),
                 ],
                 startPoint: .top,
                 endPoint: .bottom
             )
 
             // 📝 CONTENT
-            VStack(alignment: .leading, spacing: 6) {
-                Text(mode.title)
-                    .font(.headline)
+            VStack(alignment: .leading, spacing: 8) {
+
+                Text(mode.title.uppercased())
+                    .font(.headline.weight(.bold))
                     .foregroundColor(.white)
 
-                HStack(spacing: 12) {
-                    Text("⏱ \(mode.timeLimit)s")
-                    Text("👊 \(mode.enemyPool.count) ENEMIES")
+                HStack(spacing: 14) {
+
+                    // TIME
+                    Text("TIME \(mode.timeLimit)s")
+                        .font(.caption2.weight(.bold))
+                        .foregroundColor(.white.opacity(0.85))
+
+                    // ENEMIES
+                    Text("\(mode.enemyPool.count) ENEMIES")
+                        .font(.caption2.weight(.bold))
+                        .foregroundColor(.red)
+
+                    // TAG
+                    Text("SURVIVAL")
+                        .font(.caption2.weight(.bold))
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(
+                            Capsule()
+                                .fill(Color.red.opacity(0.8))
+                        )
                 }
-                .font(.caption)
-                .foregroundColor(.white.opacity(0.85))
             }
-            .padding()
+            .padding(14)
         }
-        .cornerRadius(12)
+        .cornerRadius(14)
+        .overlay(
+            RoundedRectangle(cornerRadius: 14)
+                .stroke(Color.red.opacity(0.35), lineWidth: 1.2)
+        )
+        .shadow(
+            color: Color.red.opacity(0.25),
+            radius: 14,
+            y: 8
+        )
     }
 }

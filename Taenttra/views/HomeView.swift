@@ -12,6 +12,7 @@ struct HomeView: View {
     @EnvironmentObject var gameState: GameState
 
     @State private var selection: Int = 0
+    @State private var idlePulse = false
 
     // Ordered list of menu items used by the menu and confirmSelection
     private let items: [HomeMenuItem] = [
@@ -34,7 +35,7 @@ struct HomeView: View {
             Color.black.ignoresSafeArea()
 
             VStack(spacing: 16) {
-                
+
                 VersusHeaderView()
 
                 Spacer(minLength: 8)
@@ -53,10 +54,13 @@ struct HomeView: View {
     private var mainCharacterView: some View {
         ZStack {
             RadialGradient(
-                colors: [.cyan.opacity(0.25), .clear],
+                colors: [
+                    Color.cyan.opacity(0.35),
+                    Color.clear,
+                ],
                 center: .center,
-                startRadius: 20,
-                endRadius: 220
+                startRadius: 10,
+                endRadius: 180
             )
 
             VStack(spacing: 10) {
@@ -66,8 +70,18 @@ struct HomeView: View {
                     Image(display.previewImage(using: gameState.wallet))
                         .resizable()
                         .scaledToFit()
-                        .frame(height: 260)
-                        .shadow(color: Color.black.opacity(0.6), radius: 24)
+                        .frame(height: 270)
+                        .scaleEffect(idlePulse ? 1.03 : 1.0)
+                        .shadow(color: .cyan.opacity(0.35), radius: 30)
+                        .shadow(color: .black.opacity(0.6), radius: 24)
+                        .onAppear {
+                            withAnimation(
+                                .easeInOut(duration: 2.5)
+                                    .repeatForever(autoreverses: true)
+                            ) {
+                                idlePulse.toggle()
+                            }
+                        }
                 } else {
                     // Placeholder when no character matches
                     Rectangle()
@@ -76,8 +90,10 @@ struct HomeView: View {
                 }
 
                 Text(gameState.selectedCharacterName.uppercased())
-                    .font(.title3.weight(.bold))
+                    .font(.system(size: 20, weight: .heavy))
+                    .tracking(2)
                     .foregroundColor(.white)
+                    .shadow(color: .cyan.opacity(0.6), radius: 12)
             }
         }
         .frame(maxWidth: .infinity)
@@ -150,10 +166,20 @@ struct HomeView: View {
                     footerItem(item)
                 }
             }
-            .padding(.horizontal, 20)
-            .padding(.vertical, 14)
+            .padding(.vertical, 12)
+            .padding(.horizontal, 4)
         }
-        .background(.ultraThinMaterial)
+        .background(
+            LinearGradient(
+                colors: [
+                    Color.black.opacity(0.95),
+                    Color.black.opacity(0.75),
+                    Color.black.opacity(0.6),
+                ],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+        )
     }
 
     private func footerItem(_ item: HomeMenuItem) -> some View {
@@ -169,8 +195,9 @@ struct HomeView: View {
                 gameState.screen = item.screen
             }
         } label: {
-            Text(item.title)
-                .font(.system(size: 13, weight: .heavy))
+            Text(item.title.uppercased())
+                .font(.system(size: 12, weight: .heavy))
+                .tracking(1.5)
                 .foregroundColor(unlocked ? .white : .gray)
                 .padding(.horizontal, 18)
                 .padding(.vertical, 10)
@@ -178,16 +205,22 @@ struct HomeView: View {
                     Capsule()
                         .fill(
                             unlocked
-                            ? item.color.opacity(0.35)
-                            : Color.white.opacity(0.06)
+                                ? item.color.opacity(
+                                    0.25
+                                )
+                                : Color.white.opacity(0.04)
                         )
+                )
+                .shadow(
+                    color: unlocked ? item.color.opacity(0.35) : .clear,
+                    radius: 8
                 )
                 .overlay(
                     Capsule()
                         .stroke(
                             unlocked
-                            ? item.color.opacity(0.6)
-                            : Color.clear,
+                                ? item.color.opacity(0.6)
+                                : Color.clear,
                             lineWidth: 1
                         )
                 )
@@ -195,7 +228,6 @@ struct HomeView: View {
         }
         .buttonStyle(.plain)
     }
-
 
     // MARK: - Menu Item
     private func menuItem(
@@ -253,8 +285,17 @@ struct HomeView: View {
                     .fill(.black.opacity(0.15))
             }
         }
-        .scaleEffect(isSelected ? 1.02 : 1.0)
-        .animation(.easeInOut(duration: 0.18), value: isSelected)
+        .scaleEffect(isSelected ? 1.1 : 0.95)
+        .opacity(unlocked ? (isSelected ? 1 : 0.7) : 0.25)
+        .saturation(unlocked ? 1 : 0.3)
+        .shadow(
+            color: isSelected ? Color.cyan.opacity(0.6) : .clear,
+            radius: 10
+        )
+        .animation(
+            .spring(response: 0.35, dampingFraction: 0.7),
+            value: isSelected
+        )
         .contentShape(Rectangle())
         .onTapGesture {
             selection = index

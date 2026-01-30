@@ -18,35 +18,48 @@ struct ArcadeStageRow: View {
             Image(stage.background)
                 .resizable()
                 .scaledToFill()
-                .frame(height: 120)
+                .frame(height: 130)
                 .clipped()
 
-            // 🌑 GRADIENT OVERLAY
+            // 🌑 DARK OVERLAY
             LinearGradient(
                 colors: [
                     .black.opacity(0.15),
-                    .black.opacity(0.85),
+                    .black.opacity(0.9),
                 ],
                 startPoint: .top,
                 endPoint: .bottom
             )
 
-            // 📝 TEXT CONTENT
+            // 📝 CONTENT
             VStack(alignment: .leading, spacing: 6) {
-                Text(stage.title)
-                    .font(.headline)
+
+                Text(stage.title.uppercased())
+                    .font(.headline.weight(.bold))
                     .foregroundColor(.white)
 
-                HStack(spacing: 12) {
-                    Text("👊 \(stage.enemy.uppercased())")
-                    Text("🌊 \(stage.waves) WAVES")
-                    Text("⏱ \(stage.timeLimit)s")
+                HStack(spacing: 16) {
+
+                    Text("ENEMY: \(stage.enemy.uppercased())")
+
+                    Text("\(stage.waves) WAVES")
+
+                    Text("\(stage.timeLimit)s")
                 }
-                .font(.caption)
+                .font(.caption2.weight(.semibold))
                 .foregroundColor(.white.opacity(0.85))
             }
-            .padding()
+            .padding(14)
         }
-        .cornerRadius(12)
+        .cornerRadius(14)
+        .overlay(
+            RoundedRectangle(cornerRadius: 14)
+                .stroke(Color.white.opacity(0.12), lineWidth: 1)
+        )
+        .shadow(
+            color: Color.black.opacity(0.6),
+            radius: 10,
+            y: 6
+        )
     }
 }

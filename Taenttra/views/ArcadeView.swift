@@ -14,29 +14,26 @@ struct ArcadeView: View {
 
     var body: some View {
         NavigationStack {
-            List {
-                ForEach(viewModel.stages) { stage in
-                    Button {
-                        viewModel.select(stage)
-                        onStartArcade(stage)
-                    } label: {
-                        ArcadeStageRow(stage: stage)
-                    }
-                    .buttonStyle(.plain)
-                    .listRowInsets(EdgeInsets())  // 🔥 volle Breite
-                    .padding(.vertical, 6)
-                    HStack {
-                        VStack(alignment: .leading) {
-                            Text(stage.title)
-                                .font(.headline)
-                            Text("WAVES: \(stage.waves)")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
+            ZStack {
+                Color.black.ignoresSafeArea()
+
+                ScrollView {
+                    VStack(spacing: 14) {
+                        ForEach(viewModel.stages) { stage in
+                            Button {
+                                viewModel.select(stage)
+                                onStartArcade(stage)
+                            } label: {
+                                ArcadeStageRow(stage: stage)
+                            }
+                            .buttonStyle(.plain)
+                            .contentShape(Rectangle())
                         }
                     }
+                    .padding(12)
                 }
             }
+            .navigationTitle("ARCADE")
         }
-        .navigationTitle("Arcade")
     }
 }

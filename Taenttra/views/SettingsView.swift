@@ -10,103 +10,117 @@ import SwiftUI
 struct SettingsView: View {
 
     @ObservedObject private var audio = AudioManager.shared
+    @EnvironmentObject var gameState: GameState
 
     var body: some View {
-        ScrollView {
-            VStack(spacing: 20) {
+        NavigationStack {  // 🔥 DAS FEHLT
 
-                // 🎵 AUDIO
-                sectionCard(title: "AUDIO") {
+            ZStack(alignment: .topLeading) {
 
-                    Toggle(
-                        "Music",
-                        isOn: Binding(
-                            get: { audio.musicEnabled },
-                            set: { audio.setEnabled($0) }
-                        )
-                    )
+                // 🌑 BASE
+                Color.black.ignoresSafeArea()
 
-                    VStack(alignment: .leading, spacing: 6) {
-                        Text("VOLUME")
-                            .font(.caption.weight(.semibold))
-                            .foregroundStyle(.secondary)
+                // ⬅️ GAME BACK BUTTON (HUD)
+                GameBackButton {
+                    gameState.goBack()
+                }
+                .padding(.leading, 16)
+                .padding(.top, 12)
+                .zIndex(10)
 
-                        Slider(
-                            value: Binding(
-                                get: { Double(audio.volume) },
-                                set: { audio.volume = Float($0) }
-                            ),
-                            in: 0...1
-                        )
+                ScrollView {
+                    VStack(spacing: 24) {
+
+                        sectionCard(title: "AUDIO") {
+
+                            Toggle(
+                                "MUSIC",
+                                isOn: Binding(
+                                    get: { audio.musicEnabled },
+                                    set: { audio.setEnabled($0) }
+                                )
+                            )
+                            .toggleStyle(SwitchToggleStyle(tint: .cyan))
+
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text("VOLUME")
+                                    .font(.caption.weight(.bold))
+                                    .foregroundColor(.cyan.opacity(0.8))
+                                    .tracking(1)
+
+                                Slider(
+                                    value: Binding(
+                                        get: { Double(audio.volume) },
+                                        set: { audio.volume = Float($0) }
+                                    ),
+                                    in: 0...1
+                                )
+                                .tint(.cyan)
+                            }
+                        }
                     }
-                }
 
-                // ℹ️ ABOUT
-                sectionCard(title: "ABOUT") {
-                    infoRow("Game", "Taenttra")
-                    infoRow("Version", appVersion)
-                    infoRow("Build", appBuild)
-                    infoRow("Developer", "Tufan Cakir")
-                }
-
-                // 📄 INFO
-                sectionCard(title: "INFO") {
-
-                    navigationRow("Credits") {
-                        CreditsView()
+                    sectionCard(title: "ABOUT") {
+                        infoRow("GAME", "TAENTTRA")
+                        infoRow("VERSION", appVersion)
+                        infoRow("BUILD", appBuild)
+                        infoRow("DEVELOPER", "TUFAN CAKIR")
                     }
 
-                    navigationRow("Licenses") {
-                        LicensesView()
+                    sectionCard(title: "INFO") {
+                        navigationRow("CREDITS") { CreditsView() }
+                        navigationRow("LICENSES") { LicensesView() }
                     }
-                }
 
-                // ⚙️ SYSTEM
-                sectionCard(title: "SYSTEM") {
-                    infoRow("Platform", platformName)
-                    infoRow("OS Version", osVersion)
-                }
+                    sectionCard(title: "SYSTEM") {
+                        infoRow("PLATFORM", platformName.uppercased())
+                        infoRow("OS", osVersion)
+                    }
 
-                Spacer(minLength: 20)
+                    Spacer(minLength: 40)
+                }
+                .padding(.horizontal, 16)
+                .padding(.top, 56)  // 🔥 Platz für BackButton
             }
-            .padding(.horizontal, 16)
-            .padding(.top, 16)
         }
-        .background(Color.black.opacity(0.03))
-        .navigationTitle("Options")
-        .navigationBarTitleDisplayMode(.inline)
     }
 
-    // MARK: - UI Helpers
+    // MARK: - UI
 
     private func sectionCard<Content: View>(
         title: String,
         @ViewBuilder content: () -> Content
     ) -> some View {
 
-        VStack(alignment: .leading, spacing: 14) {
+        VStack(alignment: .leading, spacing: 16) {
 
             Text(title)
-                .font(.headline.weight(.bold))
+                .font(.system(size: 14, weight: .heavy))
+                .tracking(2)
+                .foregroundColor(.cyan)
 
             content()
         }
-        .padding(16)
-        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(18)
         .background(
-            RoundedRectangle(cornerRadius: 18)
-                .fill(.ultraThinMaterial)
+            RoundedRectangle(cornerRadius: 20)
+                .fill(Color.white.opacity(0.04))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 20)
+                        .stroke(Color.cyan.opacity(0.25), lineWidth: 1)
+                )
         )
     }
 
     private func infoRow(_ title: String, _ value: String) -> some View {
         HStack {
             Text(title)
+                .foregroundColor(.white.opacity(0.8))
             Spacer()
             Text(value)
-                .foregroundStyle(.secondary)
+                .foregroundColor(.white.opacity(0.5))
         }
-        .font(.body)
+        .font(.system(size: 14, weight: .medium))
     }
 
     private func navigationRow<Destination: View>(
@@ -118,11 +132,12 @@ struct SettingsView: View {
         } label: {
             HStack {
                 Text(title)
+                    .foregroundColor(.white)
                 Spacer()
                 Text("›")
-                    .foregroundStyle(.secondary)
+                    .foregroundColor(.cyan.opacity(0.6))
             }
-            .contentShape(Rectangle())
+            .padding(.vertical, 6)
         }
     }
 

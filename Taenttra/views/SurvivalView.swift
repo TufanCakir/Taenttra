@@ -13,31 +13,26 @@ struct SurvivalView: View {
     let onStartSurvival: (SurvivalMode) -> Void
 
     var body: some View {
-        NavigationStack {
-            List {
-                ForEach(viewModel.modes) { mode in
-                    Button {
-                        viewModel.select(mode)
-                        onStartSurvival(mode)
-                    } label: {
-                        SurvivalModeRow(mode: mode)
-                    }
-                    .buttonStyle(.plain)
-                    .listRowInsets(EdgeInsets())  // 🔥 volle Breite
-                    .padding(.vertical, 6)
-                    HStack {
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text(mode.title)
-                                .font(.headline)
+        ZStack {
+            Color.black.ignoresSafeArea()
 
-                            Text("TIME: \(mode.timeLimit)s")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
+            ScrollView {
+                VStack(spacing: 14) {
+                    ForEach(viewModel.modes) { mode in
+                        Button {
+                            viewModel.select(mode)
+                            onStartSurvival(mode)
+                        } label: {
+                            SurvivalModeRow(mode: mode)
                         }
+                        .buttonStyle(.plain)
                     }
                 }
+                .padding(.horizontal, 12)
+                .padding(.top, 12)
             }
         }
-        .navigationTitle("Survival")
+        .navigationTitle("SURVIVAL")
+        .navigationBarTitleDisplayMode(.inline)
     }
 }

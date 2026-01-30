@@ -13,27 +13,26 @@ struct EventView: View {
     let onStartEvent: (EventMode) -> Void
 
     var body: some View {
-        NavigationStack {
-            List {
-                ForEach(viewModel.events) { event in
-                    Button {
-                        viewModel.select(event)
-                        onStartEvent(event)
-                    } label: {
-                        EventRow(event: event)
-                    }
-                    .buttonStyle(.plain)
-                    .listRowInsets(EdgeInsets())  // 🔥 volle Breite
-                    .padding(.vertical, 6)
-                    HStack {
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text(event.title)
-                                .font(.headline)
+        ZStack {
+            Color.black.ignoresSafeArea()
+
+            ScrollView {
+                VStack(spacing: 14) {
+                    ForEach(viewModel.events) { event in
+                        Button {
+                            viewModel.select(event)
+                            onStartEvent(event)
+                        } label: {
+                            EventRow(event: event)
                         }
+                        .buttonStyle(.plain)
                     }
                 }
+                .padding(.horizontal, 12)
+                .padding(.top, 12)
             }
         }
-        .navigationTitle("Events")
+        .navigationTitle("EVENTS")
+        .navigationBarTitleDisplayMode(.inline)
     }
 }

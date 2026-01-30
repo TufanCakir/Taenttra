@@ -18,34 +18,70 @@ struct EventRow: View {
             Image(event.background)
                 .resizable()
                 .scaledToFill()
-                .frame(height: 120)
+                .frame(height: 130)
                 .clipped()
 
-            // 🌑 GRADIENT
+            // 🌑 GRADIENT (edel, nicht aggressiv)
             LinearGradient(
                 colors: [
-                    .black.opacity(0.1),
-                    .black.opacity(0.8),
+                    .black.opacity(0.2),
+                    .black.opacity(0.85),
                 ],
                 startPoint: .top,
                 endPoint: .bottom
             )
 
-            // 📝 TEXT
-            VStack(alignment: .leading, spacing: 6) {
-                Text(event.title)
-                    .font(.headline)
-                    .foregroundColor(.white)
+            // 📝 CONTENT
+            VStack(alignment: .leading, spacing: 8) {
 
-                HStack(spacing: 12) {
-                    Text("⏱ \(event.timeLimit)s")
-                    Text("👊 \(event.enemy.uppercased())")
+                HStack {
+                    Text(event.title.uppercased())
+                        .font(.headline.weight(.bold))
+                        .foregroundColor(.white)
+
+                    Spacer()
+
+                    // EVENT BADGE
+                    Text("EVENT")
+                        .font(.caption2.weight(.bold))
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(
+                            Capsule()
+                                .fill(Color.yellow)
+                        )
+                        .foregroundColor(.black)
                 }
-                .font(.caption)
-                .foregroundColor(.white.opacity(0.85))
+
+                HStack(spacing: 14) {
+
+                    Text("TIME \(event.timeLimit)s")
+                        .font(.caption2.weight(.bold))
+                        .foregroundColor(.white.opacity(0.85))
+
+                    Text(event.enemy.uppercased())
+                        .font(.caption2.weight(.bold))
+                        .foregroundColor(.yellow)
+                }
             }
-            .padding()
+            .padding(14)
         }
-        .cornerRadius(12)
+        .cornerRadius(14)
+        .overlay(
+            RoundedRectangle(cornerRadius: 14)
+                .stroke(
+                    LinearGradient(
+                        colors: [.yellow.opacity(0.8), .orange.opacity(0.6)],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    ),
+                    lineWidth: 1.5
+                )
+        )
+        .shadow(
+            color: Color.yellow.opacity(0.35),
+            radius: 16,
+            y: 8
+        )
     }
 }
