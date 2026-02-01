@@ -213,6 +213,7 @@ struct GameView: View {
         if case .story(_, let section) = gameState.pendingMode {
             storyViewModel.unlockNextSection(after: section)
             gameState.unlockModes(after: section)
+
             gameState.lastCompletedStorySectionId = section.id
             gameState.saveLastCompletedStorySection()
         }
@@ -224,7 +225,6 @@ struct GameView: View {
     }
 
     // MARK: - Persistence
-
     private func loadPersistentState() {
         if gameState.wallet == nil {
             gameState.loadWallet(context: modelContext)
@@ -232,5 +232,8 @@ struct GameView: View {
 
         gameState.loadUnlockedModes()
         gameState.loadLastCompletedStorySection()
+
+        // 🔥 Story korrekt rekonstruieren
+        storyViewModel.rebuildUnlockedSections(using: gameState)
     }
 }

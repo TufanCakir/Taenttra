@@ -39,11 +39,9 @@ final class StoryViewModel: ObservableObject {
         selectedSection = section
         pendingFight = (chapter, section)
 
-        // 🎵 STORY MUSIC
         let music = section.music ?? chapter.music
         AudioManager.shared.playSong(key: music)
 
-        // 📖 Dialog
         activeDialog = section.introDialog
     }
 
@@ -69,5 +67,21 @@ final class StoryViewModel: ObservableObject {
 
     func isSectionUnlocked(_ section: StorySection) -> Bool {
         unlockedSectionIds.contains(section.id)
+    }
+
+    // 🔥 HIER der wichtige Rebuild
+    func rebuildUnlockedSections(using gameState: GameState) {
+        unlockedSectionIds = ["1_1"]
+
+        guard let lastId = gameState.lastCompletedStorySectionId else { return }
+
+        for chapter in chapters {
+            for section in chapter.sections {
+                unlockedSectionIds.insert(section.id)
+                if section.id == lastId {
+                    return
+                }
+            }
+        }
     }
 }
