@@ -122,13 +122,6 @@ struct GameView: View {
                 leftCharacter: left,
                 rightCharacter: right
             )
-
-            // 📜 SELECT
-        } else {
-            VersusSelectView(
-                stages: VersusLoader.load().stages
-            )
-            .environmentObject(gameState)
         }
     }
 

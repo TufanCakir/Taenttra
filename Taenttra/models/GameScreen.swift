@@ -187,18 +187,17 @@ extension GameState {
         }
     }
 
-    func startVersusStage(_ stage: VersusStage) {
+    private func startVersusStage(_ stage: VersusStage) {
 
-        print("🔥 startVersusStage:", stage.id)
-
+        // 🎵 Musik via SongLibrary
         AudioManager.shared.playFightMusic(key: stage.music)
-        pendingMode = .versus
+
         currentStage = stage
-        screen = .characterSelect  // ⬅️ HIERHIN
-
-        print("🔥 VM created:", versusViewModel != nil)
-
-        print("🔥 screen set to .versus")
+        versusViewModel = VersusViewModel(
+            stages: [stage],
+            gameState: self
+        )
+        screen = .versus
     }
 
     func startEvent(mode: EventMode) {
@@ -271,7 +270,7 @@ extension GameState {
             name: stage.title,
             background: stage.background,
             music: stage.music,
-            waves: waves,
+            waves: waves
         )
 
         startVersusStage(versusStage)

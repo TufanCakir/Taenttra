@@ -2,12 +2,45 @@
     "events": [
         {
             "id": "tournament_1",
-            "title": "Tournament of Dawn",
-            "background": "arena_sunrise",
+            "title": "Sunrise",
+            "type": "normal",
+            "background": "sunrise_arena",
             "music": "tournament_theme",
+            "enemy": "ren_dao",
+            "timeLimit": 120,
+            "rewardShards": 5,
+            "ui": {
+                "overlayColor": "#4682B4",
+                "overlayOpacity": 0.15
+            }
+        },
+        {
+            "id": "tournament_3",
+            "title": "Crimson Lotus",
+            "type": "special",
+            "background": "reika_arena",
+            "music": "reika_theme",
+            "enemy": "reika",
+            "timeLimit": 120,
+            "rewardShards": 10,
+            "ui": {
+                "overlayColor": "#8A2BE2",
+                "overlayOpacity": 0.15
+            }
+        },
+        {
+            "id": "tournament_2",
+            "title": "Tournament of Dawn",
+            "type": "boss",
+            "background": "ryuji_arena",
+            "music": "ryuji_theme",
             "enemy": "ryuji",
             "timeLimit": 120,
-            "rewardShards": 5
+            "rewardShards": 15,
+            "ui": {
+                "overlayColor": "#880808",
+                "overlayOpacity": 0.15
+            }
         }
     ]
 }

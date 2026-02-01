@@ -7,6 +7,11 @@
 
 import Foundation
 
+enum EventType: String, Decodable {
+    case normal
+    case special
+}
+
 struct EventData: Decodable {
     let events: [EventMode]
 }
@@ -14,11 +19,13 @@ struct EventData: Decodable {
 struct EventMode: Decodable, Identifiable {
     let id: String
     let title: String
+    let type: String  // "normal", "special", "boss"
     let background: String
     let music: String
     let enemy: String
     let timeLimit: Int
     let rewardShards: Int
+    let ui: EventUIConfig  // 🔥 NEU
 }
 
 final class EventLoader {

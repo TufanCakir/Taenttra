@@ -55,12 +55,6 @@ struct StartView: View {
             VStack(spacing: 12) {
                 Spacer()
 
-                Text("TAENTTRA")
-                    .font(.system(size: 36, weight: .heavy))
-                    .tracking(4)
-                    .foregroundStyle(.white)
-                    .shadow(color: .cyan.opacity(0.6), radius: 12)
-
                 Text("PRESS TO START")
                     .font(.system(size: 16, weight: .bold))
                     .tracking(3)

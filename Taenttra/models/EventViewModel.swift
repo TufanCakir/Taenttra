@@ -11,13 +11,14 @@ import Foundation
 final class EventViewModel: ObservableObject {
 
     @Published var events: [EventMode] = []
-    @Published var selectedEvent: EventMode?
+    let modes: [EventCategory]
 
     init() {
-        events = EventLoader.load().events
+        self.events = EventLoader.load().events
+        self.modes = EventModeLoader.load()
     }
 
-    func select(_ event: EventMode) {
-        selectedEvent = event
+    func events(for mode: EventCategory) -> [EventMode] {
+        events.filter { $0.type == mode.id }
     }
 }
