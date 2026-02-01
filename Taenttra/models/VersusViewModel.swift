@@ -14,6 +14,8 @@ final class VersusViewModel: ObservableObject {
     @Published var timeRemaining: Int = 0
     @Published var isTimerRunning: Bool = false
 
+    @Published var currentEnemyIndex: Int = 0
+
     // MARK: - Animation
     @Published var animationState: FighterAnimation = .idle
     @Published var attackOffset: CGFloat = 0
@@ -228,21 +230,60 @@ final class VersusViewModel: ObservableObject {
 
     private func advanceAfterKO() {
 
-        // 🟢 nächste Wave
+        guard let wave = currentWave else {
+            handleVictory()
+            return
+        }
+
+        // 🔥 NÄCHSTER GEGNER IN DERSELBEN WAVE
+        if currentEnemyIndex + 1 < wave.enemies.count {
+            currentEnemyIndex += 1
+            spawnCurrentEnemy()
+            resetForNextEnemy()
+            return
+        }
+
+        // 🟢 Wave fertig → nächste Wave
+        currentEnemyIndex = 0
+
         if currentWaveIndex + 1 < currentStage.waves.count {
             nextWave()
             resetForNextWave()
             return
         }
 
-        // 🟡 nächster Stage
-        if currentStageIndex + 1 < stages.count {
-            currentStageIndex += 1
-            loadStage(stages[currentStageIndex])
-            return
+        // 🏆 ALLES GESCHAFFT
+        handleVictory()
+    }
+
+    private func spawnCurrentEnemy() {
+        guard let wave = currentWave else { return }
+
+        let enemyKey = wave.enemies[currentEnemyIndex]
+
+        let enemy = Character.enemy(
+            key: enemyKey,
+            skinId: nil
+        )
+
+        if gameState.playerSide == .left {
+            gameState.rightCharacter = enemy
+        } else {
+            gameState.leftCharacter = enemy
         }
 
-        handleVictory()
+        print(
+            "👊 Enemy \(currentEnemyIndex + 1)/\(wave.enemies.count): \(enemyKey)"
+        )
+    }
+
+    private func resetForNextEnemy() {
+        fightState = .fighting
+        winner = nil
+        leftHealth = 1
+        rightHealth = 1
+        animationState = .idle
+        startTimer()
     }
 
     private func handleVictory() {
@@ -319,7 +360,7 @@ final class VersusViewModel: ObservableObject {
 
         guard let wave = currentWave else { return }
 
-        let enemyKey = wave.enemies.first ?? "kenji"
+        let enemyKey = wave.enemies[currentEnemyIndex]
 
         let enemyCharacter = Character.enemy(
             key: enemyKey,

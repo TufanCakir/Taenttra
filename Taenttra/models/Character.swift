@@ -130,3 +130,18 @@ extension Character {
         )
     }
 }
+
+extension Character {
+
+    static func player(
+        key: String,
+        skinId: String?
+    ) -> Character {
+        Character(
+            key: key,
+            combatSpritePrefix: nil,
+            isLocked: false,
+            skinId: skinId
+        )
+    }
+}

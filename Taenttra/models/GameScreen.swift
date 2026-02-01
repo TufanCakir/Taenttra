@@ -127,6 +127,64 @@ final class GameState: ObservableObject {
         wallet = newWallet
     }
 
+    func startQuickVersus() {
+
+        // 🧑‍🎮 PLAYER
+        let player = Character.player(
+            key: selectedCharacterKey,
+            skinId: activeSkin
+        )
+
+        leftCharacter = player
+
+        // 👊 GEGNER-POOL (ohne Player selbst)
+        let enemyPool = ["kenji", "ren_dao", "reika", "ryuji"]
+            .filter { $0 != selectedCharacterKey }
+            .shuffled()
+
+        // 🔥 FALLBACK (falls irgendwas schiefgeht)
+        let enemies = enemyPool.isEmpty ? ["ryuji"] : enemyPool
+
+        // ⛩ STAGE
+        let stage = VersusStage(
+            id: "quick_versus",
+            name: "Quick Versus",
+            background: "dojo_night",
+            music: "dojo_theme",
+            waves: [
+                VersusWave(
+                    wave: 1,
+                    enemies: enemies,  // 🔥 MEHRERE GEGNER
+                    timeLimit: 60
+                )
+            ]
+        )
+
+        // 🧠 VIEW MODEL
+        let vm = VersusViewModel(
+            stages: [stage],
+            gameState: self
+        )
+
+        versusViewModel = vm
+
+        // 🥊 ERSTEN GEGNER SPAWNEN
+        let firstEnemyKey = enemies.first!
+        rightCharacter = Character.enemy(
+            key: firstEnemyKey,
+            skinId: "base"
+        )
+
+        screen = .versus
+
+        versusViewModel = VersusViewModel(
+            stages: [stage],
+            gameState: self
+        )
+
+        screen = .versus
+    }
+
     func syncSkin(from wallet: PlayerWallet, skins: [SkinItem]) {
         guard let equipped = wallet.equippedSkin,
             let skin = skins.first(where: { $0.id == equipped })

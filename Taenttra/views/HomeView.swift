@@ -189,7 +189,7 @@ struct HomeView: View {
             guard unlocked else { return }
 
             if item == .versus {
-                gameState.screen = .versus
+                gameState.startQuickVersus()
             } else {
                 gameState.screen = item.screen
             }
