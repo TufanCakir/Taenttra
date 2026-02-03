@@ -22,14 +22,14 @@
                 {
                     "skinId": "tournament",
                     "name": "Tournament Kenji",
-                    "price": 0,
+                    "price": 100,
                     "currency": "tournamentShards",
                     "preview": "kenji_tournament_preview"
                 },
                 {
                     "skinId": "azure_fist",
                     "name": "Azure Fist",
-                    "price": 0,
+                    "price": 150,
                     "currency": "tournamentShards",
                     "preview": "kenji_azure_fist_preview"
                 }
@@ -43,8 +43,8 @@
                 {
                     "skinId": "modern",
                     "name": "Modern Kenji",
-                    "price": 180,
-                    "currency": "tournamentShards",
+                    "price": 250,
+                    "currency": "coins",
                     "preview": "kenji_modern_preview"
                 }
             ]
