@@ -1,31 +1,51 @@
 {
     "categories": [
         {
-            "id": "skins",
+            "id": "kenji_skins_basic",
             "title": "Skins",
             "icon": "tshirt",
             "items": [
                 {
-                    "skinId": "kenji_red_skin",
+                    "skinId": "red",
                     "name": "Red Kenji",
-                    "price": 350,
+                    "price": 150,
                     "currency": "coins",
-                    "preview": "kenji_red_skin"
+                    "preview": "kenji_red_preview"
                 }
             ]
         },
         {
-            "id": "event_skins",
-            "title": "Event Skins",
-            "icon": "tshirt",
+            "id": "kenji_skins_event",
+            "title": "Tournament Skins",
+            "icon": "trophy",
             "items": [
                 {
-                    "skinId": "kenji_tournament_skin",
-                    "spriteSkinId": "kenji_event",
+                    "skinId": "tournament",
                     "name": "Tournament Kenji",
-                    "price": 150,
+                    "price": 0,
                     "currency": "tournamentShards",
-                    "preview": "kenji_tournament_skin"
+                    "preview": "kenji_tournament_preview"
+                },
+                {
+                    "skinId": "azure_fist",
+                    "name": "Azure Fist",
+                    "price": 0,
+                    "currency": "tournamentShards",
+                    "preview": "kenji_azure_fist_preview"
+                }
+            ]
+        },
+        {
+            "id": "kenji_skins_modern",
+            "title": "Modern Skins",
+            "icon": "sparkles",
+            "items": [
+                {
+                    "skinId": "modern",
+                    "name": "Modern Kenji",
+                    "price": 180,
+                    "currency": "tournamentShards",
+                    "preview": "kenji_modern_preview"
                 }
             ]
         }

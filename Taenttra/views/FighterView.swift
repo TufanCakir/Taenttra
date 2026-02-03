@@ -17,7 +17,7 @@ struct FighterView: View {
 
     var body: some View {
         Image(
-            character.imageNameSafe(
+            character.spriteName(
                 for: state.characterState
             )
         )

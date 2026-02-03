@@ -36,12 +36,27 @@ enum PendingMode {
 
 final class GameState: ObservableObject {
 
+    @Published var characterDisplays: [CharacterDisplay] = []
+
     @Published var selectedCharacterKey: String = "kenji"
 
-    var selectedCharacterName: String {
-        loadCharacterDisplays()
-            .first(where: { $0.key == selectedCharacterKey })?
-            .name ?? "UNKNOWN"
+    func loadCharacterDisplays() -> [CharacterDisplay] {
+        guard
+            let url = Bundle.main.url(
+                forResource: "characters",
+                withExtension: "json"
+            ),
+            let data = try? Data(contentsOf: url),
+            let decoded = try? JSONDecoder().decode(
+                [CharacterDisplay].self,
+                from: data
+            )
+        else {
+            print("⚠️ Failed to load characters.json")
+            return []
+        }
+
+        return decoded
     }
 
     private let unlockedModesKey = "unlocked_modes"
@@ -54,7 +69,7 @@ final class GameState: ObservableObject {
 
     @Published var unlockedModes: Set<GameScreen> = [.story]
 
-    @Published var playerSide: PlayerSide = .left
+    @Published var playerSide: FighterSide = .left
     @Published var wallet: PlayerWallet!
 
     @Published var screen: GameScreen = .start
@@ -75,6 +90,11 @@ final class GameState: ObservableObject {
     @Published var equippedSkinSprite: String = "fighter_default"
     @Published var equippedSkin: String?  // frei wechselbar
     @Published var activeSkin: String?  // fight-locked
+
+    func loadCharactersIfNeeded() {
+        guard characterDisplays.isEmpty else { return }
+        characterDisplays = loadCharacterDisplays()
+    }
 
     private func saveUnlockedModes() {
         let rawValues = unlockedModes.map { $0.rawValue }

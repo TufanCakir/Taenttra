@@ -133,7 +133,7 @@ struct VersusView: View {
             return "red"
         case "red":
             return "base"
-        case "shadow":
+        case "modern":
             return "base"
         default:
             return "base"

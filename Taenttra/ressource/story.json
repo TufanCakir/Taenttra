@@ -35,9 +35,9 @@
                     "boss": false,
                     "timeLimit": 100,
                     "music": "dojo_theme_2",
-                    "arena": "city_rain",
+                    "arena": "dojo_night",
                     "introDialog": {
-                        "image": "city_rain",
+                        "image": "dojo_night",
                         "text":
                             "Kenji trainierte, um am Turnier teilnehmen zu können."
                     }

@@ -47,6 +47,10 @@ struct CharacterDisplay: Identifiable, Codable {
         try container.encode(key, forKey: .key)
         try container.encode(displayImage, forKey: .displayImage)
         try container.encode(name, forKey: .name)
+        try container.encodeIfPresent(
+            combatSpritePrefix,
+            forKey: .combatSpritePrefix
+        )
     }
 }
 
@@ -54,64 +58,62 @@ extension CharacterDisplay {
 
     /// Preview-Bild für Grid / Auswahl
     func previewImage(using wallet: PlayerWallet?) -> String {
-        if key == "kenji",
-            let skin = wallet?.equippedSkin
-        {
-            return SkinLibrary.previewImage(
-                for: key,
-                shopSkinId: skin
-            )
+        guard key == "kenji" else {
+            return displayImage
         }
-        return displayImage
+
+        let skinId = wallet?.equippedSkin
+        return SkinLibrary.previewImage(
+            for: key,
+            skinId: skinId
+        )
     }
+}
+
+extension CharacterDisplay {
 
     /// Übergang in Fight-Character
     func toCharacter(using wallet: PlayerWallet?) -> Character {
         Character(
             key: key,
-            combatSpritePrefix: combatSpritePrefix,
-            isLocked: false,  // 🔥 IM FIGHT IMMER FALSE
-            skinId: SkinLibrary.spriteVariant(
+            spriteBaseKey: combatSpritePrefix,
+            skinId: SkinLibrary.spriteId(
                 from: wallet?.equippedSkin
-            )
+            ),
+            isLocked: false
         )
     }
 }
 
 enum SkinLibrary {
 
-    // MARK: - Shop → Sprite Variant
-    static func spriteVariant(from shopSkinId: String?) -> String {
-        switch shopSkinId {
-        case "kenji_red_skin": return "red"
-        case "kenji_shadow_skin": return "shadow"
-        case "kenji_tournament_skin": return "tournament"  // 🏆 NEU
-        default: return "base"
+    // MARK: - Normalize Skin ID
+    static func normalizedSkinId(_ raw: String?) -> String? {
+        guard let raw else { return nil }
+
+        // Falls alte Daten noch "kenji_*" enthalten
+        if raw.hasPrefix("kenji_") {
+            return raw.replacingOccurrences(of: "kenji_", with: "")
         }
+
+        return raw
     }
 
-    // MARK: - Grid / UI Preview
+    // MARK: - Preview Images (UI)
     static func previewImage(
         for characterKey: String,
-        shopSkinId: String?
+        skinId rawSkinId: String?
     ) -> String {
 
-        guard let shopSkinId else {
+        guard let skinId = normalizedSkinId(rawSkinId) else {
             return "\(characterKey)_base_preview"
         }
 
-        switch shopSkinId {
-        case "kenji_red_skin":
-            return "kenji_red_preview"
+        return "\(characterKey)_\(skinId)_preview"
+    }
 
-        case "kenji_shadow_skin":
-            return "kenji_shadow_preview"
-
-        case "kenji_tournament_skin":  // 🏆 FIX
-            return "kenji_tournament_preview"  // 🔥 MUSS EXISTIEREN
-
-        default:
-            return "\(characterKey)_base_preview"
-        }
+    // MARK: - Sprite-ID für Fight
+    static func spriteId(from equippedSkinId: String?) -> String {
+        normalizedSkinId(equippedSkinId) ?? "base"
     }
 }

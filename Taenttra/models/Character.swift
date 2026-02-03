@@ -12,40 +12,61 @@ struct Character: Identifiable {
 
     let id = UUID()
     let key: String
-    let combatSpritePrefix: String?
-    let isLocked: Bool
+    let spriteBaseKey: String
     let skinId: String?
+    let isLocked: Bool
 
-    // 🔥 EINZIGE combatKey-Quelle
-    private var combatKey: String {
-        combatSpritePrefix ?? key
+    init(
+        key: String,
+        spriteBaseKey: String? = nil,
+        skinId: String?,
+        isLocked: Bool = false
+    ) {
+        self.key = key
+        self.spriteBaseKey = spriteBaseKey ?? key
+        self.skinId = skinId
+        self.isLocked = isLocked
     }
 
-    func imageNameSafe(for state: CharacterState) -> String {
+    func spriteName(for state: CharacterState) -> String {
+        SpriteResolver.resolve(
+            baseKey: spriteBaseKey,
+            skinId: skinId,
+            state: state
+        )
+    }
+}
 
-        // 1️⃣ Skin + State
-        if let skinId {
-            let skinned = "char_\(combatKey)_\(skinId)_\(state.rawValue)"
-            if UIImage(named: skinned) != nil {
-                return skinned
+enum SpriteResolver {
+
+    static func resolve(
+        baseKey: String,
+        skinId: String?,
+        state: CharacterState
+    ) -> String {
+
+        let candidates: [String] = [
+            // Skin + State
+            skinId.map { "char_\(baseKey)_\($0)_\(state.rawValue)" },
+
+            // Base + State
+            "char_\(baseKey)_base_\(state.rawValue)",
+
+            // Base Idle
+            "char_\(baseKey)_base_idle",
+
+            // Global Fallback
+            "char_fallback",
+        ].compactMap { $0 }
+
+        for name in candidates {
+            if UIImage(named: name) != nil {
+                return name
             }
         }
 
-        // 2️⃣ Base + State
-        let baseState = "char_\(combatKey)_base_\(state.rawValue)"
-        if UIImage(named: baseState) != nil {
-            return baseState
-        }
-
-        // 3️⃣ Base Idle
-        let baseIdle = "char_\(combatKey)_base_idle"
-        if UIImage(named: baseIdle) != nil {
-            return baseIdle
-        }
-
-        // 4️⃣ Global fallback
-        print("⚠️ Missing sprite for \(combatKey)")
-        return "char_fallback"
+        print("⚠️ Missing sprite for \(baseKey)")
+        return "char_kenji_base_idle"
     }
 }
 
@@ -55,78 +76,36 @@ enum CharacterState: String, CaseIterable {
     case kick
 }
 
-enum PlayerSide {
-    case left
-    case right
-}
+enum CharacterFactory {
 
-struct CharacterData: Codable {
-    let id: String
-    let image: String
-    let style: String
-}
-
-func loadCharactersFromAssets(
-    equippedSkin: String?
-) -> [Character] {
-
-    [
-        Character(
-            key: "kenji",
-            combatSpritePrefix: nil,
-            isLocked: false,
-            skinId: equippedSkin
-        ),
-        Character(
-            key: "ren_dao",
-            combatSpritePrefix: "kenji",  // 🔥 nutzt Kenji-Sprites
-            isLocked: false,
-            skinId: nil  // Mentor hat keine Skins
-        ),
-        Character(
-            key: "reika",
-            combatSpritePrefix: "kenji",  // 🔥 nutzt Kenji-Sprites
-            isLocked: false,
-            skinId: nil  // Mentor hat keine Skins
-        ),
-        Character(
-            key: "ryuji",
-            combatSpritePrefix: "kenji",  // 🔥 nutzt Kenji-Sprites
-            isLocked: false,
-            skinId: nil  // Mentor hat keine Skins
-        ),
-    ]
-}
-
-func loadCharacterDisplays() -> [CharacterDisplay] {
-    guard
-        let url = Bundle.main.url(
-            forResource: "characters",
-            withExtension: "json"
-        ),
-        let data = try? Data(contentsOf: url),
-        let decoded = try? JSONDecoder().decode(
-            [CharacterDisplay].self,
-            from: data
-        )
-    else {
-        return []
-    }
-
-    return decoded
-}
-
-extension Character {
-
-    static func enemy(
+    static func player(
         key: String,
         skinId: String?
     ) -> Character {
         Character(
             key: key,
-            combatSpritePrefix: nil,  // ⛔️ kein Sprite-Fallback
-            isLocked: false,
             skinId: skinId
+        )
+    }
+
+    static func enemy(
+        key: String,
+        skinId: String? = nil
+    ) -> Character {
+        Character(
+            key: key,
+            skinId: skinId
+        )
+    }
+
+    static func mentor(
+        key: String,
+        usesSpritesOf baseKey: String
+    ) -> Character {
+        Character(
+            key: key,
+            spriteBaseKey: baseKey,
+            skinId: nil
         )
     }
 }
@@ -137,10 +116,18 @@ extension Character {
         key: String,
         skinId: String?
     ) -> Character {
-        Character(
+        CharacterFactory.player(
             key: key,
-            combatSpritePrefix: nil,
-            isLocked: false,
+            skinId: skinId
+        )
+    }
+
+    static func enemy(
+        key: String,
+        skinId: String? = nil
+    ) -> Character {
+        CharacterFactory.enemy(
+            key: key,
             skinId: skinId
         )
     }

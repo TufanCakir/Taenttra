@@ -25,7 +25,6 @@ struct EventMode: Decodable, Identifiable {
     let enemy: String
     let timeLimit: Int
     let rewardShards: Int
-    let ui: EventUIConfig  // 🔥 NEU
 }
 
 final class EventLoader {

@@ -15,8 +15,8 @@ struct SkinSelectionView: View {
 
     private var skins: [ShopItem] {
         data.categories
-            .filter { $0.id == "skins" || $0.id == "event_skins" }
             .flatMap { $0.items }
+            .sorted { $0.name < $1.name }
     }
 
     var body: some View {
@@ -69,7 +69,6 @@ struct SkinSelectionView: View {
         let owned = wallet.ownedSkins.contains(skin.skinId)
         let equipped = wallet.equippedSkin == skin.skinId
         let isEventSkin = skin.currency == .tournamentShards
-        let isNormalSkin = !isEventSkin
 
         return VStack(spacing: 12) {
 
@@ -117,7 +116,7 @@ struct SkinSelectionView: View {
                 if equipped {
                     statusTag("EQUIPPED", color: .cyan)
                 } else if owned {
-                    statusTag("OWNED", color: .secondary)
+                    statusTag("OWNED", color: .white)
                 } else {
                     Text("Locked")
                         .font(.caption)

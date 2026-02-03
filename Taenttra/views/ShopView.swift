@@ -13,19 +13,24 @@ struct ShopView: View {
     @EnvironmentObject var gameState: GameState
     private let data = ShopLoader.load()
 
-    @State private var selectedCategoryIndex: Int = 0
+    @State private var selectedTab: ShopTab?
 
-    // MARK: - Derived State
-
-    private var categories: [ShopCategory] {
-        data.categories
+    private var allItems: [ShopItem] {
+        data.categories.flatMap { $0.items }
     }
 
-    private var selectedCategory: ShopCategory? {
-        guard categories.indices.contains(selectedCategoryIndex) else {
-            return categories.first
+    private var tabs: [ShopTab] {
+        let order: [Currency] = [.coins, .crystals, .tournamentShards]
+
+        return order.compactMap { currency in
+            allItems.contains(where: { $0.currency == currency })
+                ? ShopTab(
+                    currency: currency,
+                    title: title(for: currency),
+                    icon: icon(for: currency)
+                )
+                : nil
         }
-        return categories[selectedCategoryIndex]
     }
 
     var body: some View {
@@ -33,7 +38,6 @@ struct ShopView: View {
 
             Color.black.ignoresSafeArea()
 
-            // ⬅️ BACK
             GameBackButton {
                 gameState.goBack()
             }
@@ -43,11 +47,81 @@ struct ShopView: View {
 
             if let wallet = gameState.wallet {
                 content(wallet: wallet)
-                    .padding(.top, 48)  // 🔥 Platz für Button
+                    .padding(.top, 48)
             } else {
                 ProgressView("Loading Shop…")
                     .foregroundColor(.white)
             }
+        }
+    }
+
+    private func shopCards(wallet: PlayerWallet) -> some View {
+        if filteredItems.isEmpty {
+            return AnyView(emptyState)
+        } else {
+            return AnyView(
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 20) {
+                        ForEach(filteredItems) { item in
+                            shopCard(item, wallet: wallet)
+                        }
+                    }
+                    .padding(.horizontal, 20)
+                    .padding(.vertical, 12)
+                }
+                .id(selectedTab?.currency)
+            )
+        }
+    }
+
+    private var categoryTabs: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 8) {
+                ForEach(tabs) { tab in
+                    Button {
+                        withAnimation(.easeInOut(duration: 0.2)) {
+                            selectedTab = tab
+                        }
+                    } label: {
+                        HStack(spacing: 4) {
+                            Image(tab.icon)
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 14, height: 14)
+
+                            Text(tab.title)
+                                .font(.caption2.weight(.semibold))
+                        }
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 6)
+                        .background(
+                            Capsule()
+                                .fill(
+                                    selectedTab?.currency == tab.currency
+                                        ? Color.white.opacity(0.12)
+                                        : Color.clear
+                                )
+                        )
+                        .overlay(
+                            Capsule()
+                                .stroke(
+                                    Color.white.opacity(
+                                        selectedTab?.currency == tab.currency
+                                            ? 0 : 0.25
+                                    ),
+                                    lineWidth: 1
+                                )
+                        )
+                        .foregroundColor(
+                            selectedTab?.currency == tab.currency
+                                ? .white
+                                : .white.opacity(0.7)
+                        )
+                    }
+                }
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 6)
         }
     }
 
@@ -56,43 +130,41 @@ struct ShopView: View {
         VStack(spacing: 12) {
             VersusHeaderView()
 
-            if !categories.isEmpty {
+            if !tabs.isEmpty {
                 categoryTabs
             }
 
-            if selectedCategory?.id == "event_skins" {
-                Text(
-                    "Event Skins can only be unlocked by winning Tournaments 🏆"
-                )
-                .font(.caption)
-                .foregroundStyle(.secondary)
-                .padding(.top, 4)
-            }
-
-            if let category = selectedCategory {
-                shopCards(category: category, wallet: wallet)
-            } else {
-                emptyState
-            }
+            shopCards(wallet: wallet)
 
             Spacer()
         }
+        .onAppear {
+            if selectedTab == nil
+                || !tabs.contains(where: {
+                    $0.currency == selectedTab?.currency
+                })
+            {
+                selectedTab = tabs.first
+            }
+        }
+        .onChange(of: selectedTab) { _, _ in
+            UIImpactFeedbackGenerator(style: .light).impactOccurred()
+        }
     }
 
-    private func shopCards(
-        category: ShopCategory,
-        wallet: PlayerWallet
-    ) -> some View {
+    private var filteredItems: [ShopItem] {
+        guard let tab = selectedTab else { return [] }
 
-        ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 20) {
-                ForEach(category.items) { item in
-                    shopCard(item, wallet: wallet)
-                }
+        return
+            allItems
+            .filter { $0.currency == tab.currency }
+            .sorted {
+                let ownedA =
+                    gameState.wallet?.ownedSkins.contains($0.skinId) ?? false
+                let ownedB =
+                    gameState.wallet?.ownedSkins.contains($1.skinId) ?? false
+                return ownedA && !ownedB
             }
-            .padding(.horizontal, 20)
-            .padding(.vertical, 12)
-        }
     }
 
     private func shopCard(
@@ -124,25 +196,29 @@ struct ShopView: View {
                     .background(
                         RoundedRectangle(cornerRadius: 22)
                             .fill(Color.black)
-                            .overlay {
+                            .overlay(
                                 RoundedRectangle(cornerRadius: 22)
                                     .stroke(
                                         isEventItem
-                                            ? LinearGradient(
-                                                colors: [.yellow, .orange],
-                                                startPoint: .topLeading,
-                                                endPoint: .bottomTrailing
-                                            )
-                                            : LinearGradient(
-                                                colors: [
-                                                    Color.cyan.opacity(0.8),
-                                                    Color.cyan.opacity(0.8),
-                                                ],
-                                                startPoint: .topLeading,
-                                                endPoint: .bottomTrailing
-                                            ),
-                                        lineWidth: isEventItem ? 3 : 2
+                                            ? Color.yellow.opacity(0.5)
+                                            : Color.cyan.opacity(0.4),
+                                        lineWidth: 1
                                     )
+                            )
+                            .overlay(alignment: .topTrailing) {
+                                let badgeText =
+                                    item.price == 0
+                                    ? "FREE" : (isEventItem ? "EVENT" : "ITEM")
+                                let badgeColor: Color =
+                                    item.price == 0
+                                    ? .green : (isEventItem ? .yellow : .cyan)
+                                Text(badgeText)
+                                    .font(.caption2.weight(.bold))
+                                    .padding(.horizontal, 8)
+                                    .padding(.vertical, 4)
+                                    .background(Capsule().fill(badgeColor))
+                                    .foregroundColor(.black)
+                                    .padding(8)
                             }
                             .shadow(
                                 color: isEventItem
@@ -152,17 +228,6 @@ struct ShopView: View {
                                 y: isEventItem ? 8 : 4
                             )
                     )
-
-                Text(isEventItem ? "EVENT" : "ITEM")
-                    .font(.caption2.weight(.bold))
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 4)
-                    .background(
-                        Capsule()
-                            .fill(isEventItem ? Color.yellow : Color.cyan)
-                    )
-                    .foregroundColor(.black)
-                    .padding(8)
             }
 
             // 🏷️ Name
@@ -277,51 +342,20 @@ struct ShopView: View {
         }
     }
 
-    // MARK: - Tabs
-
-    private var categoryTabs: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 10) {
-                ForEach(Array(categories.enumerated()), id: \.element.id) {
-                    index,
-                    category in
-                    tabButton(
-                        category: category,
-                        isSelected: index == selectedCategoryIndex
-                    )
-                    .onTapGesture {
-                        withAnimation(.easeInOut(duration: 0.15)) {
-                            selectedCategoryIndex = index
-                        }
-                    }
-                }
-            }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 10)
+    private func title(for currency: Currency) -> String {
+        switch currency {
+        case .coins: return "Coins"
+        case .crystals: return "Crystals"
+        case .tournamentShards: return "Event"
         }
-        .background(.ultraThinMaterial)
     }
 
-    // MARK: - Tab Button
-
-    private func tabButton(
-        category: ShopCategory,
-        isSelected: Bool
-    ) -> some View {
-        HStack(spacing: 6) {
-            Image(systemName: category.icon)
-                .font(.caption)
-
-            Text(category.title)
-                .font(.caption.weight(.semibold))
+    private func icon(for currency: Currency) -> String {
+        switch currency {
+        case .coins: return "icon_coin"
+        case .crystals: return "icon_crystal"
+        case .tournamentShards: return "icon_tournament"
         }
-        .foregroundStyle(isSelected ? .primary : .secondary)
-        .padding(.horizontal, 14)
-        .padding(.vertical, 8)
-        .background(
-            Capsule()
-                .fill(isSelected ? Color(.secondarySystemBackground) : .clear)
-        )
     }
 
     // MARK: - Empty State

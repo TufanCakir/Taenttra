@@ -28,27 +28,44 @@ struct HomeView: View {
         .options,
     ]
 
-    private let characters: [CharacterDisplay] = loadCharacterDisplays()
+    // Character displays for the roster and main preview
+    private var characters: [CharacterDisplay] {
+        gameState.characterDisplays
+    }
 
     var body: some View {
         ZStack {
             Color.black.ignoresSafeArea()
 
             VStack(spacing: 16) {
-
                 VersusHeaderView()
 
                 Spacer(minLength: 8)
 
                 mainCharacterView
 
-                characterRoster
+                // Roster strip
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: 12) {
+                        ForEach(characters, id: \.key) { character in
+                            rosterItem(character)
+                        }
+                    }
+                    .padding(.horizontal, 16)
+                }
 
                 Spacer()
 
                 footerMenu
             }
         }
+        .onAppear {
+            gameState.loadCharactersIfNeeded()
+        }
+    }
+
+    private var selectedDisplay: CharacterDisplay? {
+        characters.first { $0.key == gameState.selectedCharacterKey }
     }
 
     private var mainCharacterView: some View {
@@ -64,9 +81,7 @@ struct HomeView: View {
             )
 
             VStack(spacing: 10) {
-                if let display = characters.first(where: {
-                    $0.key == gameState.selectedCharacterKey
-                }) {
+                if let display = selectedDisplay {
                     Image(display.previewImage(using: gameState.wallet))
                         .resizable()
                         .scaledToFit()
@@ -75,13 +90,15 @@ struct HomeView: View {
                         .shadow(color: .cyan.opacity(0.35), radius: 30)
                         .shadow(color: .black.opacity(0.6), radius: 24)
                         .onAppear {
-                            withAnimation(
-                                .easeInOut(duration: 2.5)
-                                    .repeatForever(autoreverses: true)
-                            ) {
-                                idlePulse.toggle()
-                            }
+                            guard !idlePulse else { return }
+                            idlePulse = true
                         }
+                        .animation(
+                            .easeInOut(duration: 2.5).repeatForever(
+                                autoreverses: true
+                            ),
+                            value: idlePulse
+                        )
                 } else {
                     // Placeholder when no character matches
                     Rectangle()
@@ -89,32 +106,24 @@ struct HomeView: View {
                         .frame(height: 260)
                 }
 
-                Text(gameState.selectedCharacterName.uppercased())
-                    .font(.system(size: 20, weight: .heavy))
-                    .tracking(2)
-                    .foregroundColor(.white)
-                    .shadow(color: .cyan.opacity(0.6), radius: 12)
+                Text(
+                    selectedDisplay?.name.uppercased()
+                        ?? gameState.selectedCharacterKey.uppercased()
+                )
+                .font(.system(size: 20, weight: .heavy))
+                .tracking(2)
+                .foregroundColor(.white)
+                .shadow(color: .cyan.opacity(0.6), radius: 12)
             }
         }
         .frame(maxWidth: .infinity)
     }
 
-    private var characterRoster: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 10) {
-                ForEach(characters) { character in
-                    rosterItem(character)
-                }
-            }
-            .padding(.horizontal, 16)
-        }
-    }
-
     private func rosterItem(_ character: CharacterDisplay) -> some View {
         let isSelected = character.key == gameState.selectedCharacterKey
-        let locked = !gameState.wallet!.unlockedCharacters.contains(
-            character.key
-        )
+        let locked =
+            !(gameState.wallet?.unlockedCharacters.contains(character.key)
+            ?? false)
 
         return Image(character.displayImage)
             .resizable()
@@ -204,9 +213,7 @@ struct HomeView: View {
                     Capsule()
                         .fill(
                             unlocked
-                                ? item.color.opacity(
-                                    0.25
-                                )
+                                ? item.color.opacity(0.25)
                                 : Color.white.opacity(0.04)
                         )
                 )
@@ -233,19 +240,15 @@ struct HomeView: View {
         item: HomeMenuItem,
         index: Int
     ) -> some View {
-
         let isSelected = selection == index
         let unlocked = isUnlocked(item)
 
         return HStack(spacing: 16) {
-
-            // 🔹 Indicator
             Circle()
                 .fill(unlocked ? item.color : .gray)
                 .frame(width: 10, height: 10)
                 .opacity(isSelected ? 1 : 0.4)
 
-            // 📝 Title
             Text(item.title)
                 .font(
                     .system(size: 18, weight: isSelected ? .semibold : .regular)
@@ -258,7 +261,6 @@ struct HomeView: View {
 
             Spacer()
 
-            // 🔒 / ➜
             if unlocked {
                 Image(systemName: "chevron.right")
                     .font(.caption)

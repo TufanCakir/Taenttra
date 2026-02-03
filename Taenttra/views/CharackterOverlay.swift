@@ -10,10 +10,11 @@ import SwiftUI
 struct CharacterGridView: View {
 
     @EnvironmentObject var gameState: GameState
-    private let characters: [CharacterDisplay] = loadCharacterDisplays()
-
+    private var characters: [CharacterDisplay] {
+        gameState.loadCharacterDisplays()
+    }
     @State private var selectedIndex: Int = 0
-    @State private var selectedSide: PlayerSide = .left
+    @State private var selectedSide: FighterSide = .left
 
     private var selectedCharacter: CharacterDisplay? {
         guard characters.indices.contains(selectedIndex) else { return nil }
@@ -246,28 +247,15 @@ struct CharacterGridView: View {
 
         gameState.playerSide = selectedSide
 
-        let spriteSkin = SkinLibrary.spriteVariant(
-            from: gameState.wallet?.equippedSkin
-        )
-
-        let playerCharacter = Character(
-            key: selected.key,
-            combatSpritePrefix: selected.combatSpritePrefix,
-            isLocked: false,
-            skinId: spriteSkin
-        )
-
-        let enemyCharacter = Character.enemy(
-            key: enemyKey ?? "kenji",
-            skinId: nil
-        )
+        let player = selected.toCharacter(using: gameState.wallet)
+        let enemy = Character.enemy(key: enemyKey ?? "kenji")
 
         if selectedSide == .left {
-            gameState.leftCharacter = playerCharacter
-            gameState.rightCharacter = enemyCharacter
+            gameState.leftCharacter = player
+            gameState.rightCharacter = enemy
         } else {
-            gameState.leftCharacter = enemyCharacter
-            gameState.rightCharacter = playerCharacter
+            gameState.leftCharacter = enemy
+            gameState.rightCharacter = player
         }
 
         switch gameState.pendingMode {
@@ -347,8 +335,8 @@ struct CharacterSlot: View {
 
 struct SideButton: View {
     let title: String
-    let side: PlayerSide
-    @Binding var selectedSide: PlayerSide
+    let side: FighterSide
+    @Binding var selectedSide: FighterSide
 
     var isSelected: Bool { selectedSide == side }
 

@@ -68,20 +68,15 @@ struct LeaderboardView: View {
     }
 
     private var playerCharacter: Character {
-        Character(
+        CharacterFactory.player(
             key: "kenji",
-            combatSpritePrefix: nil,
-            isLocked: false,
             skinId: gameState.wallet?.equippedSkin
         )
     }
 
     private var rivalCharacter: Character {
-        Character(
-            key: "kenji",
-            combatSpritePrefix: nil,
-            isLocked: false,
-            skinId: "kenji_red_skin"
+        CharacterFactory.enemy(
+            key: "kenji"
         )
     }
 
@@ -105,20 +100,20 @@ struct LeaderboardView: View {
             HStack(alignment: .bottom, spacing: 32) {
 
                 fighterSlot(
-                    image: playerCharacter.imageNameSafe(for: .idle),
+                    image: playerCharacter.spriteName(for: .idle),
                     name: "YOU",
                     color: .cyan
                 )
 
-                Text("VS")
-                    .font(.system(size: 42, weight: .heavy))
-                    .foregroundStyle(.red)
-                    .shadow(color: .red.opacity(0.8), radius: 12)
+                Image(systemName: "gamecontroller.slash")
+                    .font(.system(size: 42))
+                    .foregroundStyle(.white.opacity(0.4))
 
                 fighterSlot(
-                    image: rivalCharacter.imageNameSafe(for: .idle),
+                    image: playerCharacter.spriteName(for: .idle),
                     name: "RIVAL",
-                    color: .red
+                    color: .red,
+                    pulsing: true
                 )
             }
         }
@@ -127,7 +122,8 @@ struct LeaderboardView: View {
     private func fighterSlot(
         image: String,
         name: String,
-        color: Color
+        color: Color,
+        pulsing: Bool = false
     ) -> some View {
         VStack(spacing: 6) {
 
@@ -136,6 +132,14 @@ struct LeaderboardView: View {
                 .scaledToFit()
                 .frame(width: 110)
                 .shadow(color: color.opacity(0.6), radius: 20)
+                .scaleEffect(pulsing ? 1.02 : 1.0)
+                .animation(
+                    pulsing
+                        ? .easeInOut(duration: 1.2).repeatForever(
+                            autoreverses: true
+                        ) : .default,
+                    value: pulsing
+                )
 
             Text(name)
                 .font(.caption.bold())

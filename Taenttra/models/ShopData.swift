@@ -18,6 +18,14 @@ struct ShopCategory: Codable, Identifiable {
     let items: [ShopItem]
 }
 
+struct ShopTab: Identifiable, Hashable {
+    let currency: Currency
+    let title: String
+    let icon: String
+
+    var id: String { currency.rawValue }
+}
+
 struct ShopItem: Codable, Identifiable {
 
     let id: UUID  // SwiftUI

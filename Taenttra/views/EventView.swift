@@ -11,7 +11,6 @@ struct EventView: View {
 
     @ObservedObject var viewModel: EventViewModel
     @EnvironmentObject var gameState: GameState
-    @State private var currentType: EventType = .normal
     @State private var selectedMode: EventCategory
 
     init(
@@ -25,58 +24,24 @@ struct EventView: View {
 
     let onStartEvent: (EventMode) -> Void
 
-    var filteredEvents: [EventMode] {
+    private var filteredEvents: [EventMode] {
         viewModel.events(for: selectedMode)
     }
-
-    var activeOverlay: EventUIConfig? {
-        filteredEvents.first?.ui
-    }
-
-    var modeSwitchButton: some View {
-        Button {
-            withAnimation(.easeInOut(duration: 0.45)) {
-                currentType = currentType == .normal ? .special : .normal
-            }
-            UIImpactFeedbackGenerator(style: .medium).impactOccurred()
-        } label: {
-            Text(currentType == .normal ? "SPEZIAL EVENTS" : "NORMALE EVENTS")
-                .font(.headline.weight(.bold))
-                .padding()
-                .background(
-                    Capsule()
-                        .fill(
-                            currentType == .normal ? Color.purple : Color.green
-                        )
-                )
-                .foregroundColor(.black)
-        }
-    }
-
-    var fallbackOverlay: EventUIConfig {
-        EventUIConfig(
-            overlayColor: "#FFFFFF",
-            overlayOpacity: 0.1
-        )
-    }
-
-    var ui: EventUIConfig { activeOverlay ?? fallbackOverlay }
 
     var body: some View {
         ZStack(alignment: .topLeading) {
 
-            // 🌑 BASE (GANZ UNTEN)
-            Color.black
-                .ignoresSafeArea()
+            // 🌑 BASE
+            Color.black.ignoresSafeArea()
 
-            // 🎨 OVERLAY (DARÜBER)
+            // 🎨 MODE OVERLAY
             Color(hex: selectedMode.ui.overlayColor)
                 .opacity(selectedMode.ui.overlayOpacity)
                 .ignoresSafeArea()
                 .blendMode(.screen)
                 .animation(.easeInOut(duration: 0.4), value: selectedMode.id)
 
-            // ⬅️ BACK BUTTON
+            // ⬅️ BACK
             GameBackButton {
                 gameState.goBack()
             }
@@ -84,64 +49,75 @@ struct EventView: View {
             .padding(.top, 12)
             .zIndex(10)
 
-            VStack(spacing: 12) {
+            VStack(spacing: 24) {
 
+                // 🧭 MODE SELECTOR
                 ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 10) {
+                    HStack(spacing: 12) {
                         ForEach(viewModel.modes) { mode in
-                            Button {
-                                withAnimation(.easeInOut(duration: 0.35)) {
-                                    selectedMode = mode
-                                }
-                                UIImpactFeedbackGenerator(style: .medium)
-                                    .impactOccurred()
-                            } label: {
-                                Text(mode.title)
-                                    .font(.caption.weight(.bold))
-                                    .padding(.horizontal, 14)
-                                    .padding(.vertical, 8)
-                                    .background(
-                                        Capsule()
-                                            .fill(
-                                                Color(hex: mode.ui.buttonColor)
-                                            )
-                                    )
-                                    .foregroundColor(.black)
-                                    .opacity(
-                                        selectedMode.id == mode.id ? 1 : 0.5
-                                    )
-                            }
+                            modeButton(mode)
                         }
                     }
                     .padding(.horizontal, 16)
                 }
-                .padding(.top, 60)
+                .padding(.top, 72)
 
+                // 📜 EVENTS
                 ScrollView {
-                    VStack(spacing: 14) {
+                    VStack(spacing: 16) {
                         ForEach(filteredEvents) { event in
                             Button {
                                 onStartEvent(event)
                             } label: {
                                 EventRow(event: event)
-                                    .transition(
-                                        .asymmetric(
-                                            insertion: .opacity.combined(
-                                                with: .scale(scale: 1.05)
-                                            ),
-                                            removal: .opacity.combined(
-                                                with: .scale(scale: 0.95)
-                                            )
-                                        )
-                                    )
                             }
                             .buttonStyle(.plain)
                         }
                     }
                     .padding(.horizontal, 12)
                     .padding(.bottom, 24)
+                    .id(selectedMode.id)
+                    .transition(.opacity.combined(with: .scale(scale: 0.97)))
                 }
+                .animation(.easeInOut(duration: 0.35), value: selectedMode.id)
             }
+        }
+    }
+
+    // MARK: - Mode Button
+    @ViewBuilder
+    private func modeButton(_ mode: EventCategory) -> some View {
+        Button {
+            guard selectedMode.id != mode.id else { return }
+            UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+
+            withAnimation(.easeInOut(duration: 0.45)) {
+                selectedMode = mode
+            }
+        } label: {
+            Text(mode.title)
+                .font(.caption.weight(.bold))
+                .padding(.horizontal, 16)
+                .padding(.vertical, 9)
+                .foregroundColor(.black)
+                .background(
+                    Capsule()
+                        .fill(
+                            Color(hex: mode.ui.buttonColor)
+                                .opacity(
+                                    selectedMode.id == mode.id ? 1.0 : 0.25
+                                )
+                        )
+                        .overlay(
+                            Capsule()
+                                .stroke(
+                                    Color(hex: mode.ui.buttonColor),
+                                    lineWidth: selectedMode.id == mode.id
+                                        ? 0 : 1
+                                )
+                        )
+                )
+                .scaleEffect(selectedMode.id == mode.id ? 1.08 : 1.0)
         }
     }
 }

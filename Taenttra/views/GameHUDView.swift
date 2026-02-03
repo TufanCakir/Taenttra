@@ -40,7 +40,10 @@ struct GameHUDView: View {
             HStack {
 
                 SlantedPlayerHUD(
-                    name: displayName(for: gameState.leftCharacter),
+                    name: displayName(
+                        for: gameState.leftCharacter,
+                        using: gameState
+                    ),
                     health: viewModel.leftHealth,
                     direction: .left
                 )
@@ -52,7 +55,10 @@ struct GameHUDView: View {
                 Spacer()
 
                 SlantedPlayerHUD(
-                    name: displayName(for: gameState.rightCharacter),
+                    name: displayName(
+                        for: gameState.rightCharacter,
+                        using: gameState
+                    ),
                     health: viewModel.rightHealth,
                     direction: .right
                 )
@@ -97,10 +103,13 @@ struct GameHUDView: View {
     }
 }
 
-private func displayName(for character: Character?) -> String {
+private func displayName(
+    for character: Character?,
+    using gameState: GameState
+) -> String {
     guard let key = character?.key else { return "" }
 
-    return loadCharacterDisplays()
+    return gameState.characterDisplays
         .first(where: { $0.key == key })?
         .name
         ?? key.replacingOccurrences(of: "_", with: " ").capitalized
