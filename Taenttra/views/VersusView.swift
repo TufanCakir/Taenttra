@@ -19,21 +19,40 @@ struct VersusView: View {
     var body: some View {
         ZStack {
 
-            // 🏆 VICTORY – ALLES ANDERE IST TOT
-            if viewModel.fightState == .victory, let rewards = viewModel.rewards
-            {
-                VictoryView(rewards: rewards) {
-                    onVictoryContinue(rewards)
-                }
-                .transition(.opacity)
-                .zIndex(100)
-            } else {
-                // 🥊 FIGHT (nur solange NICHT Victory)
+            switch viewModel.fightState {
+
+            case .fighting:
                 fightView
                     .transition(.opacity)
+
+            case .ko:
+                if let winner = viewModel.winner {
+                    KOView(winnerSide: winner) {
+                        gameState.exitVersusAfterKO()
+                    }
+                    .zIndex(50)
+                }
+
+            case .victory:
+                if let rewards = viewModel.rewards {
+                    VictoryView(rewards: rewards) {
+                        onVictoryContinue(rewards)
+                    }
+                    .zIndex(100)
+                }
+
+            case .timeout:
+                // optional: eigenes TimeoutView
+                EmptyView()
             }
         }
         .animation(.easeInOut(duration: 0.35), value: viewModel.fightState)
+        .onAppear {
+            print("🟢 VersusView APPEAR fightState =", viewModel.fightState)
+        }
+        .onDisappear {
+            print("🔴 VersusView DISAPPEAR")
+        }
     }
 
     private var fightView: some View {
@@ -66,10 +85,10 @@ struct VersusView: View {
                         scale: 0.80,
                         content: FighterView(
                             character: leftCharacter,
-                            state: viewModel.animationState,
+                            state: viewModel.leftAnimation,
                             rotation: 0,
                             mirrored: false,
-                            attackOffset: viewModel.attackOffset
+                            attackOffset: viewModel.leftAttackOffset
                         )
                     )
 
@@ -80,10 +99,10 @@ struct VersusView: View {
                         scale: 0.80,
                         content: FighterView(
                             character: rightCharacter,
-                            state: viewModel.animationState,
+                            state: viewModel.rightAnimation,
                             rotation: 0,
                             mirrored: true,
-                            attackOffset: viewModel.attackOffset
+                            attackOffset: viewModel.rightAttackOffset
                         )
                     )
                 }
@@ -146,3 +165,4 @@ struct VersusView: View {
             : rightCharacter.skinId ?? "base"
     }
 }
+

@@ -56,7 +56,7 @@ enum SpriteResolver {
             "char_\(baseKey)_base_idle",
 
             // Global Fallback
-            "char_fallback",
+            "char_kenji_base_idle",
         ].compactMap { $0 }
 
         for name in candidates {

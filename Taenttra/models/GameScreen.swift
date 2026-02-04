@@ -91,6 +91,21 @@ final class GameState: ObservableObject {
     @Published var equippedSkin: String?  // frei wechselbar
     @Published var activeSkin: String?  // fight-locked
 
+    func exitVersusAfterKO() {
+        print("🚪 exitVersusAfterKO")
+
+        AudioManager.shared.endFight()
+
+        versusViewModel = nil
+        pendingMode = nil
+        leftCharacter = nil
+        rightCharacter = nil
+        currentStage = nil
+
+        screen = .home
+        print("🏠 screen =", screen)
+    }
+
     func loadCharactersIfNeeded() {
         guard characterDisplays.isEmpty else { return }
         characterDisplays = loadCharacterDisplays()
@@ -149,23 +164,18 @@ final class GameState: ObservableObject {
 
     func startQuickVersus() {
 
-        // 🧑‍🎮 PLAYER
         let player = Character.player(
             key: selectedCharacterKey,
             skinId: activeSkin
         )
-
         leftCharacter = player
 
-        // 👊 GEGNER-POOL (ohne Player selbst)
         let enemyPool = ["kenji", "ren_dao", "reika", "ryuji"]
             .filter { $0 != selectedCharacterKey }
             .shuffled()
 
-        // 🔥 FALLBACK (falls irgendwas schiefgeht)
         let enemies = enemyPool.isEmpty ? ["ryuji"] : enemyPool
 
-        // ⛩ STAGE
         let stage = VersusStage(
             id: "quick_versus",
             name: "Quick Versus",
@@ -174,13 +184,12 @@ final class GameState: ObservableObject {
             waves: [
                 VersusWave(
                     wave: 1,
-                    enemies: enemies,  // 🔥 MEHRERE GEGNER
+                    enemies: enemies,
                     timeLimit: 60
                 )
             ]
         )
 
-        // 🧠 VIEW MODEL
         let vm = VersusViewModel(
             stages: [stage],
             gameState: self
@@ -188,18 +197,9 @@ final class GameState: ObservableObject {
 
         versusViewModel = vm
 
-        // 🥊 ERSTEN GEGNER SPAWNEN
-        let firstEnemyKey = enemies.first!
         rightCharacter = Character.enemy(
-            key: firstEnemyKey,
+            key: enemies.first!,
             skinId: "base"
-        )
-
-        screen = .versus
-
-        versusViewModel = VersusViewModel(
-            stages: [stage],
-            gameState: self
         )
 
         screen = .versus

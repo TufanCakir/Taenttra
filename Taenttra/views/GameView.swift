@@ -42,6 +42,9 @@ struct GameView: View {
         .environmentObject(gameState)
         .animation(.easeInOut(duration: 0.25), value: gameState.screen)
         .onAppear(perform: loadPersistentState)
+        .onChange(of: gameState.screen) { oldValue, newValue in
+            print("📺 SCREEN CHANGED →", newValue)
+        }
     }
 
     // MARK: - Screen Switch

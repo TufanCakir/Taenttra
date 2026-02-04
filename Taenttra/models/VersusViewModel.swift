@@ -10,6 +10,8 @@ import SwiftUI
 
 final class VersusViewModel: ObservableObject {
 
+    @Published private(set) var koOccurred: Bool = false
+
     // MARK: - Timer
     @Published var timeRemaining: Int = 0
     @Published var isTimerRunning: Bool = false
@@ -17,8 +19,11 @@ final class VersusViewModel: ObservableObject {
     @Published var currentEnemyIndex: Int = 0
 
     // MARK: - Animation
-    @Published var animationState: FighterAnimation = .idle
-    @Published var attackOffset: CGFloat = 0
+    @Published var leftAnimation: FighterAnimation = .idle
+    @Published var rightAnimation: FighterAnimation = .idle
+
+    @Published var leftAttackOffset: CGFloat = 0
+    @Published var rightAttackOffset: CGFloat = 0
 
     // MARK: - Fight State
     @Published var fightState: FightState = .fighting
@@ -47,11 +52,16 @@ final class VersusViewModel: ObservableObject {
     @Published var rightHealth: CGFloat = 1.0
 
     // MARK: - Private
-    private var isAttacking = false
+    private var leftIsAttacking = false
+    private var rightIsAttacking = false
     private let attacks: [FighterAnimation] = [.punch, .kick]
     private var timerCancellable: AnyCancellable?
 
     private let gameState: GameState  // 🔥 NEU
+
+    // MARK: - Enemy AI
+    private var enemyAttackCancellable: AnyCancellable?
+    private let enemyAttackInterval: ClosedRange<Double> = 1.2...2.4
 
     // MARK: - Init
     init(stages: [VersusStage], gameState: GameState) {
@@ -60,6 +70,37 @@ final class VersusViewModel: ObservableObject {
         self.gameState = gameState
         self.phase = .intro
         startTimer()
+    }
+
+    private func startEnemyAttacks() {
+        enemyAttackCancellable?.cancel()
+
+        enemyAttackCancellable =
+            Timer
+            .publish(
+                every: Double.random(in: enemyAttackInterval),
+                on: .main,
+                in: .common
+            )
+            .autoconnect()
+            .sink { [weak self] _ in
+                self?.enemyAttack()
+            }
+    }
+
+    private func enemyAttack() {
+        guard fightState == .fighting else { return }
+
+        // Gegner greift immer von der Gegenseite an
+        let enemySide: FighterSide =
+            gameState.playerSide == .left ? .right : .left
+
+        performRandomAttack(from: enemySide)
+    }
+
+    private func stopEnemyAttacks() {
+        enemyAttackCancellable?.cancel()
+        enemyAttackCancellable = nil
     }
 
     func loadStage(_ stage: VersusStage) {
@@ -71,12 +112,18 @@ final class VersusViewModel: ObservableObject {
         leftHealth = 1
         rightHealth = 1
         fightState = .fighting
-        animationState = .idle
+
+        leftAnimation = .idle
+        rightAnimation = .idle
+        leftAttackOffset = 0
+        rightAttackOffset = 0
     }
 
     func startFight() {
+        koOccurred = false
         phase = .fighting
         startTimer()
+        startEnemyAttacks()
     }
 
     private func resetForNextWave() {
@@ -84,9 +131,12 @@ final class VersusViewModel: ObservableObject {
         winner = nil
         leftHealth = 1
         rightHealth = 1
-        animationState = .idle
-
+        leftAnimation = .idle
+        rightAnimation = .idle
+        leftAttackOffset = 0
+        rightAttackOffset = 0
         startTimer()
+        startEnemyAttacks()
     }
 
     private func startTimer() {
@@ -121,6 +171,7 @@ final class VersusViewModel: ObservableObject {
 
     private func handleTimeout() {
         timerCancellable?.cancel()
+        stopEnemyAttacks()
         isTimerRunning = false
 
         // Sieger anhand HP bestimmen
@@ -133,7 +184,10 @@ final class VersusViewModel: ObservableObject {
         }
 
         withAnimation(.easeOut(duration: 0.3)) {
-            animationState = .idle
+            leftAnimation = .idle
+            rightAnimation = .idle
+            leftAttackOffset = 0
+            rightAttackOffset = 0
         }
 
         let score = calculateLeaderboardScore()
@@ -172,26 +226,44 @@ final class VersusViewModel: ObservableObject {
 
     // MARK: - Attack
     func performRandomAttack(from side: FighterSide = .left) {
-        guard !isAttacking, fightState == .fighting else { return }
-        isAttacking = true
+        guard fightState == .fighting else { return }
+
+        if side == .left {
+            guard !leftIsAttacking else { return }
+            leftIsAttacking = true
+        } else {
+            guard !rightIsAttacking else { return }
+            rightIsAttacking = true
+        }
 
         let attack = attacks.randomElement() ?? .punch
         let config = data(for: attack)
         let target: FighterSide = side == .left ? .right : .left
 
         withAnimation(.easeOut(duration: 0.08)) {
-            animationState = attack
-            attackOffset = 14
+            if side == .left {
+                leftAnimation = attack
+                leftAttackOffset = 14
+            } else {
+                rightAnimation = attack
+                rightAttackOffset = -14
+            }
         }
 
         applyDamage(to: target, amount: config.damage, hitStop: config.hitStop)
 
         DispatchQueue.main.asyncAfter(deadline: .now() + config.recovery) {
             withAnimation(.easeOut(duration: 0.12)) {
-                self.attackOffset = 0
-                self.animationState = .idle
+                if side == .left {
+                    self.leftAnimation = .idle
+                    self.leftAttackOffset = 0
+                    self.leftIsAttacking = false
+                } else {
+                    self.rightAnimation = .idle
+                    self.rightAttackOffset = 0
+                    self.rightIsAttacking = false
+                }
             }
-            self.isAttacking = false
         }
     }
 
@@ -215,23 +287,32 @@ final class VersusViewModel: ObservableObject {
 
     private func handleKO(loser: FighterSide) {
         timerCancellable?.cancel()
+        stopEnemyAttacks()
+
+        koOccurred = true  // ⬅️ WICHTIG
+
         isTimerRunning = false
         fightState = .ko
         winner = loser == .left ? .right : .left
 
         withAnimation(.easeOut(duration: 0.25)) {
-            animationState = .ko
+            if loser == .left {
+                leftAnimation = .ko
+            } else {
+                rightAnimation = .ko
+            }
         }
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) {
-            self.advanceAfterKO()
+            // ❌ ENTFERNEN
+            // self.advanceAfterKO()
         }
     }
 
     private func advanceAfterKO() {
 
         guard let wave = currentWave else {
-            handleVictory()
+            // KO = Ende → NICHT Victory
             return
         }
 
@@ -282,21 +363,33 @@ final class VersusViewModel: ObservableObject {
         winner = nil
         leftHealth = 1
         rightHealth = 1
-        animationState = .idle
+
+        leftAnimation = .idle
+        rightAnimation = .idle
+        leftAttackOffset = 0
+        rightAttackOffset = 0
+
         startTimer()
+        startEnemyAttacks()
     }
 
     private func handleVictory() {
         timerCancellable?.cancel()
+        stopEnemyAttacks()
         isTimerRunning = false
 
-        rewards = calculateRewards()
+        // ❌ KEINE REWARDS NACH KO
+        if !koOccurred {
+            rewards = calculateRewards()
 
-        let score = calculateLeaderboardScore()
-        if GameCenterManager.shared.isAuthenticated {
-            Task {
-                await GameCenterManager.shared.submitScore(score)
+            let score = calculateLeaderboardScore()
+            if GameCenterManager.shared.isAuthenticated {
+                Task {
+                    await GameCenterManager.shared.submitScore(score)
+                }
             }
+        } else {
+            rewards = nil
         }
 
         withAnimation(.easeOut(duration: 0.3)) {
