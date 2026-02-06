@@ -69,14 +69,14 @@ struct LeaderboardView: View {
 
     private var playerCharacter: Character {
         CharacterFactory.player(
-            key: "kenji",
+            key: "ten",
             skinId: gameState.wallet?.equippedSkin
         )
     }
 
     private var rivalCharacter: Character {
         CharacterFactory.enemy(
-            key: "kenji"
+            key: "rei"
         )
     }
 

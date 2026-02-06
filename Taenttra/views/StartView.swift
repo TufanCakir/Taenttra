@@ -38,7 +38,7 @@ struct StartView: View {
             )
 
             // 🥊 CHARACTER
-            Image("kenji_base_preview")
+            Image("ten_base_preview")
                 .resizable()
                 .scaledToFit()
                 .frame(height: 520)

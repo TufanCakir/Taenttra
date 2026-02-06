@@ -38,7 +38,7 @@ final class GameState: ObservableObject {
 
     @Published var characterDisplays: [CharacterDisplay] = []
 
-    @Published var selectedCharacterKey: String = "kenji"
+    @Published var selectedCharacterKey: String = "ten"
 
     func loadCharacterDisplays() -> [CharacterDisplay] {
         guard
@@ -151,7 +151,7 @@ final class GameState: ObservableObject {
 
             // 🔥 MIGRATION FIX
             if wallet.unlockedCharacters.isEmpty {
-                wallet.unlockedCharacters.append("kenji")
+                wallet.unlockedCharacters.append("ten")
             }
 
             return
@@ -170,7 +170,7 @@ final class GameState: ObservableObject {
         )
         leftCharacter = player
 
-        let enemyPool = ["kenji", "ren_dao", "reika", "ryuji"]
+        let enemyPool = ["ten", "ren_dao", "reika", "ryuji"]
             .filter { $0 != selectedCharacterKey }
             .shuffled()
 
@@ -315,7 +315,7 @@ extension GameState {
     }
 
     func startSurvival(mode: SurvivalMode) {
-        let enemy = mode.enemyPool.randomElement() ?? "kenji"
+        let enemy = mode.enemyPool.randomElement() ?? "ten"
 
         let stage = VersusStage(
             id: mode.id,
@@ -372,7 +372,7 @@ extension GameState {
                 let enemy =
                     section.enemies.indices.contains(index)
                     ? section.enemies[index]
-                    : section.enemies.last ?? "kenji"
+                    : section.enemies.last ?? "ten"
 
                 return VersusWave(
                     wave: index + 1,

@@ -50,8 +50,8 @@ struct SlantedPlayerHUD: View {
 // MARK: - Preview
 #Preview {
     VStack(spacing: 20) {
-        SlantedPlayerHUD(name: "Kenji", health: 1.0, direction: .left)
-        SlantedPlayerHUD(name: "Ryu", health: 0.35, direction: .right)
+        SlantedPlayerHUD(name: "Ten", health: 1.0, direction: .left)
+        SlantedPlayerHUD(name: "Rei", health: 0.35, direction: .right)
     }
     .padding()
 }

@@ -3,76 +3,76 @@
         {
             "id": "chapter_1",
             "title": "The Tournament",
-            "background": "dojo_night",
-            "music": "dojo_theme",
-            "arena": "dojo_night",
+            "background": "background1",
+            "music": "intro",
+            "arena": "background1",
             "introDialog": {
-                "image": "dojo_night",
+                "image": "background1",
                 "text":
-                    "Nach Jahren im Exil kehrst du in das Dojo zurück, wo alles begann."
+                    "Nach Jahren im Exil kehrst du in das Gebiet zurück, wo alles begann."
             },
             "sections": [
                 {
                     "id": "1_1",
                     "title": "Ein neuer Kämpfer",
-                    "enemy": "kenji",
+                    "enemy": "ten",
                     "waves": 1,
                     "boss": false,
                     "timeLimit": 100,
-                    "music": "dojo_theme",
-                    "arena": "dojo_night",
+                    "music": "intro",
+                    "arena": "background1",
                     "introDialog": {
-                        "image": "dojo_night",
+                        "image": "background1",
                         "text":
-                            "Ein Junge namens Kenji will am Turnier teilnehmen."
+                            "Ein Junge namens Ten will am Turnier teilnehmen."
                     }
                 },
                 {
                     "id": "1_2",
                     "title": "Die Ausbildung",
-                    "enemy": "kenji",
+                    "enemy": "ten",
                     "waves": 1,
                     "boss": false,
                     "timeLimit": 100,
-                    "music": "dojo_theme_2",
-                    "arena": "dojo_night",
+                    "music": "battle",
+                    "arena": "background2",
                     "introDialog": {
-                        "image": "dojo_night",
+                        "image": "background2",
                         "text":
-                            "Kenji trainierte, um am Turnier teilnehmen zu können."
+                            "Ten trainierte, um am Turnier teilnehmen zu können."
                     }
                 },
                 {
                     "id": "1_3",
                     "title": "Der alte Mann",
-                    "enemy": "ren_dao",
+                    "enemy": "shiro",
                     "waves": 1,
                     "boss": false,
                     "timeLimit": 100,
-                    "music": "master_theme",
-                    "arena": "seishin_no_michi_dojo",
+                    "music": "battle",
+                    "arena": "background3",
                     "unlocks": [
-                        "ren_dao"
+                        "shiro"
                     ],
                     "introDialog": {
-                        "image": "seishin_no_michi_dojo",
+                        "image": "background3",
                         "text":
-                            "Der alte Mann bringt Kenji alles bei, was er weiß, damit er eines Tages der beste Kämpfer wird."
+                            "Der alte Mann bringt Ten alles bei, was er weiß, damit er eines Tages der beste Kämpfer wird."
                     }
                 },
                 {
                     "id": "1_4",
                     "title": "Verzweiflung",
-                    "enemy": "ren_dao",
+                    "enemy": "shiro",
                     "waves": 1,
                     "boss": false,
                     "timeLimit": 100,
-                    "music": "master_theme",
-                    "arena": "seishin_no_michi_dojo",
+                    "music": "battle",
+                    "arena": "background4",
                     "introDialog": {
-                        "image": "seishin_no_michi_dojo",
+                        "image": "background4",
                         "text":
-                            "Kenji glaubt, endlich bereit zu sein. Doch der Kampf endet schneller, als er begonnen hat."
+                            "Ten glaubt, endlich bereit zu sein. Doch der Kampf endet schneller, als er begonnen hat."
                     }
                 },
                 {
@@ -82,31 +82,31 @@
                     "waves": 1,
                     "boss": false,
                     "timeLimit": 100,
-                    "music": "reika_theme",
-                    "arena": "reika_arena",
+                    "music": "battle",
+                    "arena": "background5",
                     "unlocks": [
                         "reika"
                     ],
                     "introDialog": {
-                        "image": "reika_arena",
+                        "image": "background5",
                         "text":
-                            "Kenji’s Schwester taucht auf – sie hat genug davon, nur zuzusehen."
+                            "Ten’s Schwester taucht auf – sie hat genug davon, nur zuzusehen."
                     }
                 },
                 {
                     "id": "1_6",
                     "title": "Der Bruder",
-                    "enemy": "ryuji",
+                    "enemy": "rei",
                     "waves": 1,
                     "boss": false,
                     "timeLimit": 100,
-                    "music": "ryuji_theme",
-                    "arena": "ryuji_arena",
+                    "music": "battle",
+                    "arena": "background6",
                     "unlocks": [
-                        "ryuji"
+                        "rei"
                     ],
                     "introDialog": {
-                        "image": "ryuji_arena",
+                        "image": "background6",
                         "text":
                             "Sein Bruder stellt sich ihm in den Weg – nicht aus Hass, sondern aus Stolz."
                     }
@@ -115,23 +115,22 @@
                     "id": "1_7",
                     "title": "Der Wendepunkt",
                     "enemy": [
-                        "kenji",
-                        "ren_dao",
+                        "ten",
+                        "shiro",
                         "reika",
-                        "ryuji"
+                        "rei"
                     ],
                     "waves": 4,
                     "boss": true,
                     "timeLimit": 100,
-                    "music": "dojo_theme",
-                    "arena": "dojo_night",
+                    "music": "battle",
+                    "arena": "background7",
                     "introDialog": {
-                        "image": "dojo_night",
+                        "image": "background7",
                         "text":
-                            "Doch Kenji ahnt nicht, dass das wahre Turnier erst beginnt."
+                            "Doch Ten ahnt nicht, dass das wahre Turnier erst beginnt."
                     }
                 }
-
             ]
         }
     ]

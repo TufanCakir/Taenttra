@@ -1,51 +1,30 @@
 {
     "categories": [
         {
-            "id": "kenji_skins_basic",
+            "id": "ten_skins_basic",
             "title": "Skins",
             "icon": "tshirt",
             "items": [
                 {
-                    "skinId": "red",
-                    "name": "Red Kenji",
+                    "skinId": "base",
+                    "name": "Base Ten",
                     "price": 150,
                     "currency": "coins",
-                    "preview": "kenji_red_preview"
+                    "preview": "ten_base_preview"
                 }
             ]
         },
         {
-            "id": "kenji_skins_event",
+            "id": "ten_skins_event",
             "title": "Tournament Skins",
             "icon": "trophy",
             "items": [
                 {
                     "skinId": "tournament",
-                    "name": "Tournament Kenji",
+                    "name": "Tournament Ten",
                     "price": 100,
                     "currency": "tournamentShards",
-                    "preview": "kenji_tournament_preview"
-                },
-                {
-                    "skinId": "azure_fist",
-                    "name": "Azure Fist",
-                    "price": 150,
-                    "currency": "tournamentShards",
-                    "preview": "kenji_azure_fist_preview"
-                }
-            ]
-        },
-        {
-            "id": "kenji_skins_modern",
-            "title": "Modern Skins",
-            "icon": "sparkles",
-            "items": [
-                {
-                    "skinId": "modern",
-                    "name": "Modern Kenji",
-                    "price": 250,
-                    "currency": "coins",
-                    "preview": "kenji_modern_preview"
+                    "preview": "ten_base_preview"
                 }
             ]
         }

@@ -3,13 +3,13 @@
         {
             "id": "survival_basic",
             "title": "Endurance",
-            "background": "dojo_night",
-            "music": "dojo_theme",
+            "background": "background1",
+            "music": "battle",
             "enemyPool": [
-                "kenji",
-                "ren_dao",
+                "ten",
+                "shiro",
                 "reika",
-                "ryuji"
+                "rei"
             ],
             "timeLimit": 50
         }

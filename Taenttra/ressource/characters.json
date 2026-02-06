@@ -1,14 +1,14 @@
 [
     {
-        "key": "kenji",
-        "displayImage": "kenji_base_preview",
-        "name": "Kenji",
+        "key": "ten",
+        "displayImage": "ten_base_preview",
+        "name": "Ten",
         "locked": false
     },
     {
-        "key": "ren_dao",
-        "displayImage": "ren_dao_base_preview",
-        "name": "Ren Dao",
+        "key": "shiro",
+        "displayImage": "shiro_base_preview",
+        "name": "Shiro",
         "locked": true
     },
     {
@@ -18,9 +18,9 @@
         "locked": true
     },
     {
-        "key": "ryuji",
-        "displayImage": "ryuji_base_preview",
-        "name": "Ryuji",
+        "key": "rei",
+        "displayImage": "rei_base_preview",
+        "name": "Rei",
         "locked": true
     }
 ]

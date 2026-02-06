@@ -58,7 +58,7 @@ extension CharacterDisplay {
 
     /// Preview-Bild für Grid / Auswahl
     func previewImage(using wallet: PlayerWallet?) -> String {
-        guard key == "kenji" else {
+        guard key == "ten" else {
             return displayImage
         }
 
@@ -91,9 +91,9 @@ enum SkinLibrary {
     static func normalizedSkinId(_ raw: String?) -> String? {
         guard let raw else { return nil }
 
-        // Falls alte Daten noch "kenji_*" enthalten
-        if raw.hasPrefix("kenji_") {
-            return raw.replacingOccurrences(of: "kenji_", with: "")
+        // Falls alte Daten noch "ten_*" enthalten
+        if raw.hasPrefix("ten") {
+            return raw.replacingOccurrences(of: "ten_", with: "")
         }
 
         return raw

@@ -2,37 +2,37 @@
     "stages": [
         {
             "id": "arcade_1",
-            "title": "Kenji Trial",
-            "background": "dojo_night",
-            "music": "dojo_theme",
-            "enemy": "kenji",
+            "title": "Ten Trial",
+            "background": "background1",
+            "music": "battle",
+            "enemy": "ten",
             "waves": 1,
             "timeLimit": 30
         },
         {
             "id": "arcade_2",
-            "title": "Ren Dao Trial",
-            "background": "seishin_no_michi_dojo",
-            "music": "master_theme",
-            "enemy": "ren_dao",
+            "title": "Shiro Trial",
+            "background": "background2",
+            "music": "battle",
+            "enemy": "shiro",
             "waves": 1,
             "timeLimit": 60
         },
         {
             "id": "arcade_3",
             "title": "reika Trial",
-            "background": "reika_arena",
-            "music": "reika_theme",
+            "background": "background3",
+            "music": "battle",
             "enemy": "reika",
             "waves": 1,
             "timeLimit": 90
         },
         {
             "id": "arcade_4",
-            "title": "Ryuji Trial",
-            "background": "ryuji_arena",
-            "music": "ryuji_theme_2",
-            "enemy": "ryuji",
+            "title": "Rei Trial",
+            "background": "background4",
+            "music": "battle",
+            "enemy": "rei",
             "waves": 1,
             "timeLimit": 120
         }

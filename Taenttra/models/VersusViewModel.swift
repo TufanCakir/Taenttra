@@ -286,26 +286,36 @@ final class VersusViewModel: ObservableObject {
     }
 
     private func handleKO(loser: FighterSide) {
+
+        let playerSide = gameState.playerSide
+        let playerLost = loser == playerSide
+
         timerCancellable?.cancel()
         stopEnemyAttacks()
-
-        koOccurred = true  // ⬅️ WICHTIG
-
         isTimerRunning = false
-        fightState = .ko
-        winner = loser == .left ? .right : .left
 
-        withAnimation(.easeOut(duration: 0.25)) {
-            if loser == .left {
-                leftAnimation = .ko
-            } else {
-                rightAnimation = .ko
+        if playerLost {
+            // ❌ PLAYER KO
+            koOccurred = true
+            fightState = .ko
+            winner = loser == .left ? .right : .left
+
+            withAnimation(.easeOut(duration: 0.25)) {
+                if loser == .left {
+                    leftAnimation = .ko
+                } else {
+                    rightAnimation = .ko
+                }
             }
-        }
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) {
-            // ❌ ENTFERNEN
-            // self.advanceAfterKO()
+        } else {
+            // ✅ ENEMY KO → WEITER
+            fightState = .fighting
+            winner = playerSide
+
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+                self.advanceAfterKO()
+            }
         }
     }
 

@@ -10,6 +10,7 @@ import Combine
 import SwiftUI
 
 enum MusicContext {
+    case none
     case menu
     case fight
 }
@@ -17,15 +18,16 @@ enum MusicContext {
 final class AudioManager: NSObject, ObservableObject {
 
     static let shared = AudioManager()
-    private var context: MusicContext = .menu
+    private var context: MusicContext = .none
 
     // MARK: - Public Settings
     @Published var musicEnabled: Bool = true
     @Published var volume: Float = 0.7 {
         didSet {
             UserDefaults.standard.set(volume, forKey: AudioDefaults.volume)
-            guard let song = currentSong else { return }
-            player?.volume = song.volume * volume
+            if let song = currentSong {
+                player?.volume = song.volume * volume
+            }
         }
     }
 
@@ -50,74 +52,68 @@ final class AudioManager: NSObject, ObservableObject {
     private override init() {
         super.init()
 
-        // 🔹 gespeicherte Werte laden
-        let savedEnabled =
-            UserDefaults.standard.object(
-                forKey: AudioDefaults.musicEnabled
-            ) as? Bool ?? true
+        musicEnabled =
+            UserDefaults.standard.object(forKey: AudioDefaults.musicEnabled)
+            as? Bool ?? true
 
-        let savedVolume =
-            UserDefaults.standard.object(
-                forKey: AudioDefaults.volume
-            ) as? Float ?? 0.7
-
-        musicEnabled = savedEnabled
-        volume = savedVolume
+        volume =
+            UserDefaults.standard.object(forKey: AudioDefaults.volume)
+            as? Float ?? 0.7
     }
+
+    // MARK: - Menu Music (Playlist)
 
     func playMenuMusic() {
+        guard musicEnabled else { return }
+        guard context != .menu else { return }
+
         context = .menu
-        playAll()  // oder playSong(key: "intro")
+        mode = .playlist
+        playlist = SongLibrary.shared.songs
+        playlistIndex = 0
+
+        playNext()
     }
 
+    // MARK: - Fight Music (Single)
+
     func playFightMusic(key: String) {
+        guard musicEnabled else { return }
+
+        if context == .fight, currentSong?.key == key {
+            return  // gleicher Fight-Song läuft
+        }
+
         context = .fight
         playSong(key: key)
     }
 
-    private func stopMusicInternal() {
-        player?.stop()
-        player = nil
-        currentSong = nil
-    }
-
     func endFight() {
-        if context == .fight {
-            playMenuMusic()
-        }
+        guard context == .fight else { return }
+
+        context = .none
+        stopMusic()
     }
 
-    // MARK: - Single Song
+    // MARK: - Core Playback
 
     func playSong(key: String) {
-        guard musicEnabled else { return }
-
         guard let song = SongLibrary.shared.song(for: key) else {
             print("❌ Song not found:", key)
             return
         }
 
         mode = .single
-        playlist = []
-        playlistIndex = 0
+        playlist.removeAll()
         play(song)
     }
 
-    // MARK: - Playlist (ALL songs)
-
-    func playAll() {
-        guard musicEnabled else { return }
-
-        playlist = SongLibrary.shared.songs
-        playlistIndex = 0
-        mode = .playlist
-        playNext()
-    }
-
-    // MARK: - Core Playback
-
     private func playNext() {
-        guard musicEnabled, mode == .playlist, !playlist.isEmpty else { return }
+        guard
+            musicEnabled,
+            mode == .playlist,
+            !playlist.isEmpty
+        else { return }
 
         let song = playlist[playlistIndex]
         playlistIndex = (playlistIndex + 1) % playlist.count
@@ -125,6 +121,15 @@ final class AudioManager: NSObject, ObservableObject {
     }
 
     private func play(_ song: Song) {
+
+        // ✅ gleicher Song läuft → nichts tun
+        if let current = currentSong,
+            current.file == song.file,
+            player?.isPlaying == true
+        {
+            return
+        }
+
         stopMusic()
 
         guard
@@ -162,13 +167,13 @@ final class AudioManager: NSObject, ObservableObject {
         UserDefaults.standard.set(enabled, forKey: AudioDefaults.musicEnabled)
 
         if enabled {
-            switch mode {
-            case .single:
-                if let song = currentSong {
-                    play(song)
-                }
-            case .playlist:
-                playNext()
+            switch context {
+            case .menu:
+                playMenuMusic()
+            case .fight:
+                break
+            case .none:
+                break
             }
         } else {
             stopMusic()

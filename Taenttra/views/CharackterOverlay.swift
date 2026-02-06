@@ -213,7 +213,7 @@ struct CharacterGridView: View {
         {
             return enemy.displayImage
         }
-        return "kenji_base_preview"
+        return "ten_base_preview"
     }
 
     private var enemyDisplayName: String {
@@ -248,7 +248,7 @@ struct CharacterGridView: View {
         gameState.playerSide = selectedSide
 
         let player = selected.toCharacter(using: gameState.wallet)
-        let enemy = Character.enemy(key: enemyKey ?? "kenji")
+        let enemy = Character.enemy(key: enemyKey ?? "ten")
 
         if selectedSide == .left {
             gameState.leftCharacter = player
