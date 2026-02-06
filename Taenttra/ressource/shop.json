@@ -6,8 +6,8 @@
             "icon": "tshirt",
             "items": [
                 {
-                    "skinId": "base",
-                    "name": "Base Ten",
+                    "skinId": "ten_chains",
+                    "name": "Chains Ten",
                     "price": 150,
                     "currency": "coins",
                     "preview": "ten_base_preview"
@@ -20,8 +20,8 @@
             "icon": "trophy",
             "items": [
                 {
-                    "skinId": "tournament",
-                    "name": "Tournament Ten",
+                    "skinId": "rei_chains",
+                    "name": "Chains Rei",
                     "price": 100,
                     "currency": "tournamentShards",
                     "preview": "ten_base_preview"

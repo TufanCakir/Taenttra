@@ -2,7 +2,7 @@
     "modes": [
         {
             "id": "normal",
-            "title": "NORMALE EVENTS",
+            "title": "normale Events",
             "ui": {
                 "buttonColor": "#0096FF",
                 "overlayColor": "#0096FF",
@@ -11,7 +11,7 @@
         },
         {
             "id": "special",
-            "title": "SPEZIAL EVENTS",
+            "title": "Speziale Events",
             "ui": {
                 "buttonColor": "#8A2BE2",
                 "overlayColor": "#8A2BE2",
@@ -20,7 +20,7 @@
         },
         {
             "id": "boss",
-            "title": "BOSS EVENTS",
+            "title": "Boss Events",
             "ui": {
                 "buttonColor": "#880808",
                 "overlayColor": "#880808",

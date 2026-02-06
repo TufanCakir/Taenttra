@@ -2,11 +2,11 @@
     "events": [
         {
             "id": "tournament_1",
-            "title": "Sunrise",
+            "title": "Das Turnier",
             "type": "normal",
             "background": "background1",
             "music": "battle",
-            "enemy": "shiro",
+            "enemy": "rei",
             "timeLimit": 120,
             "rewardShards": 5,
             "ui": {
@@ -16,7 +16,7 @@
         },
         {
             "id": "tournament_3",
-            "title": "Crimson Lotus",
+            "title": "Purpurner Lotus",
             "type": "special",
             "background": "background2",
             "music": "battle",
@@ -30,7 +30,7 @@
         },
         {
             "id": "tournament_2",
-            "title": "Tournament of Dawn",
+            "title": "Turnier der Morgenröte",
             "type": "boss",
             "background": "background3",
             "music": "battle",

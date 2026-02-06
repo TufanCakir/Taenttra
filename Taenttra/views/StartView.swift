@@ -11,70 +11,94 @@ struct StartView: View {
 
     @EnvironmentObject var gameState: GameState
 
-    @State private var pulse = false
-    @State private var glow = false
+    @State private var breathe = false
+    @State private var reveal = false
+    @State private var flicker = false
 
     var body: some View {
         ZStack {
 
-            // 🌑 BASE
+            // 🌑 Deep Base
             Color.black.ignoresSafeArea()
 
-            // ✨ BACK GLOW
+            // 🔥 Vertical Energy Spine (Signature)
+            LinearGradient(
+                colors: [
+                    Color.white.opacity(0.0),
+                    Color.white.opacity(reveal ? 0.06 : 0.0),
+                    Color.white.opacity(0.0),
+                ],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+            .frame(width: 140)
+            .blur(radius: 50)
+            .opacity(reveal ? 1 : 0)
+
+            // 🌘 Ambient Vignette
             RadialGradient(
                 colors: [
-                    Color.cyan.opacity(glow ? 0.25 : 0.12),
-                    .clear,
+                    Color.black.opacity(0.1),
+                    Color.black.opacity(0.95),
                 ],
                 center: .center,
-                startRadius: 40,
-                endRadius: 320
+                startRadius: 120,
+                endRadius: 500
             )
             .ignoresSafeArea()
-            .animation(
-                .easeInOut(duration: 2.2)
-                    .repeatForever(autoreverses: true),
-                value: glow
-            )
 
-            // 🥊 CHARACTER
+            // 🥊 Character
             Image("ten_base_preview")
                 .resizable()
                 .scaledToFit()
                 .frame(height: 520)
-                .offset(y: -40)
-                .shadow(color: .cyan.opacity(0.35), radius: 40)
-                .scaleEffect(pulse ? 1.01 : 1.0)
+                .offset(y: -60)
+                .scaleEffect(breathe ? 1.015 : 1.0)
+                .shadow(color: .white.opacity(0.18), radius: 50)
                 .animation(
-                    .easeInOut(duration: 1.8)
+                    .easeInOut(duration: 3.2)
                         .repeatForever(autoreverses: true),
-                    value: pulse
+                    value: breathe
                 )
 
-            // 🕹️ UI
-            VStack(spacing: 12) {
+            // 🕯 Ritual Text + Footer
+            VStack {
                 Spacer()
 
-                Text("PRESS TO START")
-                    .font(.system(size: 16, weight: .bold))
-                    .tracking(3)
-                    .foregroundStyle(.cyan)
-                    .opacity(pulse ? 1 : 0.35)
-                    .scaleEffect(pulse ? 1.05 : 0.95)
-                    .animation(
-                        .easeInOut(duration: 1.1)
-                            .repeatForever(autoreverses: true),
-                        value: pulse
-                    )
-                    .padding(.bottom, 40)
+                VStack(spacing: 6) {
+                    Text("ENTER")
+                        .font(.system(size: 14, weight: .heavy))
+                        .tracking(6)
+                        .foregroundColor(.white.opacity(0.55))
+
+                    Text("TAENTTRA")
+                        .font(.system(size: 18, weight: .heavy))
+                        .tracking(4)
+                        .foregroundColor(.white.opacity(flicker ? 0.9 : 0.4))
+                }
+                .scaleEffect(flicker ? 1.02 : 0.98)
+                .animation(
+                    .easeInOut(duration: 1.6)
+                        .repeatForever(autoreverses: true),
+                    value: flicker
+                )
+                .padding(.bottom, 24)
+
+                // © Footer
+                Text("© 2026 Tufan Cakir")
+                    .font(.system(size: 11, weight: .medium))
+                    .tracking(1.5)
+                    .foregroundColor(.white.opacity(0.35))
+                    .padding(.bottom, 20)
             }
         }
         .onAppear {
-            pulse = true
-            glow = true
+            reveal = true
+            breathe = true
+            flicker = true
         }
         .onTapGesture {
-            withAnimation(.easeOut(duration: 0.25)) {
+            withAnimation(.easeOut(duration: 0.28)) {
                 gameState.screen = .home
             }
         }
@@ -83,4 +107,5 @@ struct StartView: View {
 
 #Preview {
     StartView()
+        .environmentObject(GameState())
 }

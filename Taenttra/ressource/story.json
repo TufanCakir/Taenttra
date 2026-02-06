@@ -2,9 +2,9 @@
     "chapters": [
         {
             "id": "chapter_1",
-            "title": "The Tournament",
+            "title": "Das Turnier",
             "background": "background1",
-            "music": "intro",
+            "music": "battle",
             "arena": "background1",
             "introDialog": {
                 "image": "background1",
@@ -19,7 +19,7 @@
                     "waves": 1,
                     "boss": false,
                     "timeLimit": 100,
-                    "music": "intro",
+                    "music": "battle",
                     "arena": "background1",
                     "introDialog": {
                         "image": "background1",

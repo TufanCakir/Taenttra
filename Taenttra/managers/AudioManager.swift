@@ -64,8 +64,12 @@ final class AudioManager: NSObject, ObservableObject {
     // MARK: - Menu Music (Playlist)
 
     func playMenuMusic() {
-        guard musicEnabled else { return }
-        guard context != .menu else { return }
+        guard musicEnabled else {
+            print("🔇 Music disabled – menu music blocked")
+            return
+        }
+
+        guard context != .fight else { return }
 
         context = .menu
         mode = .playlist
@@ -78,10 +82,13 @@ final class AudioManager: NSObject, ObservableObject {
     // MARK: - Fight Music (Single)
 
     func playFightMusic(key: String) {
-        guard musicEnabled else { return }
+        guard musicEnabled else {
+            print("🔇 Music disabled – fight music blocked")
+            return
+        }
 
         if context == .fight, currentSong?.key == key {
-            return  // gleicher Fight-Song läuft
+            return
         }
 
         context = .fight
@@ -89,15 +96,19 @@ final class AudioManager: NSObject, ObservableObject {
     }
 
     func endFight() {
-        guard context == .fight else { return }
-
-        context = .none
+        print("🎵 Audio Context:", context)
         stopMusic()
+        context = .none
     }
 
     // MARK: - Core Playback
 
     func playSong(key: String) {
+        guard musicEnabled else {
+            print("🔇 Music disabled – playSong blocked:", key)
+            return
+        }
+
         guard let song = SongLibrary.shared.song(for: key) else {
             print("❌ Song not found:", key)
             return
@@ -166,17 +177,15 @@ final class AudioManager: NSObject, ObservableObject {
         musicEnabled = enabled
         UserDefaults.standard.set(enabled, forKey: AudioDefaults.musicEnabled)
 
-        if enabled {
-            switch context {
-            case .menu:
-                playMenuMusic()
-            case .fight:
-                break
-            case .none:
-                break
-            }
-        } else {
+        if !enabled {
             stopMusic()
+            context = .none  // 🔥 extrem wichtig
+            mode = .single
+            playlist.removeAll()
+        } else {
+            if context == .menu {
+                playMenuMusic()
+            }
         }
     }
 }
