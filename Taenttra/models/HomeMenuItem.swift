@@ -17,6 +17,7 @@ enum HomeMenuItem: CaseIterable {
     case shop
     case skin
     case leaderboard
+    case news
     case options
 
     /// Muss dieser Modus durch Story freigeschaltet werden?
@@ -29,7 +30,7 @@ enum HomeMenuItem: CaseIterable {
         case .survival: return "1_6"
 
         // ✅ Meta & Kosmetik IMMER frei
-        case .shop, .skin, .leaderboard, .story, .options:
+        case .shop, .skin, .leaderboard, .story, .news, .options:
             return nil
         }
     }
@@ -47,6 +48,7 @@ enum HomeMenuItem: CaseIterable {
         case .shop: return "Shop"
         case .skin: return "Skin"
         case .leaderboard: return "Ranking"
+        case .news: return "News"
         case .options: return "Options"
         }
     }
@@ -62,6 +64,7 @@ enum HomeMenuItem: CaseIterable {
         case .shop: return .yellow
         case .skin: return .cyan
         case .leaderboard: return .mint
+        case .news: return .blue
         case .options: return .gray
         }
     }
@@ -78,6 +81,7 @@ enum HomeMenuItem: CaseIterable {
         case .shop: return .shop
         case .skin: return .skin
         case .leaderboard: return .leaderboard
+        case .news: return .news
         case .options: return .options
 
         case .versus:

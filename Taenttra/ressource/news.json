@@ -1,0 +1,246 @@
+[
+    {
+        "id": "story_chapter_1_overview",
+        "category": "story",
+        "title": "Story-Kapitel verfügbar: Das Turnier",
+        "description":
+            "Nach Jahren im Exil beginnt deine Rückkehr. Das Turnier markiert den Anfang einer neuen Reise.",
+        "image": "background1",
+        "imageType": "background",
+        "date": "2026-02-05T18:00:00Z"
+    },
+    {
+        "id": "story_chapter_1_1",
+        "category": "story",
+        "title": "Story-Mission freigeschaltet: Ein neuer Kämpfer",
+        "description":
+            "Ein Junge namens Ten tritt erstmals ins Rampenlicht und meldet sich für das Turnier an.",
+        "image": "background1",
+        "imageType": "background",
+        "date": "2026-02-05T18:05:00Z"
+    },
+    {
+        "id": "story_chapter_1_2",
+        "category": "story",
+        "title": "Story-Mission freigeschaltet: Die Ausbildung",
+        "description":
+            "Um am Turnier teilnehmen zu können, stellt sich Ten einem harten Training.",
+        "image": "background2",
+        "imageType": "background",
+        "date": "2026-02-05T18:10:00Z"
+    },
+    {
+        "id": "story_chapter_1_3",
+        "category": "story",
+        "title": "Story-Mission freigeschaltet: Der alte Mann",
+        "description":
+            "Ein geheimnisvoller Mentor nimmt Ten unter seine Fittiche und lehrt ihn alles, was er weiß.",
+        "image": "background3",
+        "imageType": "background",
+        "date": "2026-02-05T18:15:00Z"
+    },
+    {
+        "id": "story_chapter_1_4",
+        "category": "story",
+        "title": "Story-Mission freigeschaltet: Verzweiflung",
+        "description":
+            "Ten glaubt, bereit zu sein – doch die Realität des Kampfes trifft ihn härter als erwartet.",
+        "image": "background4",
+        "imageType": "background",
+        "date": "2026-02-05T18:20:00Z"
+    },
+    {
+        "id": "story_chapter_1_5",
+        "category": "story",
+        "title": "Story-Mission freigeschaltet: Die Schwester",
+        "description":
+            "Reika greift ein. Sie ist es leid, nur zuzusehen, und betritt selbst das Turnier.",
+        "image": "background5",
+        "imageType": "background",
+        "date": "2026-02-05T18:25:00Z"
+    },
+    {
+        "id": "story_chapter_1_6",
+        "category": "story",
+        "title": "Story-Mission freigeschaltet: Der Bruder",
+        "description":
+            "Rei stellt sich Ten entgegen – nicht aus Hass, sondern aus Stolz und Überzeugung.",
+        "image": "background6",
+        "imageType": "background",
+        "date": "2026-02-05T18:30:00Z"
+    },
+    {
+        "id": "story_chapter_1_7",
+        "category": "story",
+        "title": "Story-Boss freigeschaltet: Der Wendepunkt",
+        "description":
+            "Alle Wege kreuzen sich. Doch Ten ahnt nicht, dass das wahre Turnier erst jetzt beginnt.",
+        "image": "background7",
+        "imageType": "background",
+        "date": "2026-02-05T18:35:00Z"
+    },
+    {
+        "id": "arcade_ten_trial",
+        "category": "arcade",
+        "title": "Neuer Arcade-Trial: Ten",
+        "description":
+            "Beweise deine Stärke im Ten-Trial. Eine neue Arcade-Stufe ist jetzt verfügbar.",
+        "image": "background1",
+        "imageType": "background",
+        "date": "2026-02-01T10:00:00Z"
+    },
+    {
+        "id": "arcade_shiro_trial",
+        "category": "arcade",
+        "title": "Neuer Arcade-Trial: Shiro",
+        "description":
+            "Shiro betritt die Arena. Eine neue Arcade-Herausforderung wartet auf dich.",
+        "image": "background2",
+        "imageType": "background",
+        "date": "2026-02-01T10:05:00Z"
+    },
+    {
+        "id": "arcade_reika_trial",
+        "category": "arcade",
+        "title": "Neuer Arcade-Trial: Reika",
+        "description": "Stelle dich Reika in einer brandneuen Arcade-Stufe..",
+        "image": "background3",
+        "imageType": "background",
+        "date": "2026-02-01T10:10:00Z"
+    },
+    {
+        "id": "arcade_rei_trial",
+        "category": "arcade",
+        "title": "Neuer Arcade-Trial: Rei",
+        "description":
+            "Rei ist jetzt Teil des Arcade-Modus. Nur die Stärksten werden überleben.",
+        "image": "background4",
+        "imageType": "background",
+        "date": "2026-02-01T10:15:00Z"
+    },
+    {
+        "id": "character_shiro_unlock",
+        "category": "character",
+        "title": "Neuer Kämpfer freigeschaltet: Shiro",
+        "description":
+            "Schließe die Story ab, um Shiro als spielbaren Charakter freizuschalten.",
+        "image": "shiro_base_preview",
+        "imageType": "character",
+        "date": "2026-02-02T12:00:00Z"
+    },
+    {
+        "id": "character_reika_unlock",
+        "category": "character",
+        "title": "Neuer Kämpfer freigeschaltet: Reika",
+        "description":
+            "Reika ist jetzt Teil des Rosters. Schalte sie im Story-Modus frei.",
+        "image": "reika_base_preview",
+        "imageType": "character",
+        "date": "2026-02-02T12:10:00Z"
+    },
+    {
+        "id": "character_rei_unlock",
+        "category": "character",
+        "title": "Neuer Kämpfer freigeschaltet: Rei",
+        "description":
+            "Rei ist jetzt verfügbar. Beende das Story-Kapitel, um ihn freizuschalten.",
+        "image": "rei_base_preview",
+        "imageType": "character",
+        "date": "2026-02-02T12:20:00Z"
+    },
+    {
+        "id": "event_tournament_1",
+        "category": "event",
+        "title": "Neues Event: Das Turnier",
+        "description":
+            "Nimm am Turnier teil und verdiene exklusive Belohnungen.",
+        "image": "background1",
+        "imageType": "background",
+        "date": "2026-02-03T12:00:00Z"
+    },
+    {
+        "id": "event_purpurner_lotus",
+        "category": "event",
+        "title": "Spezial-Event: Purpurner Lotus",
+        "description":
+            "Eine besondere Herausforderung mit erhöhten Belohnungen.",
+        "image": "background2",
+        "imageType": "background",
+        "date": "2026-02-03T12:10:00Z"
+    },
+    {
+        "id": "event_boss_tournament",
+        "category": "event",
+        "title": "Boss-Event: Turnier der Morgenröte",
+        "description":
+            "Stelle dich dem ultimativen Boss und verdiene Turnier-Splitter.",
+        "image": "background3",
+        "imageType": "background",
+        "date": "2026-02-03T12:20:00Z"
+    },
+    {
+        "id": "shop_chains_ten",
+        "category": "shop",
+        "title": "Neuer Skin verfügbar: Chains Ten",
+        "description": "Ein neuer Skin für Ten ist jetzt im Shop erhältlich.",
+        "image": "ten_base_preview",
+        "imageType": "character",
+        "date": "2026-02-04T09:00:00Z"
+    },
+    {
+        "id": "shop_chains_rei",
+        "category": "shop",
+        "title": "Event-Skin: Chains Rei",
+        "description":
+            "Schalte den Chains-Rei-Skin mit Turnier-Splittern frei.",
+        "image": "rei_base_preview",
+        "imageType": "character",
+        "date": "2026-02-04T09:10:00Z"
+    },
+    {
+        "id": "survival_endurance",
+        "category": "survival",
+        "title": "Neuer Survival-Modus: Endurance",
+        "description": "Kämpfe gegen endlose Gegner und teste deine Grenzen.",
+        "image": "background1",
+        "imageType": "background",
+        "date": "2026-02-06T08:00:00Z"
+    },
+    {
+        "id": "training_ten",
+        "category": "training",
+        "title": "Trainingsmodus hinzugefügt: Ten",
+        "description": "Lerne die Grundlagen mit Ten im neuen Trainingsmodus.",
+        "image": "background1",
+        "imageType": "background",
+        "date": "2026-02-06T08:10:00Z"
+    },
+    {
+        "id": "training_shiro",
+        "category": "training",
+        "title": "Trainingsmodus hinzugefügt: Shiro",
+        "description": "Übe deine Fähigkeiten im Kampf gegen Shiro.",
+        "image": "background2",
+        "imageType": "background",
+        "date": "2026-02-06T08:20:00Z"
+    },
+    {
+        "id": "training_reika",
+        "category": "training",
+        "title": "Trainingsmodus hinzugefügt: Reika",
+        "description": "Meistere deine Kombos im Training gegen Reika.",
+        "image": "background3",
+        "imageType": "background",
+        "date": "2026-02-06T08:30:00Z"
+    },
+    {
+        "id": "training_rei",
+        "category": "training",
+        "title": "Trainingsmodus hinzugefügt: Rei",
+        "description":
+            "Trainiere gegen Rei und bereite dich auf den Kampf vor.",
+        "image": "background4",
+        "imageType": "background",
+        "date": "2026-02-06T08:40:00Z"
+    }
+]

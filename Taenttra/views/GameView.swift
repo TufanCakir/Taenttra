@@ -62,6 +62,9 @@ struct GameView: View {
         case .leaderboard:
             LeaderboardView()
 
+        case .news:
+            NewsView()
+
         case .options:
             SettingsView()
 

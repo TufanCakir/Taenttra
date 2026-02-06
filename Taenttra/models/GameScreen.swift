@@ -23,6 +23,7 @@ enum GameScreen: String, CaseIterable, Codable {
     case shop
     case leaderboard
     case skin
+    case news
 }
 
 enum PendingMode {
@@ -35,6 +36,9 @@ enum PendingMode {
 }
 
 final class GameState: ObservableObject {
+
+    // MARK: - News
+    @Published var hasUnreadNews: Bool = false
 
     @Published var characterDisplays: [CharacterDisplay] = []
 
@@ -249,7 +253,7 @@ extension GameState {
             AudioManager.shared.endFight()
             screen = .home
 
-        case .shop, .skin, .options:
+        case .shop, .skin, .options, .news:
             AudioManager.shared.endFight()
             screen = .home
 

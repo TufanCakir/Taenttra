@@ -22,9 +22,10 @@ struct HomeView: View {
         .arcade,
         .survival,
         .versus,
+        .leaderboard,
         .shop,
         .skin,
-        .leaderboard,
+        .news,
         .options,
     ]
 
@@ -61,6 +62,11 @@ struct HomeView: View {
         }
         .onAppear {
             gameState.loadCharactersIfNeeded()
+        }
+        .onAppear {
+            if let index = items.firstIndex(of: .story) {
+                selection = index
+            }
         }
     }
 
@@ -169,26 +175,103 @@ struct HomeView: View {
     }
 
     private var footerMenu: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 16) {
-                ForEach(items, id: \.self) { item in
-                    footerItem(item)
+        ZStack {
+            if let prev = item(at: selection - 1) {
+                carouselButton(
+                    for: prev,
+                    offset: -110,
+                    scale: 0.8,
+                    opacity: 0.5,
+                    z: 0
+                )
+            }
+
+            carouselButton(
+                for: items[selection],
+                offset: 0,
+                scale: 1.15,
+                opacity: 1,
+                z: 2
+            )
+
+            if let next = item(at: selection + 1) {
+                carouselButton(
+                    for: next,
+                    offset: 110,
+                    scale: 0.8,
+                    opacity: 0.5,
+                    z: 1
+                )
+            }
+        }
+        .frame(height: 180)
+        .gesture(dragGesture)
+        .animation(
+            .spring(response: 0.45, dampingFraction: 0.8),
+            value: selection
+        )
+    }
+
+    private func carouselButton(
+        for item: HomeMenuItem,
+        offset: CGFloat,
+        scale: CGFloat,
+        opacity: Double,
+        z: Double
+    ) -> some View {
+
+        Button {
+            if item == .versus {
+                gameState.startQuickVersus()
+            } else {
+                gameState.screen = item.screen
+            }
+        } label: {
+            ZStack {
+                Circle()
+                    .fill(
+                        RadialGradient(
+                            colors: [
+                                item.color.opacity(0.85),
+                                item.color.opacity(0.3),
+                            ],
+                            center: .topLeading,
+                            startRadius: 10,
+                            endRadius: 120
+                        )
+                    )
+                    .frame(width: 96, height: 96)
+                    .shadow(color: item.color.opacity(0.6), radius: 20)
+
+                Text(item.title.prefix(1))
+                    .font(.system(size: 42, weight: .heavy))
+                    .foregroundColor(.black.opacity(0.85))
+            }
+        }
+        .scaleEffect(scale)
+        .opacity(opacity)
+        .offset(x: offset)
+        .zIndex(z)
+        .buttonStyle(.plain)
+    }
+
+    private func item(at index: Int) -> HomeMenuItem? {
+        let count = items.count
+        let wrapped = (index + count) % count
+        return items[wrapped]
+    }
+
+    private var dragGesture: some Gesture {
+        DragGesture()
+            .onEnded { value in
+                if value.translation.width < -40 {
+                    selection = (selection + 1) % items.count
+                    UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+                } else if value.translation.width > 40 {
+                    selection = (selection - 1 + items.count) % items.count
+                    UIImpactFeedbackGenerator(style: .medium).impactOccurred()
                 }
             }
-            .padding(.vertical, 12)
-            .padding(.horizontal, 4)
-        }
-        .background(
-            LinearGradient(
-                colors: [
-                    Color.black.opacity(0.95),
-                    Color.black.opacity(0.75),
-                    Color.black.opacity(0.6),
-                ],
-                startPoint: .top,
-                endPoint: .bottom
-            )
-        )
     }
 
     private func footerItem(_ item: HomeMenuItem) -> some View {
@@ -233,74 +316,6 @@ struct HomeView: View {
                 .opacity(unlocked ? 1 : 0.45)
         }
         .buttonStyle(.plain)
-    }
-
-    // MARK: - Menu Item
-    private func menuItem(
-        item: HomeMenuItem,
-        index: Int
-    ) -> some View {
-        let isSelected = selection == index
-        let unlocked = isUnlocked(item)
-
-        return HStack(spacing: 16) {
-            Circle()
-                .fill(unlocked ? item.color : .gray)
-                .frame(width: 10, height: 10)
-                .opacity(isSelected ? 1 : 0.4)
-
-            Text(item.title)
-                .font(
-                    .system(size: 18, weight: isSelected ? .semibold : .regular)
-                )
-                .foregroundStyle(
-                    unlocked
-                        ? (isSelected ? item.color : .primary)
-                        : .secondary
-                )
-
-            Spacer()
-
-            if unlocked {
-                Image(systemName: "chevron.right")
-                    .font(.caption)
-                    .foregroundStyle(isSelected ? item.color : .secondary)
-            } else {
-                Image(systemName: "lock.fill")
-                    .foregroundStyle(.secondary)
-            }
-        }
-        .padding(.horizontal, 20)
-        .frame(height: 52)
-        .background {
-            RoundedRectangle(cornerRadius: 12)
-                .fill(
-                    isSelected
-                        ? item.color.opacity(0.14)
-                        : Color.secondary.opacity(0.06)
-                )
-        }
-        .overlay {
-            if !unlocked {
-                RoundedRectangle(cornerRadius: 12)
-                    .fill(.black.opacity(0.15))
-            }
-        }
-        .scaleEffect(isSelected ? 1.1 : 0.95)
-        .opacity(unlocked ? (isSelected ? 1 : 0.7) : 0.25)
-        .saturation(unlocked ? 1 : 0.3)
-        .shadow(
-            color: isSelected ? Color.cyan.opacity(0.6) : .clear,
-            radius: 10
-        )
-        .animation(
-            .spring(response: 0.35, dampingFraction: 0.7),
-            value: isSelected
-        )
-        .contentShape(Rectangle())
-        .onTapGesture {
-            selection = index
-        }
     }
 
     // MARK: - Unlock Logic
@@ -363,6 +378,8 @@ struct HomeView: View {
             gameState.screen = .skin
         case .leaderboard:
             gameState.screen = .leaderboard
+        case .news:
+            gameState.screen = .news
         case .options:
             gameState.screen = .options
         }

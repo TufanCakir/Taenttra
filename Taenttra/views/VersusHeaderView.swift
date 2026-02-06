@@ -10,6 +10,7 @@ import SwiftUI
 struct VersusHeaderView: View {
 
     @EnvironmentObject var gameState: GameState
+    @State private var showWalletSheet = false
 
     var body: some View {
         HStack {
@@ -44,11 +45,18 @@ struct VersusHeaderView: View {
                             .stroke(Color.white.opacity(0.12), lineWidth: 1)
                     )
             )
+            .onTapGesture {
+                showWalletSheet = true
+            }
         }
         .padding(.horizontal, 16)
         .padding(.top, 10)
+        .sheet(isPresented: $showWalletSheet) {
+            WalletSheetView()
+                .environmentObject(gameState)
+        }
     }
-
+    
     // MARK: - Currency View
     private func currencyView(
         icon: String,
