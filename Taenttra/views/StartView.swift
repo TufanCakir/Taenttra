@@ -54,7 +54,7 @@ struct StartView: View {
                 .frame(height: 520)
                 .offset(y: -60)
                 .scaleEffect(breathe ? 1.015 : 1.0)
-                .shadow(color: .white.opacity(0.18), radius: 50)
+                .shadow(color: .blue, radius: 50)
                 .animation(
                     .easeInOut(duration: 3.2)
                         .repeatForever(autoreverses: true),

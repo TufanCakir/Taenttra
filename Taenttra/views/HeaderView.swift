@@ -1,5 +1,5 @@
 //
-//  VersusHeaderView.swift
+//  HeaderView.swift
 //  Taenttra
 //
 //  Created by Tufan Cakir on 26.01.26.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct VersusHeaderView: View {
+struct HeaderView: View {
 
     @EnvironmentObject var gameState: GameState
     @State private var showWalletSheet = false

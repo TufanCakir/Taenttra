@@ -57,11 +57,11 @@ enum HomeMenuItem: CaseIterable {
         switch self {
         case .story: return .blue
         case .arcade: return .orange
-        case .survival: return .indigo
-        case .events: return .purple
-        case .versus: return .red
-        case .training: return .green
-        case .shop: return .yellow
+        case .survival: return .green
+        case .events: return .indigo
+        case .versus: return .purple
+        case .training: return .cyan
+        case .shop: return .blue
         case .skin: return .cyan
         case .leaderboard: return .mint
         case .news: return .blue

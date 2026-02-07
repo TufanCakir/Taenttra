@@ -27,7 +27,7 @@ struct CharacterGridView: View {
 
             VStack(spacing: 20) {
 
-                Text("CHOOSE YOUR FIGHTER")
+                Text("Wähle Deinen Kämpfer")
                     .font(.system(size: 20, weight: .heavy))
                     .tracking(2)
                     .foregroundStyle(
@@ -75,13 +75,12 @@ struct CharacterGridView: View {
                         using: gameState.wallet
                     ),
                     name: selectedCharacter?.name ?? "PLAYER",
-                    color: .cyan
+                    color: .blue
                 )
 
                 Text("VS")
                     .font(.system(size: 56, weight: .heavy))
                     .foregroundStyle(.red)
-                    .shadow(color: .red.opacity(0.8), radius: 16)
 
                 fighterPreview(
                     image: enemyPreviewImage,
@@ -161,13 +160,13 @@ struct CharacterGridView: View {
     private var sideSelector: some View {
         HStack(spacing: 24) {
             SideButton(
-                title: "LEFT",
+                title: "Left",
                 side: .left,
                 selectedSide: $selectedSide
             )
 
             SideButton(
-                title: "RIGHT",
+                title: "Right",
                 side: .right,
                 selectedSide: $selectedSide
             )
@@ -177,7 +176,7 @@ struct CharacterGridView: View {
     // MARK: - Start Button
     private var startButton: some View {
         Button(action: startFight) {
-            Text("START FIGHT")
+            Text("Start Fight")
                 .font(.system(size: 20, weight: .heavy))
                 .tracking(1)
                 .foregroundColor(.black)

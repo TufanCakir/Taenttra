@@ -13,6 +13,7 @@ struct HomeView: View {
 
     @State private var selection: Int = 0
     @State private var idlePulse = false
+    @State private var showMenuOverlay = false
 
     // Ordered list of menu items used by the menu and confirmSelection
     private let items: [HomeMenuItem] = [
@@ -39,13 +40,11 @@ struct HomeView: View {
             Color.black.ignoresSafeArea()
 
             VStack(spacing: 16) {
-                VersusHeaderView()
 
                 Spacer(minLength: 8)
 
                 mainCharacterView
 
-                // Roster strip
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 12) {
                         ForEach(characters, id: \.key) { character in
@@ -55,9 +54,21 @@ struct HomeView: View {
                     .padding(.horizontal, 16)
                 }
 
-                Spacer()
-
                 footerMenu
+            }
+
+            // ✅ HIER GEHÖRT DIE TRANSITION HIN
+            if showMenuOverlay {
+                menuOverlay
+                    .zIndex(100)
+                    .transition(
+                        .asymmetric(
+                            insertion: .move(edge: .bottom)
+                                .combined(with: .opacity),
+                            removal: .move(edge: .bottom)
+                                .combined(with: .opacity)
+                        )
+                    )
             }
         }
         .onAppear {
@@ -70,6 +81,116 @@ struct HomeView: View {
         }
     }
 
+    private func menuRow(_ item: HomeMenuItem) -> some View {
+        let unlocked = isUnlocked(item)
+
+        return Button {
+            guard unlocked else { return }
+
+            withAnimation(.spring(response: 0.5, dampingFraction: 0.9)) {
+                showMenuOverlay = true
+            }
+
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+                if item == .versus {
+                    gameState.startQuickVersus()
+                } else {
+                    gameState.screen = item.screen
+                }
+            }
+
+        } label: {
+            HStack {
+                Text(item.title.uppercased())
+                    .font(.system(size: 14, weight: .heavy))
+                    .tracking(1.5)
+
+                Spacer()
+
+                Image(systemName: "chevron.right")
+                    .font(.caption)
+                    .opacity(0.6)
+            }
+            .foregroundColor(unlocked ? .white : .gray)
+            .padding()
+            .background(
+                RoundedRectangle(cornerRadius: 14)
+                    .fill(
+                        unlocked
+                            ? item.color.opacity(0.2)
+                            : Color.white.opacity(0.05)
+                    )
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 14)
+                    .stroke(
+                        unlocked ? item.color.opacity(0.5) : Color.clear,
+                        lineWidth: 1
+                    )
+            )
+            .opacity(unlocked ? 1 : 0.4)
+        }
+        .buttonStyle(.plain)
+    }
+
+    private var menuOverlay: some View {
+        ZStack {
+
+            // 🌑 BACKDROP
+            LinearGradient(
+                colors: [
+                    Color.blue,
+                    Color.indigo,
+                ],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+            .ignoresSafeArea()
+            .onTapGesture {
+                withAnimation(.spring(response: 0.5, dampingFraction: 0.9)) {
+                    showMenuOverlay = false
+                }
+            }
+
+            // 📋 MENU SHEET
+            VStack(spacing: 0) {
+
+                // 🔽 Handle
+                Capsule()
+                    .fill(Color.white)
+                    .frame(width: 40, height: 5)
+                    .padding(.vertical, 10)
+
+                // 📜 SCROLLABLE CONTENT
+                ScrollView(showsIndicators: false) {
+                    VStack(spacing: 12) {
+                        ForEach(items, id: \.self) { item in
+                            menuRow(item)
+                        }
+                    }
+                    .padding(.horizontal)
+                    .padding(.bottom, 24)
+                }
+            }
+            .frame(maxWidth: .infinity)
+            .frame(height: min(CGFloat(items.count) * 64 + 60, 420))
+            .background(
+                RoundedRectangle(cornerRadius: 24)
+                    .fill(Color.black.opacity(0.95))
+            )
+            .padding(.horizontal, 16)
+            .padding(.bottom, 24)
+            .frame(maxWidth: .infinity, alignment: .bottom)
+        }
+        .mask(
+            LinearGradient(
+                colors: [.clear, .black, .black, .clear],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+        )
+    }
+
     private var selectedDisplay: CharacterDisplay? {
         characters.first { $0.key == gameState.selectedCharacterKey }
     }
@@ -78,7 +199,7 @@ struct HomeView: View {
         ZStack {
             RadialGradient(
                 colors: [
-                    Color.cyan.opacity(0.35),
+                    Color.blue.opacity(0.30),
                     Color.clear,
                 ],
                 center: .center,
@@ -119,7 +240,6 @@ struct HomeView: View {
                 .font(.system(size: 20, weight: .heavy))
                 .tracking(2)
                 .foregroundColor(.white)
-                .shadow(color: .cyan.opacity(0.6), radius: 12)
             }
         }
         .frame(maxWidth: .infinity)
@@ -175,41 +295,42 @@ struct HomeView: View {
     }
 
     private var footerMenu: some View {
-        ZStack {
-            if let prev = item(at: selection - 1) {
-                carouselButton(
-                    for: prev,
-                    offset: -110,
-                    scale: 0.8,
-                    opacity: 0.5,
-                    z: 0
-                )
+        Button {
+            withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
+                showMenuOverlay.toggle()
             }
+            UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+        } label: {
+            ZStack {
+                Circle()
+                    .fill(
+                        RadialGradient(
+                            colors: [
+                                Color.blue,
+                                Color.black,
+                                Color.blue,
+                            ],
+                            center: .topLeading,
+                            startRadius: 10,
+                            endRadius: 120
+                        )
+                    )
+                    .frame(width: 96, height: 96)
+                    .shadow(color: .cyan.opacity(0.6), radius: 20)
 
-            carouselButton(
-                for: items[selection],
-                offset: 0,
-                scale: 1.15,
-                opacity: 1,
-                z: 2
-            )
-
-            if let next = item(at: selection + 1) {
-                carouselButton(
-                    for: next,
-                    offset: 110,
-                    scale: 0.8,
-                    opacity: 0.5,
-                    z: 1
-                )
+                Image(systemName: "circle.circle")
+                    .font(.system(size: 50, weight: .bold))
+                    .foregroundColor(.white)
             }
         }
-        .frame(height: 180)
-        .gesture(dragGesture)
-        .animation(
-            .spring(response: 0.45, dampingFraction: 0.8),
-            value: selection
+        .buttonStyle(.plain)
+        .transition(
+            .asymmetric(
+                insertion: .move(edge: .bottom).combined(with: .opacity),
+                removal: .move(edge: .bottom).combined(with: .opacity)
+            )
         )
+        .frame(height: 160)
     }
 
     private func carouselButton(

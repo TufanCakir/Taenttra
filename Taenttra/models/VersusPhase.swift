@@ -10,5 +10,5 @@ import Foundation
 enum VersusPhase {
     case intro
     case fighting
-    case victory  // ✅ NEU
+    case victory 
 }

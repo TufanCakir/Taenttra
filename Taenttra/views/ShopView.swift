@@ -128,7 +128,7 @@ struct ShopView: View {
     // MARK: - Content
     private func content(wallet: PlayerWallet) -> some View {
         VStack(spacing: 12) {
-            VersusHeaderView()
+            HeaderView()
 
             if !tabs.isEmpty {
                 categoryTabs
