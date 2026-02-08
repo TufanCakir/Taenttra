@@ -1,0 +1,14 @@
+{
+    "title": "Account",
+    "profile_name_placeholder": "Name",
+    "profile_local": "Lokales Benutzerprofil",
+    "language_section": "Sprache",
+    "language_picker": "Sprache auswählen",
+    "language_de": "Deutsch",
+    "language_en": "Englisch",
+    "app_section": "App",
+    "appearance": "Erscheinungsbild",
+    "about_section": "Über",
+    "version": "Version",
+    "built_with": "Erstellt mit Apple Foundation Models"
+}

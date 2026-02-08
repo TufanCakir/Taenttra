@@ -1,0 +1,42 @@
+[
+  {
+    "id": "p1",
+    "modes": ["chat"],
+    "text": "Erkläre diesen Code Schritt für Schritt"
+  },
+  {
+    "id": "p2",
+    "modes": ["chat"],
+    "text": "Fasse diesen Text in einfachen Worten zusammen"
+  },
+  {
+    "id": "p3",
+    "modes": ["chat"],
+    "text": "Finde den Fehler in dieser SwiftUI-View"
+  },
+  {
+    "id": "p4",
+    "modes": ["chat"],
+    "text": "Refaktorisiere diesen Swift-Code"
+  },
+  {
+    "id": "i1",
+    "modes": ["image"],
+    "text": "Eine gemütliche Leseecke mit großem Fenster, weiches Morgenlicht, warme Farben, realistischer Stil"
+  },
+  {
+    "id": "i2",
+    "modes": ["image"],
+    "text": "Minimalistisches App-Icon mit einer Chat-Sprechblase, Flat Design, Pastellfarben, iOS-Stil"
+  },
+  {
+    "id": "i3",
+    "modes": ["image"],
+    "text": "Porträt eines futuristischen KI-Assistenten, cineastische Beleuchtung, sehr detailreich, hohe Qualität"
+  },
+  {
+    "id": "i4",
+    "modes": ["image"],
+    "text": "Ruhige Berglandschaft bei Sonnenaufgang, leichter Nebel, Weitwinkel, fotorealistisch"
+  }
+]

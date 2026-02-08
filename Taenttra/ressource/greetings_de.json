@@ -1,0 +1,85 @@
+[
+  {
+    "id": "E12A4B9A-1123-44E7-A49F-11D9913A0A11",
+    "text": "Guten Morgen",
+    "sfSymbol": "sun.max.fill",
+    "fromHour": 5,
+    "toHour": 11
+  },
+  {
+    "id": "B1C3F8E4-9D5A-4C21-9E0C-5E6C7F8A1234",
+    "text": "Guten Tag",
+    "sfSymbol": "sun.min.fill",
+    "fromHour": 12,
+    "toHour": 17
+  },
+  {
+    "id": "D7B21743-4C10-4C5A-8898-48E8E3B4E019",
+    "text": "Guten Abend",
+    "sfSymbol": "moon.stars.fill",
+    "fromHour": 18,
+    "toHour": 23
+  },
+  {
+    "id": "F9A2C6E1-4B77-4E6A-9B21-0A8D4E6F9123",
+    "text": "Gute Nacht",
+    "sfSymbol": "moon.fill",
+    "fromHour": 0,
+    "toHour": 4
+  },
+  {
+    "id": "A52F4B38-0F32-4A18-9E42-BBD63A5F95C7",
+    "text": "Hallo",
+    "sfSymbol": "hand.wave.fill"
+  },
+  {
+    "id": "C8E1A9F2-7D44-4B6C-8F12-3A9E5D6B1023",
+    "text": "Hi",
+    "sfSymbol": "bubble.left.fill"
+  },
+  {
+    "id": "E4D7B2A9-3F66-4C9D-8A1E-5B7F6C0A7788",
+    "text": "Willkommen zurück",
+    "sfSymbol": "arrow.uturn.left.circle.fill"
+  },
+  {
+    "id": "A9F6C1D4-2E55-4F8B-9A77-0C3E5D6B8899",
+    "text": "Wie kann ich helfen?",
+    "sfSymbol": "sparkles"
+  },
+  {
+    "id": "B3E5D8A2-1C44-4E9B-8F72-10293A6D4451",
+    "text": "Schön, dich zu sehen",
+    "sfSymbol": "face.smiling.fill"
+  },
+  {
+    "id": "C1A9F4D6-7B22-4E88-9D41-55A3B8C01992",
+    "text": "Was kann ich für dich tun?",
+    "sfSymbol": "questionmark.circle.fill"
+  },
+  {
+    "id": "D9E3A7B2-6C10-4A55-8E91-2F3B8C7D5521",
+    "text": "Bereit, wenn du es bist",
+    "sfSymbol": "bolt.fill"
+  },
+  {
+    "id": "E2B8C4D1-9A77-4F66-8D10-0A1B2C3D4455",
+    "text": "Lass uns anfangen",
+    "sfSymbol": "play.fill"
+  },
+  {
+    "id": "F7C1A9D3-5E44-4B88-9A62-7D8E1F002341",
+    "text": "Ich bin für dich da",
+    "sfSymbol": "lifepreserver.fill"
+  },
+  {
+    "id": "A1D3E7B9-4F55-4C22-8E10-9921B7A6C334",
+    "text": "Was beschäftigt dich?",
+    "sfSymbol": "brain.head.profile"
+  },
+  {
+    "id": "B8F1C2A4-6E33-4D99-9A10-44C7E2D11002",
+    "text": "Frag mich alles",
+    "sfSymbol": "ellipsis.bubble.fill"
+  }
+]

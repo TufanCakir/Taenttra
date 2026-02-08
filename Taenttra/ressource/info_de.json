@@ -1,0 +1,26 @@
+{
+    "title": "Taenttra",
+    "subtitle": "On-Device KI. Schnell. Privat. Natürlich.",
+    "sections": [
+        {
+            "title": "On-Device KI",
+            "text":
+                "Taenttra ist ein vollständig On-Device laufendes KI-Modell. Alle Berechnungen finden direkt auf deinem iPhone statt – ohne Cloud, ohne Server, ohne Datenweitergabe. Das macht Taenttra extrem schnell, zuverlässig und maximal privat."
+        },
+        {
+            "title": "Voll nativ & blitzschnell",
+            "text":
+                "Taenttra ist komplett nativ mit Swift und SwiftUI entwickelt und optimal auf iOS abgestimmt. Die App nutzt System-Frameworks, System-Themes und moderne Apple-Technologien für eine besonders flüssige, reaktionsschnelle Nutzung."
+        },
+        {
+            "title": "Siri, Spotlight & Systemintegration",
+            "text":
+                "Taenttra lässt sich direkt über Siri und Spotlight öffnen und nutzen. So ist die KI jederzeit erreichbar – ohne Umwege, tief im System integriert und so schnell wie möglich verfügbar."
+        },
+        {
+            "title": "Privacy, Accessibility & einfache Bedienung",
+            "text":
+                "Privatsphäre, Barrierefreiheit und Benutzerfreundlichkeit stehen im Mittelpunkt. Taenttra unterstützt Sprachsteuerung und ist besonders hilfreich für Menschen mit Einschränkungen. Die Oberfläche ist bewusst simpel, klar und auf das Wesentliche reduziert. Weitere Funktionen folgen kontinuierlich, um die Bedienung noch einfacher, schneller und zugänglicher zu machen."
+        }
+    ]
+}

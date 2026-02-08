@@ -3,70 +3,45 @@
 //  Taenttra
 //
 
-import SwiftData
 import SwiftUI
 
 @main
 struct TaenttraApp: App {
 
-    @StateObject private var gameState = GameState()
-    @StateObject private var network = NetworkMonitor.shared
+    @Environment(\.scenePhase) private var scenePhase
 
-    @State private var showSplash = true
+    @StateObject private var themeManager: ThemeManager
 
-    private let splashDuration: Double = 1.6
-    private let transitionDuration: Double = 0.6
+    @AppStorage("hasSeenOnboarding")
+    private var hasSeenOnboarding = false
 
     init() {
-        GameCenterManager.shared.authenticate()
-
-        if AudioManager.shared.musicEnabled {
-            AudioManager.shared.playMenuMusic()
-        }
+        _themeManager = StateObject(wrappedValue: ThemeManager())
     }
 
     var body: some Scene {
         WindowGroup {
-            ZStack {
-                Color.black.ignoresSafeArea()
-
-                if !network.isConnected {
-
-                    ConnectionRequiredView(
-                        message: "Taenttra requires an internet connection."
-                    )
-                    .transition(.opacity)
-
-                } else if showSplash {
-
-                    SplashView()
-                        .transition(.opacity)
-                        .zIndex(10)
-
-                } else {
-
-                    GameView()
-                        .environmentObject(gameState)
-                        .transition(.opacity)
-                        .zIndex(0)
-                }
-            }
-            .onAppear(perform: startSplashTimer)
-            .animation(
-                .easeInOut(duration: transitionDuration),
-                value: showSplash
-            )
+            rootContent
+                .environmentObject(themeManager)
+                .preferredColorScheme(themeManager.colorScheme)
+                .tint(themeManager.accentColor)
         }
-        .modelContainer(for: PlayerWallet.self)
     }
 
-    // MARK: - Splash Control
-    private func startSplashTimer() {
-        guard showSplash else { return }
-
-        DispatchQueue.main.asyncAfter(deadline: .now() + splashDuration) {
-            withAnimation {
-                showSplash = false
+    @ViewBuilder
+    private var rootContent: some View {
+        Group {
+            if hasSeenOnboarding {
+                RootView()
+            } else {
+                OnboardingView {
+                    hasSeenOnboarding = true
+                }
+            }
+        }
+        .onChange(of: scenePhase) { oldValue, newValue in
+            if newValue == .background {
+                GreetingManager.resetSession()
             }
         }
     }
