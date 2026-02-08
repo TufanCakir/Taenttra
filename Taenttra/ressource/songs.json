@@ -1,0 +1,12 @@
+{
+    "songs": [
+        {
+            "title": "Intro",
+            "fileName": "intro_theme"
+        },
+        {
+            "title": "Battle",
+            "fileName": "battle_theme"
+        }
+    ]
+}

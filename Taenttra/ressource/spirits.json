@@ -1,0 +1,458 @@
+[
+    {
+        "id": "aquadrax",
+        "modelName": "aquadrax",
+        "gridColor": "#0077CC",
+        "facing": "right",
+        "scale": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "position": [
+            0.0,
+            0.2,
+            0.0
+        ],
+        "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "hp": 300,
+        "next": "lightning_wolf",
+        "reward": {
+            "coins": 60,
+            "crystals": 2,
+            "exp": 35
+        },
+        "camera": {
+            "position": [
+                0.0,
+                1.2,
+                5.0
+            ],
+            "lookAt": [
+                0.0,
+                1.0,
+                0.0
+            ]
+        },
+        "light": {
+            "intensity": 6000,
+            "position": [
+                1.5,
+                2.5,
+                2.5
+            ]
+        }
+    },
+    {
+        "id": "lightning_wolf",
+        "modelName": "lightning_wolf",
+        "gridColor": "#0066CC",
+        "facing": "right",
+        "scale": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "position": [
+            0.0,
+            0.2,
+            0.0
+        ],
+        "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "hp": 450,
+        "next": "glacielion",
+        "reward": {
+            "coins": 70,
+            "crystals": 2,
+            "exp": 40
+        },
+        "camera": {
+            "position": [
+                0.0,
+                1.2,
+                5.0
+            ],
+            "lookAt": [
+                0.0,
+                1.0,
+                0.0
+            ]
+        },
+        "light": {
+            "intensity": 6200,
+            "position": [
+                1.5,
+                2.5,
+                2.5
+            ]
+        }
+    },
+    {
+        "id": "glacielion",
+        "modelName": "glacielion",
+        "gridColor": "#AEEBFF",
+        "facing": "right",
+        "scale": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "position": [
+            0.0,
+            0.2,
+            0.0
+        ],
+        "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "hp": 500,
+        "next": "frostfang",
+        "reward": {
+            "coins": 80,
+            "crystals": 3,
+            "exp": 45
+        },
+        "camera": {
+            "position": [
+                0.0,
+                1.2,
+                5.0
+            ],
+            "lookAt": [
+                0.0,
+                1.0,
+                0.0
+            ]
+        },
+        "light": {
+            "intensity": 6500,
+            "position": [
+                1.5,
+                2.5,
+                2.5
+            ]
+        }
+    },
+    {
+        "id": "frostfang",
+        "modelName": "frostfang",
+        "gridColor": "#44A8FF",
+        "facing": "right",
+        "scale": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "position": [
+            0.0,
+            0.2,
+            0.0
+        ],
+        "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "hp": 550,
+        "next": "wolfrider",
+        "reward": {
+            "coins": 90,
+            "crystals": 3,
+            "exp": 50
+        },
+        "camera": {
+            "position": [
+                0.0,
+                1.2,
+                5.0
+            ],
+            "lookAt": [
+                0.0,
+                1.0,
+                0.0
+            ]
+        },
+        "light": {
+            "intensity": 6500,
+            "position": [
+                1.5,
+                2.5,
+                2.5
+            ]
+        }
+    },
+    {
+        "id": "wolfrider",
+        "modelName": "wolfrider",
+        "gridColor": "#3FA6FF",
+        "facing": "right",
+        "scale": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "position": [
+            0.0,
+            0.2,
+            0.0
+        ],
+        "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "hp": 600,
+        "next": "raptoroid",
+        "reward": {
+            "coins": 100,
+            "crystals": 4,
+            "exp": 55
+        },
+        "camera": {
+            "position": [
+                0.0,
+                1.2,
+                5.0
+            ],
+            "lookAt": [
+                0.0,
+                1.0,
+                0.0
+            ]
+        },
+        "light": {
+            "intensity": 6800,
+            "position": [
+                1.5,
+                2.5,
+                2.5
+            ]
+        }
+    },
+    {
+        "id": "raptoroid",
+        "modelName": "raptoroid",
+        "gridColor": "#00E6A0",
+        "facing": "right",
+        "scale": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "position": [
+            0.0,
+            0.2,
+            0.0
+        ],
+        "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "hp": 650,
+        "next": "blue_fox",
+        "reward": {
+            "coins": 120,
+            "crystals": 4,
+            "exp": 60
+        },
+        "camera": {
+            "position": [
+                0.0,
+                1.2,
+                5.0
+            ],
+            "lookAt": [
+                0.0,
+                1.0,
+                0.0
+            ]
+        },
+        "light": {
+            "intensity": 7000,
+            "position": [
+                1.5,
+                2.5,
+                2.5
+            ]
+        }
+    },
+    {
+        "id": "blue_fox",
+        "modelName": "blue_fox",
+        "gridColor": "#66E0FF",
+        "facing": "right",
+        "scale": [
+            1.0,
+            1.0,
+            1.0
+        ],
+        "position": [
+            0.0,
+            0.2,
+            0.0
+        ],
+        "rotation": {
+            "x": 0.0,
+            "y": 0.0,
+            "z": 0.0
+        },
+        "hp": 700,
+        "next": "aquadrax",
+        "reward": {
+            "coins": 140,
+            "crystals": 5,
+            "exp": 70
+        },
+        "camera": {
+            "position": [
+                0.0,
+                1.2,
+                5.0
+            ],
+            "lookAt": [
+                0.0,
+                1.0,
+                0.0
+            ]
+        },
+        "light": {
+            "intensity": 7200,
+            "position": [
+                1.5,
+                2.5,
+                2.5
+            ]
+        }
+    },
+    {
+      "id": "frostrik",
+      "modelName": "frostrik",
+      "gridColor": "#9FDFFF",
+      "facing": "right",
+      "scale": [1.0, 1.0, 1.0],
+      "position": [0.0, 0.2, 0.0],
+      "rotation": { "x": 0.0, "y": 0.0, "z": 0.0 },
+      "hp": 520,
+      "next": "knubbi",
+      "reward": { "coins": 110, "crystals": 4, "exp": 75 },
+      "camera": {
+        "position": [0.0, 1.2, 5.0],
+        "lookAt": [0.0, 1.0, 0.0]
+      },
+      "light": {
+        "intensity": 7000,
+        "position": [1.5, 2.5, 2.5]
+      }
+    },
+    {
+      "id": "knubbi",
+      "modelName": "knubbi",
+      "gridColor": "#B48CFF",
+      "facing": "right",
+      "scale": [0.9, 0.9, 0.9],
+      "position": [0.0, 0.15, 0.0],
+      "rotation": { "x": 0.0, "y": 0.0, "z": 0.0 },
+      "hp": 350,
+      "next": "flammi",
+      "reward": { "coins": 95, "crystals": 5, "exp": 70 },
+      "camera": {
+        "position": [0.0, 1.1, 4.5],
+        "lookAt": [0.0, 0.9, 0.0]
+      },
+      "light": {
+        "intensity": 6500,
+        "position": [1.5, 2.5, 2.5]
+      }
+    },
+    {
+      "id": "flammi",
+      "modelName": "flammi",
+      "gridColor": "#FF6633",
+      "facing": "right",
+      "scale": [1.05, 1.05, 1.05],
+      "position": [0.0, 0.25, 0.0],
+      "rotation": { "x": 0.0, "y": 0.0, "z": 0.0 },
+      "hp": 650,
+      "next": "flapp",
+      "reward": { "coins": 140, "crystals": 5, "exp": 95 },
+      "camera": {
+        "position": [0.0, 1.25, 5.2],
+        "lookAt": [0.0, 1.0, 0.0]
+      },
+      "light": {
+        "intensity": 7200,
+        "position": [1.5, 2.5, 2.5]
+      }
+    },
+    {
+      "id": "flapp",
+      "modelName": "flapp",
+      "gridColor": "#7A6CFF",
+      "facing": "right",
+      "scale": [0.95, 0.95, 0.95],
+      "position": [0.0, 0.18, 0.0],
+      "rotation": { "x": 0.0, "y": 0.0, "z": 0.0 },
+      "hp": 420,
+      "next": "zappi",
+      "reward": { "coins": 115, "crystals": 5, "exp": 85 },
+      "camera": {
+        "position": [0.0, 1.15, 4.8],
+        "lookAt": [0.0, 0.95, 0.0]
+      },
+      "light": {
+        "intensity": 6800,
+        "position": [1.5, 2.5, 2.5]
+      }
+    },
+    {
+      "id": "zappi",
+      "modelName": "zappi",
+      "gridColor": "#66CCFF",
+      "facing": "right",
+      "scale": [1.1, 1.1, 1.1],
+      "position": [0.0, 0.25, 0.0],
+      "rotation": { "x": 0.0, "y": 0.0, "z": 0.0 },
+      "hp": 620,
+      "next": "malphas",
+      "reward": { "coins": 150, "crystals": 6, "exp": 100 },
+      "camera": {
+        "position": [0.0, 1.3, 5.4],
+        "lookAt": [0.0, 1.0, 0.0]
+      },
+      "light": {
+        "intensity": 7400,
+        "position": [1.5, 2.5, 2.5]
+      }
+    },
+    {
+      "id": "malphas",
+      "modelName": "malphas",
+      "gridColor": "#1A2A3F",
+      "facing": "right",
+      "scale": [1.25, 1.25, 1.25],
+      "position": [0.0, 0.3, 0.0],
+      "rotation": { "x": 0.0, "y": 0.0, "z": 0.0 },
+      "hp": 900,
+      "next": "aquadrax",
+      "reward": { "coins": 220, "crystals": 8, "exp": 150 },
+      "camera": {
+        "position": [0.0, 1.5, 6.0],
+        "lookAt": [0.0, 1.1, 0.0]
+      },
+      "light": {
+        "intensity": 8000,
+        "position": [1.5, 2.8, 2.8]
+      }
+    }
+]
