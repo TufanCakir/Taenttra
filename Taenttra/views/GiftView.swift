@@ -9,6 +9,7 @@ import SwiftUI
 
 struct GiftView: View {
 
+    @EnvironmentObject var bgManager: BackgroundManager
     @EnvironmentObject var giftManager: GiftManager
 
     // MARK: - Example Gifts
@@ -69,7 +70,7 @@ struct GiftView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                SpiritGridBackground()
+                SpiritGridBackground(style: bgManager.selected)
 
                 ScrollView(showsIndicators: false) {
                     VStack(spacing: 20) {

@@ -10,7 +10,9 @@ import Foundation
 
 @MainActor
 final class SpiritGameController: ObservableObject {
-    
+
+    @Published var currentEventBackground: EventBackground?
+
     @Published private(set) var activeEvent: GameEvent?
 
     // MARK: - Published: UI States
@@ -64,8 +66,6 @@ final class SpiritGameController: ObservableObject {
         self.current = first
         self.currentHP = first.hp + ArtefactInventoryManager.shared.bonusHP
 
-     
-        
         setupArtefactListener()
     }
 
@@ -95,12 +95,32 @@ final class SpiritGameController: ObservableObject {
         eventWon = false
         activeEvent = event
 
-        currentEventGridColor = event.gridColor
+        // currentEventGridColor = event.gridColor
+
+        currentEventBackground = event.background  // 👈 WICHTIG
+
+        if let musicId = event.musicId {
+            Task {
+                await MusicManager.shared.playSong(id: musicId)
+            }
+        }
 
         eventBossList = event.bosses.flatMap { $0.modelNames }
         eventBossIndex = 0
 
         loadEventBoss(modelID: eventBossList[0], data: event.bosses[0])
+    }
+
+    func handleEventVictory() {
+        EventShopManager.shared.spiritPoints += 10
+        isInEvent = false
+        eventWon = true
+        activeEvent = nil
+        currentEventBackground = nil
+
+        Task {
+            await MusicManager.shared.playSong(id: "menu")
+        }
     }
 
     private func loadEventBoss(modelID: String, data: EventBoss) {
@@ -133,12 +153,11 @@ final class SpiritGameController: ObservableObject {
             )
         )
     }
-    
+
     func resetStage() {
         stage = 1
         UserDefaults.standard.set(1, forKey: "savedStage")
     }
-
 
     // MARK: - Player Tap
     func tapAttack() {
@@ -173,7 +192,7 @@ final class SpiritGameController: ObservableObject {
                 } else {
                     isInEvent = false
                     eventWon = true
-                    activeEvent = nil   // 👈 optional, aber sauber
+                    activeEvent = nil  // 👈 optional, aber sauber
                     handleEventVictory()
                     return
                 }
@@ -183,13 +202,6 @@ final class SpiritGameController: ObservableObject {
         // 3. NORMALER MODUS
         giveReward()
         goToNext()
-    }
-
-    func handleEventVictory() {
-        EventShopManager.shared.spiritPoints += 10
-        isInEvent = false
-        currentEventGridColor = "#0066FF"
-        eventWon = true
     }
 
     private func calculateDamage(base: Int) -> Int {
@@ -248,10 +260,10 @@ final class SpiritGameController: ObservableObject {
         stage = 1
         // 🔥 SPIRIT ZURÜCKSETZEN
         if let first = all.first {
-            current = first               // neuer Spirit
-            currentHP = first.hp          // HP auf Start setzen
+            current = first  // neuer Spirit
+            currentHP = first.hp  // HP auf Start setzen
         }
-        
+
         print("🔄 SpiritGame Stats reset!")
     }
 

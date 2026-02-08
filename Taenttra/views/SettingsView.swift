@@ -10,6 +10,7 @@ import SwiftUI
 struct SettingsView: View {
 
     // MARK: - Environment Objects
+    @EnvironmentObject var bgManager: BackgroundManager
     @EnvironmentObject var coinManager: CoinManager
     @EnvironmentObject var crystalManager: CrystalManager
     @EnvironmentObject var artefactInventoryManager: ArtefactInventoryManager
@@ -26,7 +27,7 @@ struct SettingsView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                SpiritGridBackground()
+                SpiritGridBackground(style: bgManager.selected)
 
                 // MARK: - Content
                 ScrollView(showsIndicators: false) {
@@ -39,10 +40,13 @@ struct SettingsView: View {
                                     .environmentObject(musicManager)
 
                                 MusicVolumeSlider()
+                                    .padding(.horizontal, 6)
+                                    .opacity(musicManager.isMusicOn ? 1 : 0.35)
+                                    .disabled(!musicManager.isMusicOn)
                                     .environmentObject(musicManager)
                             }
                         }
-                        
+
                         // MARK: Account
                         settingsSection(title: "Account Overview") {
                             HStack(spacing: 22) {
@@ -89,11 +93,22 @@ struct SettingsView: View {
                                     "Reset All Progress",
                                     systemImage: "trash.fill"
                                 )
+                                .font(.title3.bold())
                                 .font(.headline)
                                 .foregroundColor(.white)
                                 .padding()
                                 .frame(maxWidth: .infinity)
-                                .background(.red.gradient.opacity(0.7))
+                                .background(
+                                    RoundedRectangle(cornerRadius: 18)
+                                        .fill(Color.white.opacity(0.05))
+                                )
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 18)
+                                        .stroke(
+                                            Color.white.opacity(0.1),
+                                            lineWidth: 1
+                                        )
+                                )
                                 .cornerRadius(16)
                                 .shadow(color: .red.opacity(0.5), radius: 6)
 
@@ -167,7 +182,7 @@ extension SettingsView {
         ArtefactInventoryManager.shared.reset()
         spiritGame.resetStats()
 
-        // Event Shop reset  ⬇️ NEU
+        // Event Shop
         EventShopManager.shared.reset()
 
         // Social / Daily
@@ -177,7 +192,7 @@ extension SettingsView {
         // Quests
         QuestManager.shared.reset()
 
-        // Game Center Rewards zurücksetzen
+        // Game Center
         GameCenterRewardService.shared.reset()
 
         withAnimation(.spring(response: 0.5, dampingFraction: 0.8)) {
@@ -218,48 +233,48 @@ extension SettingsView {
 // MARK: - MusicToggleButton Component
 struct MusicToggleButton: View {
     @EnvironmentObject var musicManager: MusicManager
-    @State private var iconScale = 1.0
+    @State private var pulse = false
 
     var body: some View {
         Button {
-            withAnimation(.easeInOut(duration: 0.25)) {
-                musicManager.isMusicOn.toggle()
-                iconScale = 1.2
-            }
-
-            Task {
-                if musicManager.isMusicOn {
-                    await musicManager.forcePlaySong(index: 0)
-                }
-            }
-
-            withAnimation(.spring(response: 0.4, dampingFraction: 0.5).delay(0.1)) {
-                iconScale = 1.0
+            withAnimation(.spring(response: 0.4, dampingFraction: 0.6)) {
+                musicManager.toggleMusic()
+                pulse.toggle()
             }
         } label: {
-            HStack(spacing: 12) {
-                Image(systemName: musicManager.isMusicOn
-                        ? "music.note"
+            HStack(spacing: 14) {
+                Image(
+                    systemName: musicManager.isMusicOn
+                        ? "music.note.list"
                         : "speaker.slash.fill"
                 )
-                .font(.title3.bold())
-                .foregroundColor(.blue)
-                .scaleEffect(iconScale)
+                .font(.title2.bold())
+                .foregroundColor(musicManager.isMusicOn ? .cyan : .gray)
+                .scaleEffect(pulse ? 1.15 : 1.0)
 
                 Text(musicManager.isMusicOn ? "Music On" : "Music Off")
                     .font(.headline)
                     .foregroundColor(.white)
+
+                Spacer()
             }
-            .frame(maxWidth: .infinity)
             .padding()
-            .background(.thinMaterial)
-            .cornerRadius(14)
+            .background(
+                RoundedRectangle(cornerRadius: 16)
+                    .fill(.ultraThinMaterial)
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 16)
+                    .stroke(
+                        musicManager.isMusicOn
+                            ? Color.cyan.opacity(0.6)
+                            : Color.white.opacity(0.15),
+                        lineWidth: 1
+                    )
+            )
         }
     }
 }
-
-
-
 
 // MARK: - StatBox Component
 private struct StatBox: View {
@@ -269,7 +284,7 @@ private struct StatBox: View {
     let color: Color
 
     var body: some View {
-        VStack(spacing: 8) {
+        VStack(spacing: 14) {
             Image(systemName: icon)
                 .font(.title2)
                 .foregroundColor(color)
@@ -280,8 +295,8 @@ private struct StatBox: View {
                 .font(.headline.bold())
                 .foregroundColor(.white)
         }
-        .frame(width: 90, height: 90)
-        .background(Color.white.opacity(0.08))
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 6).background(Color.white.opacity(0.08))
         .cornerRadius(16)
     }
 }

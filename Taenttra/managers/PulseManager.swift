@@ -5,8 +5,8 @@
 //  Created by Tufan Cakir on 08.02.26.
 //
 
-import SwiftUI
 import Combine
+import SwiftUI
 
 class PulseManager: ObservableObject {
     @Published var pulses: [PulseEffect] = []

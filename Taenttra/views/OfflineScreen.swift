@@ -8,10 +8,12 @@
 import SwiftUI
 
 struct OfflineScreen: View {
+
+    @EnvironmentObject var bgManager: BackgroundManager
+
     var body: some View {
         ZStack {
-            // MARK: - Hintergrund (animiertes Grid o.Ä.)
-            SpiritGridBackground()
+            SpiritGridBackground(style: bgManager.selected)
                 .ignoresSafeArea()
 
             // MARK: - Inhalt

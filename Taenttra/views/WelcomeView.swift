@@ -32,7 +32,7 @@ struct WelcomeView: View {
                         .onTapGesture { pulseText() }
                         .shadow(color: .black, radius: 12)
 
-                    NavigationLink(destination: TutorialView()) {
+                    NavigationLink(destination: FooterTabView()) {
                         Text("Start")
                             .font(
                                 .system(

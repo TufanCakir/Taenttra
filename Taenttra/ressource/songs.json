@@ -1,11 +1,13 @@
 {
     "songs": [
         {
-            "title": "Intro",
+            "id": "menu",
+            "title": "Menu Theme",
             "fileName": "intro_theme"
         },
         {
-            "title": "Battle",
+            "id": "battle",
+            "title": "Battle Theme",
             "fileName": "battle_theme"
         }
     ]

@@ -10,6 +10,7 @@ import SwiftUI
 struct ExchangeView: View {
 
     // MARK: - Managers
+    @EnvironmentObject var bgManager: BackgroundManager
     @EnvironmentObject private var coinManager: CoinManager
     @EnvironmentObject private var crystalManager: CrystalManager
     @Environment(\.dismiss) private var dismiss
@@ -44,7 +45,7 @@ struct ExchangeView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                SpiritGridBackground()
+                SpiritGridBackground(style: bgManager.selected)
 
                 VStack(spacing: 28) {
 

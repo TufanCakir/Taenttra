@@ -9,6 +9,7 @@ import SwiftUI
 
 struct EventGameView: View {
 
+    @EnvironmentObject var bgManager: BackgroundManager
     @EnvironmentObject private var game: SpiritGameController
     @Environment(\.dismiss) private var dismiss
 
@@ -32,7 +33,7 @@ struct EventGameView: View {
             // 🔥 2. TAP ATTACK
             // ---------------------------------------------------
             attackLayer
-            
+
             // 🔥 RAID OVERLAY (NUR ANZEIGE)
             if game.activeEvent?.category == .raid {
                 VStack {
@@ -75,23 +76,23 @@ struct EventGameView: View {
 extension EventGameView {
     fileprivate var renderLayer: some View {
         ZStack {
-            
-            // Background Grid
-            SpiritGridBackground(
-                glowColor: Color(hex: game.currentEventGridColor)
-            )
-            
-            // 3D Spirit immer direkt über dem Background
+
+            if let bg = game.currentEventBackground {
+                EventBackgroundView(background: bg)
+            } else {
+
+                SpiritGridBackground(style: bgManager.selected)
+            }
+
             SpiritView(config: game.current)
                 .id(game.current.id + "_event")
 
-
-            // GLOBAL pulse layer
             PulseLayer(pulses: pulse.pulses)
         }
         .ignoresSafeArea()
     }
 }
+
 // MARK: - TAP
 
 extension EventGameView {

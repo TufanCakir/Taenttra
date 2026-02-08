@@ -9,50 +9,45 @@ import SwiftUI
 
 struct FooterTabView: View {
 
-    @State private var selectedTab: Int = 0
-    @State private var showUpgrade = false
+    @State private var selectedTab = 0
+    @State private var showMenu = false
+
+    private let buttons: [HomeButton] =
+        Bundle.main.decode("homeButtons.json")
 
     var body: some View {
-        TabView(selection: $selectedTab) {
+        ZStack {
 
-            // -------------------------
-            // 🔥 TAB 1 – HOME
-            // -------------------------
-            NavigationStack {
-                HomeView()
-            }
-            .tabItem {
-                Image(systemName: "house.fill")
-                Text("Home")
-            }
-            .tag(0)
+            TabView(selection: $selectedTab) {
 
-            NavigationStack {
-                UpgradeView()
-            }
-            .tabItem {
-                Image(systemName: "arrow.up.circle.fill")
-                Text("Upgrade")
-            }
-            .tag(1)
+                NavigationStack { HomeView() }
+                    .tabItem {
+                        Image(systemName: "house.fill")
+                        Text("Home")
+                    }
+                    .tag(0)
 
-            NavigationStack {
-                ArtefactView()
-            }
-            .tabItem {
-                Image(systemName: "sparkles")
-                Text("Artefact")
-            }
-            .tag(2)
+                NavigationStack { UpgradeView() }
+                    .tabItem {
+                        Image(systemName: "arrow.up.circle.fill")
+                        Text("Upgrade")
+                    }
+                    .tag(1)
 
-            NavigationStack {
-                EventShopView()
+                NavigationStack { ArtefactView() }
+                    .tabItem {
+                        Image(systemName: "sparkles")
+                        Text("Artefact")
+                    }
+                    .tag(2)
+
+                NavigationStack { CrystalShopView() }
+                    .tabItem {
+                        Image(systemName: "cart.fill")
+                        Text("Shop")
+                    }
+                    .tag(3)
             }
-            .tabItem {
-                Image(systemName: "cart.fill")
-                Text("Event Shop")
-            }
-            .tag(3)
         }
     }
 }

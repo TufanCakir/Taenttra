@@ -11,55 +11,64 @@ import Foundation
 
 @MainActor
 final class MusicManager: NSObject, ObservableObject, AVAudioPlayerDelegate {
-    
+
+    // ✅ DIE EINZIGE INSTANZ
+    static let shared = MusicManager()
+
     // MARK: - Published
     @Published var isMusicOn: Bool {
         didSet { Task { await handleMusicToggle() } }
     }
-    
+
     @Published var volume: Float {
         didSet {
             UserDefaults.standard.set(volume, forKey: "musicVolume")
             player?.volume = volume * volume
         }
     }
-    
+
     // MARK: - Private
     private(set) var player: AVAudioPlayer?
     private var fadeTask: Task<Void, Never>?
     private(set) var songs: [Song] = []
-    
+
     private var currentIndex = 0
-    
+
     // MARK: - INIT
     override init() {
         self.isMusicOn = UserDefaults.standard.bool(forKey: "isMusicOn")
-        self.volume = UserDefaults.standard.object(forKey: "musicVolume") as? Float ?? 0.85
+        self.volume =
+            UserDefaults.standard.object(forKey: "musicVolume") as? Float
+            ?? 0.85
         super.init()
-        
+
         configureAudioSession()
         loadSongs()
-        
+
         if isMusicOn {
             Task { await playSong(at: currentIndex, fadeIn: true) }
         }
     }
 }
 
-
 // MARK: - PUBLIC API
 extension MusicManager {
 
-    /// Erzwungenen Song spielen (ignoriert "player läuft bereits")
-    func forcePlaySong(index: Int) async {
-        guard index >= 0, index < songs.count else {
-            print("⚠️ Ungültiger Song-Index:", index)
+    func playSong(id: String, fadeIn: Bool = true) async {
+        guard let index = songs.firstIndex(where: { $0.id == id }) else {
+            print("⚠️ Song-ID nicht gefunden:", id)
             return
         }
 
         stopImmediately()
         currentIndex = index
-        await playSong(at: index, fadeIn: true)
+        await playSong(at: index, fadeIn: fadeIn)
+    }
+
+    func playBattleMusic() {
+        Task {
+            await playSong(id: "battle_default")
+        }
     }
 
     /// Normal Song spielen (ohne Stop, verhindert Doppelstart)
@@ -77,7 +86,12 @@ extension MusicManager {
         currentIndex = index
         let song = songs[index]
 
-        guard let url = Bundle.main.url(forResource: song.fileName, withExtension: "mp3") else {
+        guard
+            let url = Bundle.main.url(
+                forResource: song.fileName,
+                withExtension: "mp3"
+            )
+        else {
             print("❌ MP3-Datei fehlt:", song.fileName)
             return
         }
@@ -92,7 +106,7 @@ extension MusicManager {
 
             player = newPlayer
             if fadeIn { await fadeInMusic(to: volume) }
-            
+
             print("🎶 Now Playing:", song.title)
 
         } catch {
@@ -113,7 +127,6 @@ extension MusicManager {
         player = nil
     }
 }
-
 
 // MARK: - PRIVATE HELPERS
 extension MusicManager {
@@ -137,14 +150,17 @@ extension MusicManager {
     }
 }
 
-
 // MARK: - JSON LOADING
 extension MusicManager {
 
     private func loadSongs() {
-        guard let url = Bundle.main.url(forResource: "songs", withExtension: "json"),
-              let data = try? Data(contentsOf: url),
-              let decoded = try? JSONDecoder().decode(SongList.self, from: data)
+        guard
+            let url = Bundle.main.url(
+                forResource: "songs",
+                withExtension: "json"
+            ),
+            let data = try? Data(contentsOf: url),
+            let decoded = try? JSONDecoder().decode(SongList.self, from: data)
         else {
             print("❌ songs.json NICHT gefunden oder fehlerhaft.")
             return
@@ -160,7 +176,6 @@ extension MusicManager {
     }
 }
 
-
 // MARK: - AUDIO SESSION
 extension MusicManager {
 
@@ -169,13 +184,16 @@ extension MusicManager {
 
         do {
             // playback = ignoriert Stumm-Schalter
+            try session.setCategory(.playback, options: [.mixWithOthers])
             try session.setActive(true)
         } catch {
-            print("⚠️ AudioSession konnte nicht gesetzt werden:", error.localizedDescription)
+            print(
+                "⚠️ AudioSession konnte nicht gesetzt werden:",
+                error.localizedDescription
+            )
         }
     }
 }
-
 
 // MARK: - FADE LOGIC
 extension MusicManager {
@@ -227,7 +245,6 @@ extension MusicManager {
     }
 }
 
-
 // MARK: - NEXT SONG
 extension MusicManager {
 
@@ -240,11 +257,13 @@ extension MusicManager {
         await playSong(at: currentIndex, fadeIn: true)
     }
 
-    func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
+    func audioPlayerDidFinishPlaying(
+        _ player: AVAudioPlayer,
+        successfully flag: Bool
+    ) {
         Task { await skipToNextSong() }
     }
 }
-
 
 // MARK: - MODELS
 struct SongList: Codable {
@@ -252,6 +271,7 @@ struct SongList: Codable {
 }
 
 struct Song: Codable {
+    let id: String  // 👈 NEU
     let title: String
     let fileName: String
 }

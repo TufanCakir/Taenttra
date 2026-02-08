@@ -5,12 +5,17 @@
 
 import SwiftUI
 
+enum AppStorageKeys {
+    static let hasSeenOnboarding = "hasSeenOnboarding"
+}
+
 @main
 struct TaenttraApp: App {
 
     // MARK: - Hauptzustände und Manager
+    @StateObject private var backgroundManager = BackgroundManager.shared
     @StateObject private var spiritGame = SpiritGameController()
-    @StateObject private var musicManager = MusicManager()
+    @StateObject private var musicManager = MusicManager.shared
     @StateObject private var internet = InternetMonitor()
 
     // MARK: - Singleton-Manager
@@ -25,15 +30,11 @@ struct TaenttraApp: App {
     @StateObject private var questManager = QuestManager.shared
     @StateObject private var eventShopManager = EventShopManager.shared
 
-    // MARK: - Init
-    init() {
-        ScreenFactory.shared.setGameController(spiritGame)
-    }
-
     // MARK: - Scene
     var body: some Scene {
         WindowGroup {
             rootView
+                .environmentObject(backgroundManager)
                 .environmentObject(spiritGame)
                 .environmentObject(musicManager)
                 .environmentObject(internet)
@@ -53,15 +54,19 @@ struct TaenttraApp: App {
                 .onAppear {
                     ScreenFactory.shared.setGameController(spiritGame)
                     GameCenterManager.shared.authenticate()
-                    musicManager.configureAudioSession()
                 }
         }
     }
 
     // MARK: - Root View
+    @AppStorage(AppStorageKeys.hasSeenOnboarding)
+    private var hasSeenOnboarding: Bool = false
+
     @ViewBuilder
     private var rootView: some View {
-        if internet.isConnected {
+        if !hasSeenOnboarding {
+            OnboardingView()
+        } else if internet.isConnected {
             WelcomeView()
         } else {
             OfflineScreen()

@@ -9,13 +9,14 @@ import SwiftUI
 
 struct UpgradeView: View {
 
+    @EnvironmentObject var bgManager: BackgroundManager
     @EnvironmentObject var coins: CoinManager
     @EnvironmentObject var upgrades: UpgradeManager
 
     var body: some View {
         NavigationStack {
             ZStack {
-                SpiritGridBackground(glowColor: .blue)
+                SpiritGridBackground(style: bgManager.selected)
 
                 VStack(spacing: 22) {
 

@@ -21,39 +21,40 @@ final class ScreenFactory {
         self.game = controller
     }
 
- 
     // MARK: - Public API
     func make(_ name: String) -> AnyView {
         guard game != nil else {
             return AnyView(missingGameControllerView())
         }
 
-        let view: AnyView = switch name {
+        let view: AnyView =
+            switch name {
 
-        // Core
-        case "SettingsView": AnyView(SettingsView())
-        case "SpiritGameView": AnyView(SpiritGameView())
+            // Core
+            case "BackgroundSelectorView": AnyView(BackgroundSelectorView())
+            case "SettingsView": AnyView(SettingsView())
+            case "SpiritGameView": AnyView(SpiritGameView())
 
-        // Gifts / Daily
-        case "GiftView": AnyView(GiftView())
-        case "DailyLoginView": AnyView(DailyLoginView())
+            // Gifts / Daily
+            case "GiftView": AnyView(GiftView())
+            case "DailyLoginView": AnyView(DailyLoginView())
 
-        // Game
-        case "UpgradeView": AnyView(UpgradeView())
-        case "ExchangeView": AnyView(ExchangeView())
-        case "ArtefactView": AnyView(ArtefactView())
-        case "QuestView": AnyView(QuestView())
-        case "SpiritListView": AnyView(SpiritListView())
-        case "EventShopInventoryView": AnyView(EventShopInventoryView())
-        case "CustomViewBuilder": AnyView(CustomViewBuilder())
+            // Game
+            case "UpgradeView": AnyView(UpgradeView())
+            case "ExchangeView": AnyView(ExchangeView())
+            case "ArtefactView": AnyView(ArtefactView())
+            case "QuestView": AnyView(QuestView())
+            case "SpiritListView": AnyView(SpiritListView())
+            case "EventShopInventoryView": AnyView(EventShopInventoryView())
+            case "CustomViewBuilder": AnyView(CustomViewBuilder())
 
-        case "EventView":
-            AnyView(EventView())
+            case "EventView":
+                AnyView(EventView())
 
-        // Default fallback
-        default:
-            AnyView(fallbackView(for: name))
-        }
+            // Default fallback
+            default:
+                AnyView(fallbackView(for: name))
+            }
 
         return injectAllEnvironmentObjects(into: view)
     }
@@ -93,11 +94,13 @@ extension ScreenFactory {
                 .font(.system(size: 22, weight: .semibold, design: .rounded))
                 .foregroundColor(.white)
 
-            Text("Dieser Screen ist noch nicht in der ScreenFactory registriert.")
-                .font(.subheadline)
-                .foregroundColor(.white.opacity(0.65))
-                .multilineTextAlignment(.center)
-                .padding(.horizontal, 30)
+            Text(
+                "Dieser Screen ist noch nicht in der ScreenFactory registriert."
+            )
+            .font(.subheadline)
+            .foregroundColor(.white.opacity(0.65))
+            .multilineTextAlignment(.center)
+            .padding(.horizontal, 30)
         }
         .padding(32)
         .background(
@@ -152,7 +155,6 @@ extension ScreenFactory {
         return modified
     }
 }
-
 
 // MARK: - 🧰 Bundle Helper
 extension Bundle {

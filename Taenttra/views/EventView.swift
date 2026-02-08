@@ -9,6 +9,8 @@ import SwiftUI
 
 struct EventView: View {
 
+    @EnvironmentObject var bgManager: BackgroundManager
+
     @EnvironmentObject private var game: SpiritGameController
 
     @State private var events: [GameEvent] = []
@@ -18,22 +20,7 @@ struct EventView: View {
     @State private var selectedCategory: EventCategory? = nil  // nil = ALL
 
     init() {
-        let decoded: [GameEvent]
-        do {
-            decoded = try Bundle.main.decodeSafe("events.json")
-        } catch {
-            decoded = []
-        }
-        _events = State(initialValue: decoded)
-    }
-    
-    private var filteredEvents: [GameEvent] {
-        let active = events.filter { $0.isActive }
-
-        if let cat = selectedCategory {
-            return active.filter { $0.category == cat }
-        }
-        return active
+        _events = State(initialValue: EventLoader.loadEvents())
     }
 
     // 🔥 Kategorien für Leiste
@@ -43,15 +30,17 @@ struct EventView: View {
 
     // 🔥 Gefilterte Events
     private var filteredEvents: [GameEvent] {
+        let active = events.filter { $0.isActive }
+
         if let cat = selectedCategory {
-            return events.filter { $0.category == cat }
+            return active.filter { $0.category == cat }
         }
-        return events
+        return active
     }
 
     var body: some View {
         ZStack {
-            SpiritGridBackground()
+            SpiritGridBackground(style: bgManager.selected)
 
             VStack(spacing: 22) {
 
@@ -68,7 +57,7 @@ struct EventView: View {
                         }
                     }
                     .padding(.horizontal, 20)
-                    .padding(.bottom, 30)
+                    .padding(.bottom, 80)
                 }
             }
         }
@@ -87,42 +76,40 @@ struct EventView: View {
 extension EventView {
 
     fileprivate func eventCard(_ event: GameEvent) -> some View {
-        ZStack {
-            // 🔥 CARD-Grid — NICHT fullscreen!
-            SpiritGridBackground(
-                glowColor: Color(hex: event.gridColor),
-                intensity: 1.0  // doppelte Stärke
-            )
-            .shadow(color: Color(hex: event.gridColor).opacity(0.9), radius: 20)
+        ZStack(alignment: .bottomLeading) {
 
-            .clipShape(RoundedRectangle(cornerRadius: 20))
-            .frame(height: 200)
-            .overlay(
-                RoundedRectangle(cornerRadius: 20)
-                    .stroke(Color(hex: event.gridColor), lineWidth: 3)  // optional schöner
-            )  // <- wichtig!!!
-            .frame(height: 200)  // <- Card Größe
-            .overlay(
-                RoundedRectangle(cornerRadius: 20)
-                    .stroke(.blue, lineWidth: 3)
+            // 🎨 BACKGROUND
+            EventBackgroundView(background: event.background)
+                .frame(height: 200)
+                .frame(maxWidth: .infinity)
+                .clipped()
+
+            // 🌫️ Gradient für Lesbarkeit
+            LinearGradient(
+                colors: [.black.opacity(0.75), .clear],
+                startPoint: .bottom,
+                endPoint: .center
             )
 
-            HStack {
-                VStack(alignment: .center, spacing: 6) {
+            // 📝 TITLE + TIMER
+            VStack(alignment: .leading, spacing: 6) {
+                Text(event.name)
+                    .font(.system(size: 32, weight: .black, design: .rounded))
+                    .foregroundColor(.white)
+                    .lineLimit(2)
 
-                    Text(event.name)
-                        .font(
-                            .system(size: 45, weight: .black, design: .rounded)
-                        )
-                        .foregroundColor(.white)
-                        .frame(maxWidth: .infinity)
+                if event.isActive {
+                    Text("⏳ \(event.remainingDays) days left")
+                        .font(.caption.bold())
+                        .foregroundColor(.white.opacity(0.9))
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 4)
+                        .background(.black.opacity(0.6))
+                        .clipShape(Capsule())
                 }
-
-                Spacer()
             }
-            .padding(.horizontal, 20)
+            .padding(16)
         }
-        .padding(.horizontal, 5)
     }
 }
 
@@ -197,25 +184,40 @@ struct EventDetailView: View {
     var body: some View {
         VStack(spacing: 20) {
 
-            // 🔥 CARD-Grid — NICHT fullscreen!
-            SpiritGridBackground(
-                glowColor: Color(hex: event.gridColor),
-                intensity: 1.0  // doppelte Stärke
-            )
-            .shadow(color: Color(hex: event.gridColor).opacity(0.9), radius: 20)
+            /*EventBackgroundView(background: event.background)
+                .clipShape(RoundedRectangle(cornerRadius: 20))
+                .frame(height: 200)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 20)
+                        .stroke(.white.opacity(0.6), lineWidth: 2)
+                )*/
 
-            .clipShape(RoundedRectangle(cornerRadius: 20))  // <- wichtig!!!
-            .frame(height: 200)  // <- Card Größe
-            .overlay(
-                RoundedRectangle(cornerRadius: 20)
-                    .stroke(.blue, lineWidth: 3)
-            )
+            // 🔥 CARD-Grid — NICHT fullscreen!
+            EventBackgroundView(background: event.background)
+                .clipShape(RoundedRectangle(cornerRadius: 20))
+                .frame(height: 200)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 20)
+                        .stroke(.white.opacity(0.6), lineWidth: 2)
+                )
 
             Text(event.description)
                 .font(Font.body.italic())
                 .foregroundColor(.white)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal)
+
+                .opacity(event.isActive ? 1.0 : 0.35)
+                .overlay {
+                    if !event.isActive {
+                        Text("Coming Soon")
+                            .font(.headline.bold())
+                            .foregroundColor(.white)
+                            .padding(8)
+                            .background(.black.opacity(0.6))
+                            .clipShape(Capsule())
+                    }
+                }
 
             Spacer()
 

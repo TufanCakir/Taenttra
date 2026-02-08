@@ -9,6 +9,7 @@ import SwiftUI
 
 struct EventShopView: View {
 
+    @EnvironmentObject var bgManager: BackgroundManager
     @EnvironmentObject private var shop: EventShopManager
 
     @State private var selectedItem: EventShopItem? = nil
@@ -18,7 +19,7 @@ struct EventShopView: View {
     var body: some View {
         ZStack {
 
-            SpiritGridBackground()
+            SpiritGridBackground(style: bgManager.selected)
 
             VStack(spacing: 26) {
 

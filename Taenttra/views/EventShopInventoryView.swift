@@ -9,12 +9,13 @@ import SwiftUI
 
 struct EventShopInventoryView: View {
 
+    @EnvironmentObject var bgManager: BackgroundManager
+
     @EnvironmentObject private var shop: EventShopManager
 
     var body: some View {
         ZStack {
-                SpiritGridBackground()
-
+            SpiritGridBackground(style: bgManager.selected)
 
             VStack(spacing: 20) {
 

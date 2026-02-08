@@ -2,80 +2,72 @@
     {
         "id": "1",
         "title": "Battle",
-        "icon": "arcade.stick.console",
-        "color": "#000000",
-        "iconColor": "#0096FF",
+        "iconColor": "#00B4FF",
         "destination": "SpiritGameView"
     },
     {
         "id": "2",
         "title": "Events",
-        "icon": "gamecontroller",
-        "color": "#000000",
-        "iconColor": "#FF4500",
+        "iconColor": "#FF3B3B",
         "destination": "EventView"
     },
     {
         "id": "3",
         "title": "Spirits",
-        "icon": "cube.transparent",
-        "color": "#000000",
         "iconColor": "#00E5FF",
         "destination": "SpiritListView"
     },
     {
         "id": "4",
         "title": "Quests",
-        "icon": "list.bullet.rectangle.fill",
-        "color": "#000000",
         "iconColor": "#7CFF4D",
         "destination": "QuestView"
     },
     {
         "id": "5",
         "title": "Gifts",
-        "icon": "gift",
-        "color": "#000000",
         "iconColor": "#00FF9C",
         "destination": "GiftView"
     },
     {
         "id": "6",
         "title": "Daily Login Bonus",
-        "icon": "giftcard",
-        "color": "#000000",
-        "iconColor": "#FF66FF",
+        "iconColor": "#FFD166",
         "destination": "DailyLoginView"
     },
     {
         "id": "7",
         "title": "Exchange",
-        "icon": "arrow.trianglehead.2.counterclockwise",
-        "color": "#000000",
         "iconColor": "#00C8FF",
         "destination": "ExchangeView"
     },
     {
         "id": "8",
         "title": "Inventory",
-        "icon": "bag",
-        "color": "#000000",
-        "iconColor": "#FF8C00",
+        "iconColor": "#FF9F1C",
         "destination": "EventShopInventoryView"
     },
     {
         "id": "9",
         "title": "Custom Builder",
-        "icon": "hammer.fill",
-        "color": "#000000",
         "iconColor": "#C77DFF",
         "destination": "CustomViewBuilder"
     },
     {
         "id": "10",
+        "title": "Event Shop",
+        "iconColor": "#9B111E",
+        "destination": "EventShopView"
+    },
+    {
+        "id": "11",
+        "title": "Backgrounds",
+        "iconColor": "#2ED573",
+        "destination": "BackgroundSelectorView"
+    },
+    {
+        "id": "12",
         "title": "Settings",
-        "icon": "gear",
-        "color": "#000000",
         "iconColor": "#8E8E93",
         "destination": "SettingsView"
     }

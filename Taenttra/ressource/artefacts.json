@@ -510,37 +510,38 @@
         "shardsForNextLevel": 840
     },
     {
-      "id": "artifact_ice_core",
-      "name": "Ice Core",
-      "rarity": "epic",
-      "dropChance": 0.12,
-      "types": [
-        "hp_bonus",
-        "tap_damage"
-      ],
-      "power": 14,
-      "basePower": 20,
-      "desc": "Ein uralter Kern aus reinem Eis, durchdrungen von Frostmagie.",
-      "icon": "snowflake.circle.fill",
-      "level": 1,
-      "shards": 0,
-      "shardsForNextLevel": 150
+        "id": "artifact_ice_core",
+        "name": "Ice Core",
+        "rarity": "epic",
+        "dropChance": 0.12,
+        "types": [
+            "hp_bonus",
+            "tap_damage"
+        ],
+        "power": 14,
+        "basePower": 20,
+        "desc": "Ein uralter Kern aus reinem Eis, durchdrungen von Frostmagie.",
+        "icon": "snowflake.circle.fill",
+        "level": 1,
+        "shards": 0,
+        "shardsForNextLevel": 150
     },
     {
-      "id": "artifact_void_core",
-      "name": "Void Core",
-      "rarity": "legendary",
-      "dropChance": 0.04,
-      "types": [
-        "exp_bonus",
-        "crit_damage"
-      ],
-      "power": 18,
-      "basePower": 35,
-      "desc": "Ein pulsierender Kern aus purer Leere, erschaffen von Malphas.",
-      "icon": "circle.hexagongrid.fill",
-      "level": 1,
-      "shards": 0,
-      "shardsForNextLevel": 300
+        "id": "artifact_void_core",
+        "name": "Void Core",
+        "rarity": "legendary",
+        "dropChance": 0.04,
+        "types": [
+            "exp_bonus",
+            "crit_damage"
+        ],
+        "power": 18,
+        "basePower": 35,
+        "desc":
+            "Ein pulsierender Kern aus purer Leere, erschaffen von Malphas.",
+        "icon": "circle.hexagongrid.fill",
+        "level": 1,
+        "shards": 0,
+        "shardsForNextLevel": 300
     }
 ]

@@ -14,7 +14,7 @@ struct PulseEffect: Identifiable {
     var rotation: Double
     var color: Color
     var size: CGFloat
-    
+
     /// Wichtig für Rainbow!
     var hue: Double
 }

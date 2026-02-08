@@ -9,6 +9,7 @@ import SwiftUI
 
 struct DailyLoginView: View {
 
+    @EnvironmentObject var bgManager: BackgroundManager
     @EnvironmentObject var loginManager: DailyLoginManager
 
     private let rewards: [DailyReward] = [
@@ -37,7 +38,7 @@ struct DailyLoginView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                SpiritGridBackground()
+                SpiritGridBackground(style: bgManager.selected)
 
                 VStack(spacing: 22) {
 

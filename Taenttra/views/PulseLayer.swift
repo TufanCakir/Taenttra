@@ -20,7 +20,7 @@ struct PulseLayer: View {
                     .position(pulse.position)
                     .opacity(pulse.opacity)
                     .animation(.easeOut(duration: 0.8), value: pulse.opacity)
-                }
+            }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .ignoresSafeArea()

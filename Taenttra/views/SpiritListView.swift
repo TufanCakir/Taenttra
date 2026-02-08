@@ -9,6 +9,7 @@ import SceneKit
 import SwiftUI
 
 struct SpiritCardView: View {
+
     let spirit: ModelConfig  // ← richtig!
 
     var body: some View {
@@ -162,6 +163,8 @@ extension Spirit3DMini {
 
 struct SpiritListView: View {
 
+    @EnvironmentObject var bgManager: BackgroundManager
+
     @State private var spirits: [ModelConfig] = Bundle.main.loadSpiritArray(
         "spirits"
     )
@@ -189,7 +192,7 @@ struct SpiritListView: View {
             }
         }
         .background(
-            SpiritGridBackground()
+            SpiritGridBackground(style: bgManager.selected)
         )
     }
 }

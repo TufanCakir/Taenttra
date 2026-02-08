@@ -1,14 +1,17 @@
 [
     {
         "id": "event_aquadrax_raid",
+        "startDate": null,
+        "endDate": null,
         "name": "AquaDrax Depth Raid",
         "description":
             "Ein uralter Wasserdrache prüft deine Stärke in einem tobenden Ozean.",
-        "gridColor": "#0077CC",
+        "background": {
+            "type": "image",
+            "value": "background17"
+        },
         "category": "special",
-        "musicIndex": 1,
-        "startDate": null,
-        "endDate": null,
+        "musicId": "battle",
         "bosses": [
             {
                 "modelNames": [
@@ -27,7 +30,7 @@
                     130
                 ],
                 "crystals": [
-                    3,
+                    1,
                     5,
                     7
                 ],
@@ -41,14 +44,17 @@
     },
     {
         "id": "event_arc_lightning_trial",
+        "startDate": null,
+        "endDate": null,
         "name": "Arc Lightning Wolf Trial",
         "description":
             "Der Blitzwolf entfesselt elektrische Stürme gegen jeden Herausforderer.",
-        "gridColor": "#0066CC",
+        "background": {
+            "type": "image",
+            "value": "background16"
+        },
         "category": "trial",
-        "musicIndex": 1,
-        "startDate": null,
-        "endDate": null,
+        "musicId": "battle",
         "bosses": [
             {
                 "modelNames": [
@@ -63,14 +69,17 @@
     },
     {
         "id": "event_glacier_breach",
+        "startDate": null,
+        "endDate": null,
         "name": "Glacier Breach",
         "description":
             "Drei frostige Bestien brechen aus den Eisfeldern hervor.",
-        "gridColor": "#AEEBFF",
+        "background": {
+            "type": "image",
+            "value": "background15"
+        },
         "category": "special",
-        "musicIndex": 1,
-        "startDate": null,
-        "endDate": null,
+        "musicId": "battle",
         "bosses": [
             {
                 "modelNames": [
@@ -103,14 +112,17 @@
     },
     {
         "id": "event_frostfang_elite",
+        "startDate": null,
+        "endDate": null,
         "name": "Frostfang Elite Trial",
         "description":
             "Frostfang wartet auf den nächsten würdigen Herausforderer.",
-        "gridColor": "#44A8FF",
+        "background": {
+            "type": "image",
+            "value": "background14"
+        },
         "category": "special",
-        "musicIndex": 1,
-        "startDate": null,
-        "endDate": null,
+        "musicId": "battle",
         "bosses": [
             {
                 "modelNames": [
@@ -125,14 +137,17 @@
     },
     {
         "id": "event_wolfrider_skirmish",
+        "startDate": null,
+        "endDate": null,
         "name": "Wolfrider Skirmish",
         "description":
             "Ein berüchtigter Wolfsreiter stellt sich dir in einem direkten Duell.",
-        "gridColor": "#3FA6FF",
+        "background": {
+            "type": "image",
+            "value": "background13"
+        },
         "category": "special",
-        "musicIndex": 1,
-        "startDate": null,
-        "endDate": null,
+        "musicId": "battle",
         "bosses": [
             {
                 "modelNames": [
@@ -147,13 +162,16 @@
     },
     {
         "id": "event_raptoroid_rampage",
-        "name": "Raptoroid Rampage",
-        "description": "Der technoide Dino-Spirit rastet völlig aus!",
-        "gridColor": "#00E6A0",
-        "category": "special",
-        "musicIndex": 1,
         "startDate": null,
         "endDate": null,
+        "name": "Raptoroid Rampage",
+        "description": "Der technoide Dino-Spirit rastet völlig aus!",
+        "background": {
+            "type": "image",
+            "value": "background12"
+        },
+        "category": "special",
+        "musicId": "battle",
         "bosses": [
             {
                 "modelNames": [
@@ -168,14 +186,17 @@
     },
     {
         "id": "event_ethereal_blue_awakening",
+        "startDate": null,
+        "endDate": null,
         "name": "Ethereal Blue Awakening",
         "description":
             "Der mystische himmelblaue Fox-Spirit erwacht aus uraltem Schlaf.",
-        "gridColor": "#66E0FF",
+        "background": {
+            "type": "image",
+            "value": "background11"
+        },
         "category": "special",
-        "musicIndex": 1,
-        "startDate": null,
-        "endDate": null,
+        "musicId": "battle",
         "bosses": [
             {
                 "modelNames": [
@@ -188,118 +209,151 @@
             }
         ]
     },
-      {
+    {
         "id": "event_frostrik_trial",
+        "startDate": null,
+        "endDate": null,
         "name": "Frostrik Icebound Trial",
-        "description": "Der frostige Magier Frostrik prüft deine Kontrolle über Eis und Magie.",
-        "gridColor": "#9FDFFF",
+        "description":
+            "Der frostige Magier Frostrik prüft deine Kontrolle über Eis und Magie.",
+        "background": {
+            "type": "image",
+            "value": "background10"
+        },
         "category": "trial",
-        "musicIndex": 1,
-        "startDate": null,
-        "endDate": null,
+        "musicId": "battle",
         "bosses": [
-          {
-            "modelNames": ["frostrik"],
-            "hp": 500,
-            "coins": 120,
-            "crystals": 4,
-            "exp": 80
-          }
+            {
+                "modelNames": [
+                    "frostrik"
+                ],
+                "hp": 500,
+                "coins": 120,
+                "crystals": 4,
+                "exp": 80
+            }
         ]
-      },
-      {
+    },
+    {
         "id": "event_knubbi_crystal_support",
-        "name": "Knubbi Crystal Support",
-        "description": "Knubbi verstärkt Verbündete mit reiner Kristallenergie.",
-        "gridColor": "#B48CFF",
-        "category": "special",
-        "musicIndex": 1,
         "startDate": null,
         "endDate": null,
+        "name": "Knubbi Crystal Support",
+        "description":
+            "Knubbi verstärkt Verbündete mit reiner Kristallenergie.",
+        "background": {
+            "type": "image",
+            "value": "background9"
+        },
+        "category": "special",
+        "musicId": "battle",
         "bosses": [
-          {
-            "modelNames": ["knubbi"],
-            "hp": 300,
-            "coins": 90,
-            "crystals": 6,
-            "exp": 70
-          }
+            {
+                "modelNames": [
+                    "knubbi"
+                ],
+                "hp": 300,
+                "coins": 90,
+                "crystals": 6,
+                "exp": 70
+            }
         ]
-      },
-      {
+    },
+    {
         "id": "event_flammi_burning_trial",
+        "startDate": null,
+        "endDate": null,
         "name": "Flammi Burning Trial",
         "description": "Flammi entfesselt gnadenlose Flammenangriffe.",
-        "gridColor": "#FF6633",
+        "background": {
+            "type": "image",
+            "value": "background8"
+        },
         "category": "trial",
-        "musicIndex": 1,
+        "musicId": "battle",
+        "bosses": [
+            {
+                "modelNames": [
+                    "flammi"
+                ],
+                "hp": 650,
+                "coins": 140,
+                "crystals": 5,
+                "exp": 95
+            }
+        ]
+    },
+    {
+        "id": "event_flapp_moon_ritual",
         "startDate": null,
         "endDate": null,
-        "bosses": [
-          {
-            "modelNames": ["flammi"],
-            "hp": 650,
-            "coins": 140,
-            "crystals": 5,
-            "exp": 95
-          }
-        ]
-      },
-      {
-        "id": "event_flapp_moon_ritual",
         "name": "Flapp Moon Ritual",
         "description": "Der geheimnisvolle Flapp wirkt alte Mondzauber.",
-        "gridColor": "#7A6CFF",
+        "background": {
+            "type": "image",
+            "value": "background6"
+        },
         "category": "special",
-        "musicIndex": 1,
+        "musicId": "battle",
+        "bosses": [
+            {
+                "modelNames": [
+                    "flapp"
+                ],
+                "hp": 420,
+                "coins": 110,
+                "crystals": 5,
+                "exp": 85
+            }
+        ]
+    },
+    {
+        "id": "event_malphas_abyss_raid",
         "startDate": null,
         "endDate": null,
-        "bosses": [
-          {
-            "modelNames": ["flapp"],
-            "hp": 420,
-            "coins": 110,
-            "crystals": 5,
-            "exp": 85
-          }
-        ]
-      },
-      {
-        "id": "event_malphas_abyss_raid",
         "name": "Malphas Abyss Raid",
-        "description": "Die dunkle Urmacht Malphas erhebt sich aus dem Abgrund.",
-        "gridColor": "#1A2A3F",
+        "description":
+            "Die dunkle Urmacht Malphas erhebt sich aus dem Abgrund.",
+        "background": {
+            "type": "image",
+            "value": "raid_bg"
+        },
         "category": "raid",
-        "musicIndex": 1,
-        "startDate": "2026-02-10T00:00:00Z",
-        "endDate": "2026-02-20T23:59:59Z",
+        "musicId": "battle",
         "bosses": [
-          {
-            "modelNames": ["malphas"],
-            "hp": 900,
-            "coins": 200,
-            "crystals": 8,
-            "exp": 140
-          }
+            {
+                "modelNames": [
+                    "malphas"
+                ],
+                "hp": 900,
+                "coins": 200,
+                "crystals": 8,
+                "exp": 140
+            }
         ]
-      },
-      {
+    },
+    {
         "id": "event_zappi_frost_charge",
         "name": "Zappi Frost Charge",
         "description": "Zappi stürmt mit eisiger Wucht über das Schlachtfeld.",
-        "gridColor": "#66CCFF",
+        "background": {
+            "type": "image",
+            "value": "background5"
+        },
         "category": "trial",
-        "musicIndex": 1,
+        "musicId": "battle",
         "startDate": null,
         "endDate": null,
         "bosses": [
-          {
-            "modelNames": ["zappi"],
-            "hp": 600,
-            "coins": 130,
-            "crystals": 4,
-            "exp": 90
-          }
+            {
+                "modelNames": [
+                    "zappi"
+                ],
+                "hp": 600,
+                "coins": 130,
+                "crystals": 4,
+                "exp": 90
+            }
         ]
-      }
+    }
 ]

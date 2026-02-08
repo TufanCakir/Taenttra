@@ -9,12 +9,14 @@ import SwiftUI
 
 struct ArtefactView: View {
 
+    @EnvironmentObject var bgManager: BackgroundManager
+
     @ObservedObject private var inventory = ArtefactInventoryManager.shared
 
     var body: some View {
         NavigationStack {
             ZStack {
-                SpiritGridBackground()
+                SpiritGridBackground(style: bgManager.selected)
 
                 ScrollView(showsIndicators: false) {
                     LazyVStack(spacing: 24) {

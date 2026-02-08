@@ -9,13 +9,15 @@ import SwiftUI
 
 struct QuestView: View {
 
+    @EnvironmentObject var bgManager: BackgroundManager
+
     @State private var quests: [Quest] = Bundle.main.decode("quests.json")
     @ObservedObject private var questManager = QuestManager.shared
     @State private var selectedQuest: Quest?
 
     var body: some View {
         ZStack {
-            SpiritGridBackground()
+            SpiritGridBackground(style: bgManager.selected)
 
             ScrollView(showsIndicators: false) {
                 VStack(spacing: 32) {

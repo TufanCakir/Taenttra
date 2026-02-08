@@ -10,6 +10,7 @@ import SwiftUI
 
 struct SpiritGameView: View {
 
+    @EnvironmentObject var bgManager: BackgroundManager
     @EnvironmentObject private var game: SpiritGameController
     @EnvironmentObject private var musicManager: MusicManager
     @State private var activeSheet: ActiveSheet?
@@ -23,7 +24,7 @@ struct SpiritGameView: View {
 
     var body: some View {
         ZStack {
-            SpiritGridBackground(glowColor: Color(hex: game.current.gridColor))
+            SpiritGridBackground(style: bgManager.selected)
 
             // GLOBAL pulse layer
             PulseLayer(pulses: pulse.pulses)
@@ -79,12 +80,7 @@ struct SpiritGameView: View {
                 ArtefactView()
             }
         }
-        .onAppear {
-            print("VIEW CONTROLLER:", Unmanaged.passUnretained(game).toOpaque())
-            Task {
-                await musicManager.forcePlaySong(index: 1)
-            }
-        }
+
     }
 }
 

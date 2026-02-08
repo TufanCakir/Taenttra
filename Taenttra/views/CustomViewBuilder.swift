@@ -30,7 +30,8 @@ struct CustomViewBuilder: View {
                     Button("Löschen") {
                         withAnimation {
                             viewItems.removeAll { item in
-                                guard let index = viewItems.firstIndex(of: item) else { return false }
+                                guard let index = viewItems.firstIndex(of: item)
+                                else { return false }
                                 return selectedIndices.contains(index)
                             }
                             selectedIndices.removeAll()
@@ -66,9 +67,15 @@ struct CustomViewBuilder: View {
                                 }
 
                             if editMode {
-                                Image(systemName: selectedIndices.contains(index) ? "checkmark.circle.fill" : "circle")
-                                    .foregroundColor(selectedIndices.contains(index) ? .green : .gray)
-                                    .padding(8)
+                                Image(
+                                    systemName: selectedIndices.contains(index)
+                                        ? "checkmark.circle.fill" : "circle"
+                                )
+                                .foregroundColor(
+                                    selectedIndices.contains(index)
+                                        ? .green : .gray
+                                )
+                                .padding(8)
                             }
                         }
                         .padding(.horizontal)
@@ -111,7 +118,10 @@ struct CustomViewBuilder: View {
                 )
             }
             .padding(.bottom, 40)
-            .confirmationDialog("Neues Element hinzufügen", isPresented: $showAddMenu) {
+            .confirmationDialog(
+                "Neues Element hinzufügen",
+                isPresented: $showAddMenu
+            ) {
                 ForEach(CustomViewType.allCases) { type in
                     Button(type.displayTitle) {
                         withAnimation {
@@ -181,14 +191,16 @@ struct CustomViewBuilder: View {
             Text("Willkommen")
                 .font(.title3)
                 .foregroundStyle(
-                    LinearGradient(colors: [.cyan, .blue, .cyan],
-                                   startPoint: .topLeading,
-                                   endPoint: .bottomTrailing)
+                    LinearGradient(
+                        colors: [.cyan, .blue, .cyan],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
                 )
 
         case .emptySpacer:
             Spacer().frame(height: 30)
-            
+
         case .dailyLoginView:
             DailyLoginView()
                 .frame(height: 500)
@@ -216,7 +228,11 @@ struct CustomViewBuilder: View {
 
     private func load() {
         if let data = UserDefaults.standard.data(forKey: saveKey),
-           let decoded = try? JSONDecoder().decode([CustomViewType].self, from: data) {
+            let decoded = try? JSONDecoder().decode(
+                [CustomViewType].self,
+                from: data
+            )
+        {
             viewItems = decoded
         }
     }

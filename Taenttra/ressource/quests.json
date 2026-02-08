@@ -154,93 +154,93 @@
         }
     },
     {
-      "id": "quest_defeat_frostrik",
-      "name_de": "Besiege Frostrik",
-      "name_en": "Defeat Frostrik",
-      "desc_de": "Bezwinge den frostigen Magier Frostrik.",
-      "desc_en": "Defeat the frost mage Frostrik.",
-      "type": "boss",
-      "target": 1,
-      "reward": {
-        "coins": 200,
-        "crystals": 3,
-        "exp": 150,
-        "artefact": "artifact_ice_core"
-      }
+        "id": "quest_defeat_frostrik",
+        "name_de": "Besiege Frostrik",
+        "name_en": "Defeat Frostrik",
+        "desc_de": "Bezwinge den frostigen Magier Frostrik.",
+        "desc_en": "Defeat the frost mage Frostrik.",
+        "type": "boss",
+        "target": 1,
+        "reward": {
+            "coins": 200,
+            "crystals": 3,
+            "exp": 150,
+            "artefact": "artifact_ice_core"
+        }
     },
     {
-      "id": "quest_defeat_knubbi",
-      "name_de": "Kristallprüfung",
-      "name_en": "Crystal Trial",
-      "desc_de": "Überstehe Knubbis Kristallprüfung.",
-      "desc_en": "Survive Knubbi’s crystal trial.",
-      "type": "boss",
-      "target": 1,
-      "reward": {
-        "coins": 180,
-        "crystals": 5,
-        "exp": 140,
-        "artefact": null
-      }
+        "id": "quest_defeat_knubbi",
+        "name_de": "Kristallprüfung",
+        "name_en": "Crystal Trial",
+        "desc_de": "Überstehe Knubbis Kristallprüfung.",
+        "desc_en": "Survive Knubbi’s crystal trial.",
+        "type": "boss",
+        "target": 1,
+        "reward": {
+            "coins": 180,
+            "crystals": 5,
+            "exp": 140,
+            "artefact": null
+        }
     },
     {
-      "id": "quest_defeat_flammi",
-      "name_de": "Flammendes Duell",
-      "name_en": "Burning Duel",
-      "desc_de": "Stelle dich Flammi und seinen Flammen.",
-      "desc_en": "Face Flammi and his flames.",
-      "type": "boss",
-      "target": 1,
-      "reward": {
-        "coins": 250,
-        "crystals": 5,
-        "exp": 180,
-        "artefact": "artifact_fire_core"
-      }
+        "id": "quest_defeat_flammi",
+        "name_de": "Flammendes Duell",
+        "name_en": "Burning Duel",
+        "desc_de": "Stelle dich Flammi und seinen Flammen.",
+        "desc_en": "Face Flammi and his flames.",
+        "type": "boss",
+        "target": 1,
+        "reward": {
+            "coins": 250,
+            "crystals": 5,
+            "exp": 180,
+            "artefact": "artifact_fire_core"
+        }
     },
     {
-      "id": "quest_defeat_flapp",
-      "name_de": "Mondritual",
-      "name_en": "Moon Ritual",
-      "desc_de": "Unterbrich Flapps geheimnisvolles Ritual.",
-      "desc_en": "Interrupt Flapp’s mysterious ritual.",
-      "type": "boss",
-      "target": 1,
-      "reward": {
-        "coins": 220,
-        "crystals": 4,
-        "exp": 170,
-        "artefact": null
-      }
+        "id": "quest_defeat_flapp",
+        "name_de": "Mondritual",
+        "name_en": "Moon Ritual",
+        "desc_de": "Unterbrich Flapps geheimnisvolles Ritual.",
+        "desc_en": "Interrupt Flapp’s mysterious ritual.",
+        "type": "boss",
+        "target": 1,
+        "reward": {
+            "coins": 220,
+            "crystals": 4,
+            "exp": 170,
+            "artefact": null
+        }
     },
     {
-      "id": "quest_defeat_zappi",
-      "name_de": "Froststurm-Zertrümmerer",
-      "name_en": "Froststorm Breaker",
-      "desc_de": "Halte Zappis frostigen Ansturm auf.",
-      "desc_en": "Stop Zappi’s icy charge.",
-      "type": "boss",
-      "target": 1,
-      "reward": {
-        "coins": 260,
-        "crystals": 6,
-        "exp": 190,
-        "artefact": null
-      }
+        "id": "quest_defeat_zappi",
+        "name_de": "Froststurm-Zertrümmerer",
+        "name_en": "Froststorm Breaker",
+        "desc_de": "Halte Zappis frostigen Ansturm auf.",
+        "desc_en": "Stop Zappi’s icy charge.",
+        "type": "boss",
+        "target": 1,
+        "reward": {
+            "coins": 260,
+            "crystals": 6,
+            "exp": 190,
+            "artefact": null
+        }
     },
     {
-      "id": "quest_defeat_malphas",
-      "name_de": "Sturz der Urmacht",
-      "name_en": "Fall of the Primordial",
-      "desc_de": "Besiege Malphas, die dunkle Urmacht.",
-      "desc_en": "Defeat Malphas, the primordial darkness.",
-      "type": "boss",
-      "target": 1,
-      "reward": {
-        "coins": 500,
-        "crystals": 10,
-        "exp": 350,
-        "artefact": "artifact_void_core"
-      }
+        "id": "quest_defeat_malphas",
+        "name_de": "Sturz der Urmacht",
+        "name_en": "Fall of the Primordial",
+        "desc_de": "Besiege Malphas, die dunkle Urmacht.",
+        "desc_en": "Defeat Malphas, the primordial darkness.",
+        "type": "boss",
+        "target": 1,
+        "reward": {
+            "coins": 500,
+            "crystals": 10,
+            "exp": 350,
+            "artefact": "artifact_void_core"
+        }
     }
 ]
