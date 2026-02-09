@@ -16,29 +16,40 @@ struct HeaderView: View {
 
     @State private var glow = false
     @State private var showDetails = false
+    private let headerBlue = Color(hex: "#0A2A4A")  // dunkles HUD-Blau
 
     var body: some View {
-        HStack(spacing: 18) {
 
-            hudItem(
-                key: "level",
-                title: "Lv.",
-                value: accountManager.level
-            )
+        let icon = HudIconManager.shared.icon(for: "level")
 
-            hudItem(
-                key: "coin",
-                value: coinManager.coins
-            )
+        let color = Color(hex: icon?.color ?? "#00FF00  ")
 
-            hudItem(
-                key: "crystal",
-                value: crystalManager.crystals
-            )
+        VStack(spacing: 16) {
+            // Top row: Level left, resources right
+            HStack(alignment: .top, spacing: 16) {
+                // Level label on the left
+                HStack {
+                    Text("Rank \(accountManager.level)")
+                        .font(.callout.bold())
+                        .foregroundColor(.white)
+                }
+
+                Spacer()
+
+                // Resources on the right
+                HStack(spacing: 16) {
+                    hudItem(key: "coin", value: coinManager.coins)
+                    hudItem(key: "crystal", value: crystalManager.crystals)
+                }
+            }
+
+            // EXP bar below with spacing
+            expBar
+                .padding(.bottom)
         }
-        .onTapGesture {
-            showDetails = true
-        }
+        .padding(.horizontal, 16)
+        .padding(.top, 16)
+        .onTapGesture { showDetails = true }
         .sheet(isPresented: $showDetails) {
             HeaderDetailSheet()
                 .environmentObject(coinManager)
@@ -46,18 +57,16 @@ struct HeaderView: View {
                 .environmentObject(accountManager)
                 .environmentObject(artefacts)
         }
-        .padding(.horizontal, 14)
-        .padding(.vertical, 14)
+        .padding(.horizontal, 16)
+        .padding(.top, 0)
         .background(
-            RoundedRectangle(cornerRadius: 20)
-                .fill(.ultraThinMaterial)
-                .shadow(color: .white.opacity(0.15), radius: 10, y: 4)
+            Capsule()
+                .fill(headerBlue)
                 .overlay(
-                    RoundedRectangle(cornerRadius: 20)
-                        .stroke(Color.white.opacity(0.2), lineWidth: 1)
+                    Capsule()
+                        .stroke(Color.blue, lineWidth: 1)
                 )
         )
-        .padding(.horizontal, 10)
         .onAppear {
             withAnimation(
                 .easeInOut(duration: 1.8)
@@ -68,59 +77,40 @@ struct HeaderView: View {
         }
     }
 
+    private var expBar: some View {
+        let icon = HudIconManager.shared.icon(for: "level")
+        let color = Color(hex: icon?.color ?? "#32CD32")
+
+        return GeometryReader { geo in
+            ZStack(alignment: .leading) {
+                Capsule()
+                    .fill(Color.white.opacity(0.30))
+                Capsule()
+                    .fill(color)
+                    .frame(width: geo.size.width * accountManager.expProgress)
+            }
+        }
+        .frame(height: 6)
+    }
+
     private func hudItem(
         key: String,
-        title: String? = nil,
         value: Int
     ) -> some View {
 
         let icon = HudIconManager.shared.icon(for: key)
         let color = Color(hex: icon?.color ?? "#FFFFFF")
 
-        return HStack(spacing: 6) {
+        return HStack(spacing: 16) {
+            Image(systemName: icon?.symbol ?? "questionmark")
+                .font(.system(size: 16, weight: .semibold))
+                .foregroundColor(color)
 
-            ZStack {
-                Circle()
-                    .fill(color.opacity(0.12))
-                    .frame(width: 30, height: 30)
-                    .shadow(
-                        color: color.opacity(glow ? 0.5 : 0.2),
-                        radius: glow ? 8 : 2
-                    )
-
-                Image(systemName: icon?.symbol ?? "questionmark")
-                    .font(.system(size: 14, weight: .semibold))
-                    .foregroundColor(color)
-            }
-
-            VStack(alignment: .leading, spacing: 0) {
-                if let title {
-                    Text(title)
-                        .font(.caption2)
-                        .foregroundColor(.white.opacity(0.7))
-                }
-
-                Text(value.short)
-                    .font(.subheadline.weight(.bold))
-                    .foregroundColor(.white)
-                    .monospacedDigit()
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.7)
-            }
-
-            Spacer(minLength: 0)
+            Text(value.short)
+                .font(.subheadline.bold())
+                .monospacedDigit()
+                .foregroundColor(.white)
         }
-        .frame(width: 78)
-        .padding(.vertical, 6)
-        .padding(.horizontal, 10)
-        .background(
-            RoundedRectangle(cornerRadius: 16)
-                .fill(Color.white.opacity(0.05))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 16)
-                        .stroke(color.opacity(0.5), lineWidth: 1)
-                )
-        )
     }
 }
 

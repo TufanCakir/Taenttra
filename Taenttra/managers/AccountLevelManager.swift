@@ -42,6 +42,11 @@ final class AccountLevelManager: ObservableObject {
         save()
     }
 
+    var expProgress: Double {
+        let needed = Double(level * 200)
+        return min(Double(exp) / needed, 1.0)
+    }
+
     private func save() {
         UserDefaults.standard.set(level, forKey: "accountLevel")
         UserDefaults.standard.set(exp, forKey: "accountExp")

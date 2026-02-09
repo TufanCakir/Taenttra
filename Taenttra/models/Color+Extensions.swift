@@ -10,45 +10,35 @@ import simd
 
 // MARK: - Color ⇄ HEX + SIMD Extensions
 extension Color {
-    /// Erstellt eine `Color` aus einem Hex-String wie `#RRGGBB` oder `#AARRGGBB`.
-    /// Unterstützt auch Kurzformen wie `#FFF`.
-    init(hex: String) {
-        // 🔹 Nur alphanumerische Zeichen behalten (entfernt #, Leerzeichen etc.)
-        var sanitized = hex.trimmingCharacters(
-            in: CharacterSet.alphanumerics.inverted
-        )
 
-        // Unterstützt Kurzformen wie #FFF → #FFFFFF
-        if sanitized.count == 3 {
-            sanitized = sanitized.map { "\($0)\($0)" }.joined()
+    init(hex: String, alpha: Double? = nil) {
+        var hex = hex.trimmingCharacters(in: .alphanumerics.inverted)
+
+        if hex.count == 3 {
+            hex = hex.map { "\($0)\($0)" }.joined()
         }
 
-        // Falls Länge unpassend, abbrechen
-        guard [6, 8].contains(sanitized.count) else {
-            self.init(.sRGB, red: 0, green: 0, blue: 0, opacity: 1)
+        var int: UInt64 = 0
+        Scanner(string: hex).scanHexInt64(&int)
+
+        let a, r, g, b: UInt64
+        switch hex.count {
+        case 6:
+            (a, r, g, b) = (255, (int >> 16) & 0xFF, (int >> 8) & 0xFF, int & 0xFF)
+        case 8:
+            (a, r, g, b) = ((int >> 24) & 0xFF, (int >> 16) & 0xFF, (int >> 8) & 0xFF, int & 0xFF)
+        default:
+            self = .black
             return
         }
 
-        var value: UInt64 = 0
-        Scanner(string: sanitized).scanHexInt64(&value)
-
-        let r: Double
-        let g: Double
-        let b: Double
-        let a: Double
-        if sanitized.count == 6 {
-            r = Double((value >> 16) & 0xFF) / 255.0
-            g = Double((value >> 8) & 0xFF) / 255.0
-            b = Double(value & 0xFF) / 255.0
-            a = 1.0
-        } else {
-            a = Double((value >> 24) & 0xFF) / 255.0
-            r = Double((value >> 16) & 0xFF) / 255.0
-            g = Double((value >> 8) & 0xFF) / 255.0
-            b = Double(value & 0xFF) / 255.0
-        }
-
-        self.init(.sRGB, red: r, green: g, blue: b, opacity: a)
+        self.init(
+            .sRGB,
+            red: Double(r) / 255,
+            green: Double(g) / 255,
+            blue: Double(b) / 255,
+            opacity: alpha ?? Double(a) / 255
+        )
     }
 
     /// Gibt die Farbe als 32-Bit Float-Vektor zurück – ideal für Metal-Shader.
@@ -104,5 +94,72 @@ extension Color {
             Int(g * 255),
             Int(b * 255)
         )
+    }
+}
+
+extension LinearGradient {
+    static func game(
+        _ start: Color,
+        _ end: Color,
+        startPoint: UnitPoint = .topLeading,
+        endPoint: UnitPoint = .bottomTrailing
+    ) -> LinearGradient {
+        LinearGradient(
+            colors: [start, end],
+            startPoint: startPoint,
+            endPoint: endPoint
+        )
+    }
+}
+
+extension RadialGradient {
+    static func glow(
+        color: Color,
+        radius: CGFloat = 120
+    ) -> RadialGradient {
+        RadialGradient(
+            colors: [
+                color.opacity(0.9),
+                color.opacity(0.4),
+                .clear
+            ],
+            center: .center,
+            startRadius: 0,
+            endRadius: radius
+        )
+    }
+}
+
+extension Color {
+
+    func lighter(_ amount: Double = 0.2) -> Color {
+        adjust(brightness: amount)
+    }
+
+    func darker(_ amount: Double = 0.2) -> Color {
+        adjust(brightness: -amount)
+    }
+
+    private func adjust(brightness: Double) -> Color {
+        #if canImport(UIKit)
+        var r: CGFloat = 0, g: CGFloat = 0, b: CGFloat = 0, a: CGFloat = 0
+        UIColor(self).getRed(&r, green: &g, blue: &b, alpha: &a)
+        return Color(
+            red: min(max(Double(r) + brightness, 0), 1),
+            green: min(max(Double(g) + brightness, 0), 1),
+            blue: min(max(Double(b) + brightness, 0), 1),
+            opacity: Double(a)
+        )
+        #else
+        return self
+        #endif
+    }
+}
+
+extension View {
+    func glow(color: Color, radius: CGFloat = 10) -> some View {
+        self
+            .shadow(color: color.opacity(0.8), radius: radius)
+            .shadow(color: color.opacity(0.5), radius: radius / 2)
     }
 }
