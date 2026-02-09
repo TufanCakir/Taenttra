@@ -313,6 +313,15 @@ final class SpiritGameController: ObservableObject {
         point += 1
         UserDefaults.standard.set(stage, forKey: "savedStage")
 
+        // 🏆 Highest Stage – NUR wenn neuer Rekord
+        let bestStage = UserDefaults.standard.integer(forKey: "bestStage")
+        if stage > bestStage {
+            UserDefaults.standard.set(stage, forKey: "bestStage")
+            GCHighestStage.submit(stage)
+            GameCenterRewardService.shared.rewardForStage(stage)
+        }
+
+        // 🔪 Andere Stats (immer ok)
         GCKills.submit(totalKills)
         GameCenterRewardService.shared.rewardForKills(totalKills)
 
@@ -321,9 +330,6 @@ final class SpiritGameController: ObservableObject {
 
         GCPlaytime.submit(playtimeMinutes)
         GameCenterRewardService.shared.rewardForPlaytime(playtimeMinutes)
-
-        GCHighestStage.submit(stage)
-        GameCenterRewardService.shared.rewardForStage(stage)
 
         saveStats()
 

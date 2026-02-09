@@ -24,8 +24,8 @@ let backgroundShop: [BackgroundShopItem] = [
     .init(style: .redGrid, price: 250),
     .init(style: .purpleGrid, price: 400),
     .init(style: .emeraldGrid, price: 600),
-    .init(style: .firePNG, price: 800),
-    .init(style: .voidPNG, price: 1200),
+    .init(style: .raidPNG, price: 800),
+    .init(style: .background8PNG, price: 1200),
 ]
 
 struct CrystalShopView: View {

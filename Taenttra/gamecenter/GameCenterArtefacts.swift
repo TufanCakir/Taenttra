@@ -10,9 +10,10 @@ import Foundation
 /// 🔹 Verwaltung des Artefakt-Highscores über Game Center (ohne UI)
 struct GCArtefacts {
 
-    static let leaderboardID = "total_artefacts"
+    /// 🏆 Leaderboard: gesammelte Artefakte (Lifetime)
+    static let leaderboardID = "artefacts_collected"
 
-    /// Reicht den aktuellen Artefakt-Stand bei Game Center ein (nur wenn ≥ 0 und eingeloggt)
+    /// Reicht den aktuellen Artefakt-Stand bei Game Center ein
     static func submit(_ value: Int) {
         guard value >= 0 else {
             print("⚠️ GCArtefacts: Wert darf nicht negativ sein.")

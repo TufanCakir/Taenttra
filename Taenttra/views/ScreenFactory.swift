@@ -38,7 +38,7 @@ final class ScreenFactory {
             // Gifts / Daily
             case "GiftView": AnyView(GiftView())
             case "DailyLoginView": AnyView(DailyLoginView())
-
+            case "EventShopView": AnyView(EventShopView())
             // Game
             case "UpgradeView": AnyView(UpgradeView())
             case "ExchangeView": AnyView(ExchangeView())

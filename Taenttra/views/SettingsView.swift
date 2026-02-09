@@ -23,6 +23,16 @@ struct SettingsView: View {
     @State private var showResetConfirmation = false
     @State private var resetAnimation = false
 
+    private let appVersion =
+        Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String
+        ?? "–"
+
+    private let buildNumber =
+        Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "–"
+
+    private let iosVersion = UIDevice.current.systemVersion
+    private let deviceModel = UIDevice.current.model
+
     // MARK: - Body
     var body: some View {
         NavigationStack {
@@ -80,6 +90,47 @@ struct SettingsView: View {
 
                         }
 
+                        // MARK: - About
+                        settingsSection(title: "About") {
+                            VStack(spacing: 14) {
+
+                                aboutRow(
+                                    title: "App Version",
+                                    value: "\(appVersion) (\(buildNumber))"
+                                )
+
+                                aboutRow(
+                                    title: "iOS Version",
+                                    value: "iOS \(iosVersion)"
+                                )
+
+                                aboutRow(
+                                    title: "Device",
+                                    value: deviceModel
+                                )
+
+                                Divider().opacity(0.3)
+
+                                Link(
+                                    destination: URL(
+                                        string:
+                                            "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/"
+                                    )!
+                                ) {
+                                    Label(
+                                        "Apple Terms of Service",
+                                        systemImage: "doc.text"
+                                    )
+                                }
+                                .foregroundColor(.cyan)
+                                .padding(.vertical, 6)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 10)
+                                        .fill(Color.black.opacity(0.35))
+                                )
+                            }
+                        }
+
                         // MARK: Data & Storage
                         settingsSection(title: "Data & Storage") {
                             Button {
@@ -135,6 +186,9 @@ struct SettingsView: View {
                 )
             }
             .overlay(resetConfirmationOverlay)
+            .background(
+                Color.black.opacity(0.25)  // 🔥 sehr wichtig
+            )
         }
     }
 }
@@ -218,15 +272,15 @@ extension SettingsView {
         @ViewBuilder content: () -> Content
     ) -> some View {
         VStack(alignment: .leading, spacing: 12) {
+
             Text(title)
                 .font(.headline)
-                .foregroundColor(.white.opacity(0.8))
+                .foregroundColor(.white.opacity(0.9))
+
             content()
         }
         .padding()
-        .background(Color.white.opacity(0.06))
-        .cornerRadius(16)
-        .shadow(color: .black.opacity(0.3), radius: 5)
+        .background(SettingsCardBackground())
     }
 }
 
@@ -276,6 +330,31 @@ struct MusicToggleButton: View {
     }
 }
 
+struct SettingsCardBackground: View {
+    var body: some View {
+        RoundedRectangle(cornerRadius: 18)
+            .fill(
+                LinearGradient(
+                    colors: [
+                        Color.black.opacity(0.75),
+                        Color.black.opacity(0.55),
+                    ],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 18)
+                    .stroke(Color.white.opacity(0.12), lineWidth: 1)
+            )
+            .background(
+                RoundedRectangle(cornerRadius: 18)
+                    .fill(.ultraThinMaterial)
+            )
+            .shadow(color: .black.opacity(0.6), radius: 12, y: 6)
+    }
+}
+
 // MARK: - StatBox Component
 private struct StatBox: View {
     let icon: String
@@ -299,6 +378,21 @@ private struct StatBox: View {
         .padding(.vertical, 6).background(Color.white.opacity(0.08))
         .cornerRadius(16)
     }
+}
+
+private func aboutRow(
+    title: String,
+    value: String
+) -> some View {
+    HStack {
+        Text(title)
+            .foregroundColor(.white.opacity(0.7))
+        Spacer()
+        Text(value)
+            .fontWeight(.semibold)
+            .foregroundColor(.white)
+    }
+    .font(.subheadline)
 }
 
 #Preview {

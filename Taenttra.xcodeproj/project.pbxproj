@@ -257,7 +257,7 @@
 				DEVELOPMENT_TEAM = HN763R468M;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.games";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Wir benötigen das Mikrofon für Spracheingabe.";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Wir benötigen Zugriff auf Fotos, um Bilder auszuwählen.";
 				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "benötigen Spracherkennung, um deine Sprache in Text umzuwandeln.";
@@ -294,7 +294,7 @@
 				DEVELOPMENT_TEAM = HN763R468M;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.games";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Wir benötigen das Mikrofon für Spracheingabe.";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Wir benötigen Zugriff auf Fotos, um Bilder auszuwählen.";
 				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "benötigen Spracherkennung, um deine Sprache in Text umzuwandeln.";

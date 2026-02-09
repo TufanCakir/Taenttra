@@ -19,17 +19,49 @@ struct ArtefactView: View {
                 SpiritGridBackground(style: bgManager.selected)
 
                 ScrollView(showsIndicators: false) {
-                    LazyVStack(spacing: 24) {
-                        ForEach(inventory.owned) { art in
-                            artefactCard(art)
+
+                    if inventory.owned.isEmpty {
+                        emptyState
+                            .padding(.top, 120)
+                    } else {
+                        LazyVStack(spacing: 24) {
+                            ForEach(inventory.owned) { art in
+                                artefactCard(art)
+                            }
                         }
+                        .padding(.top, 20)
+                        .padding(.horizontal, 20)
+                        .padding(.bottom, 40)
                     }
-                    .padding(.top, 20)
-                    .padding(.horizontal, 20)
-                    .padding(.bottom, 40)
                 }
             }
         }
+    }
+}
+
+private var emptyState: some View {
+    VStack(spacing: 18) {
+
+        ZStack {
+            Circle()
+                .fill(Color.white.opacity(0.08))
+                .frame(width: 110, height: 110)
+                .shadow(color: .cyan.opacity(0.4), radius: 18)
+
+            Image(systemName: "hexagon")
+                .font(.system(size: 46, weight: .bold))
+                .foregroundColor(.cyan)
+        }
+
+        Text("No Artefacts Yet")
+            .font(.title2.bold())
+            .foregroundColor(.white)
+
+        Text("Defeat enemies and events to discover powerful artefacts.")
+            .font(.subheadline)
+            .foregroundColor(.white.opacity(0.7))
+            .multilineTextAlignment(.center)
+            .padding(.horizontal, 32)
     }
 }
 
