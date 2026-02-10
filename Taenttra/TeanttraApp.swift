@@ -30,6 +30,10 @@ struct TaenttraApp: App {
     @StateObject private var questManager = QuestManager.shared
     @StateObject private var eventShopManager = EventShopManager.shared
 
+    init() {
+        GameCenterManager.shared.authenticateIfNeeded()
+    }
+
     // MARK: - Scene
     var body: some Scene {
         WindowGroup {
@@ -53,7 +57,6 @@ struct TaenttraApp: App {
                 )
                 .onAppear {
                     ScreenFactory.shared.setGameController(spiritGame)
-                    GameCenterManager.shared.authenticate()
                 }
         }
     }

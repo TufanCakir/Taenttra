@@ -18,6 +18,8 @@ final class SpiritGameController: ObservableObject {
     // MARK: - Published: UI States
     @Published private(set) var current: ModelConfig
     @Published private(set) var currentHP: Int
+    @Published var raidCurrentHP: Int64? = nil
+    @Published var raidMaxHP: Int64? = nil
     @Published private(set) var stage: Int = {
         // Load stage from UserDefaults
         let saved = UserDefaults.standard.integer(forKey: "savedStage")
@@ -54,6 +56,7 @@ final class SpiritGameController: ObservableObject {
 
     // MARK: - Data
     private let all: [ModelConfig]
+    private var raidPollingTask: Task<Void, Never>?
 
     // MARK: - Init
     init() {
@@ -86,7 +89,28 @@ final class SpiritGameController: ObservableObject {
 
     private func recalculateHP() {
         currentHP = max(1, current.hp + ArtefactInventoryManager.shared.bonusHP)
-        objectWillChange.send()
+    }
+
+    func startRaidPolling() {
+        guard let raidId = activeEvent?.id else { return }
+
+        stopRaidPolling()  // 🔥 WICHTIG
+
+        raidPollingTask = Task {
+            while !Task.isCancelled {
+                RaidService.shared.loadRaid(raidId: raidId) { hp, max in
+                    self.raidCurrentHP = hp
+                    self.raidMaxHP = max
+                }
+
+                try? await Task.sleep(nanoseconds: 4_000_000_000)
+            }
+        }
+    }
+
+    private func stopRaidPolling() {
+        raidPollingTask?.cancel()
+        raidPollingTask = nil
     }
 
     // MARK: - Event Start
@@ -94,10 +118,21 @@ final class SpiritGameController: ObservableObject {
         isInEvent = true
         eventWon = false
         activeEvent = event
+        raidCurrentHP = nil
+        raidMaxHP = nil
 
-        // currentEventGridColor = event.gridColor
+        currentEventBackground = event.background
 
-        currentEventBackground = event.background  // 👈 WICHTIG
+        // 🔥 BOOTSTRAP – EINMALIG
+        if event.category == .raid {
+            RaidService.shared.bootstrapRaidIfNeeded(raidId: event.id)
+
+            RaidService.shared.loadRaid(raidId: event.id) { hp, max in
+                self.raidCurrentHP = hp
+                self.raidMaxHP = max
+                self.startRaidPolling()
+            }
+        }
 
         if let musicId = event.musicId {
             Task {
@@ -112,15 +147,23 @@ final class SpiritGameController: ObservableObject {
     }
 
     func handleEventVictory() {
-        EventShopManager.shared.spiritPoints += 10
-        isInEvent = false
+        endEventCleanup()
         eventWon = true
-        activeEvent = nil
-        currentEventBackground = nil
+
+        EventShopManager.shared.spiritPoints += 10
 
         Task {
             await MusicManager.shared.playSong(id: "menu")
         }
+    }
+
+    private func endEventCleanup() {
+        stopRaidPolling()
+        isInEvent = false
+        activeEvent = nil
+
+        raidCurrentHP = nil
+        raidMaxHP = nil
     }
 
     private func loadEventBoss(modelID: String, data: EventBoss) {
@@ -161,13 +204,27 @@ final class SpiritGameController: ObservableObject {
 
     // MARK: - Player Tap
     func tapAttack() {
-        guard currentHP > 0 else { return }
 
         let base =
             UpgradeManager.shared.tapDamage
             + ArtefactInventoryManager.shared.bonusTapDamage
         let damage = calculateDamage(base: base)
 
+        // 🔥 RAID
+        if activeEvent?.category == .raid {
+            guard (raidCurrentHP ?? 0) > 0 else { return }
+
+            if let raidId = activeEvent?.id {
+                RaidService.shared.submitDamage(
+                    raidId: raidId,
+                    damage: damage
+                )
+            }
+            return
+        }
+
+        // 🔥 NORMAL
+        guard currentHP > 0 else { return }
         currentHP = max(0, currentHP - damage)
 
         if currentHP == 0 {

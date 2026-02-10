@@ -14,48 +14,61 @@ final class GameCenterManager: NSObject, ObservableObject {
 
     static let shared = GameCenterManager()
 
-    @Published var isAuthenticated = false
-    @Published var playerName: String = "Not logged in"
+    @Published private(set) var isAuthenticated = false
+    @Published private(set) var playerName: String = "Not logged in"
+
+    private var didAuthenticate = false
 
     private override init() {}
 
-    // MARK: - AUTHENTICATION
-    func authenticate() {
+    // MARK: - Authentication (SAFE)
+    func authenticateIfNeeded() {
+        guard !didAuthenticate else { return }
+        didAuthenticate = true
+
         GKLocalPlayer.local.authenticateHandler = { [weak self] vc, error in
             guard let self else { return }
 
-            if let error = error {
+            if let error {
                 print("❌ Game Center Error:", error.localizedDescription)
             }
 
-            // Falls Game Center ein Login-View liefert (UIKit), logge Hinweis, aber präsentiere nichts
-            if vc != nil {
-                print(
-                    "🔐 Login-UI wäre verfügbar, aber wird nicht automatisch gezeigt."
-                )
+            // 🔐 WICHTIG: Login-UI MUSS präsentiert werden
+            if let vc {
+                self.present(vc)
                 return
             }
 
             if GKLocalPlayer.local.isAuthenticated {
                 self.isAuthenticated = true
                 self.playerName = GKLocalPlayer.local.displayName
-                print("🎮 Eingeloggt als:", self.playerName)
+                print("🎮 Game Center logged in as:", self.playerName)
             } else {
                 self.isAuthenticated = false
-                print("❌ Authentifizierung fehlgeschlagen")
+                print("⚠️ Game Center not authenticated")
             }
         }
     }
 
-    // MARK: - Login manuell triggern (aber keine UI)
-    func openGameCenterLogin() {
-        authenticate()
+    // MARK: - UI Präsentation (UIKit-Bridge)
+    private func present(_ vc: UIViewController) {
+        guard
+            let scene = UIApplication.shared.connectedScenes
+                .first(where: { $0.activationState == .foregroundActive })
+                as? UIWindowScene,
+            let root = scene.windows.first?.rootViewController
+        else {
+            print("❌ Kein RootViewController für Game Center UI")
+            return
+        }
+
+        root.present(vc, animated: true)
     }
 
-    // MARK: - Score Submission (ohne UI)
+    // MARK: - Score Submission
     func submit(score: Int, leaderboardID: String) {
         guard isAuthenticated else {
-            print("⚠️ Kann Score nicht senden – nicht eingeloggt.")
+            print("⚠️ Score nicht gesendet – nicht eingeloggt")
             return
         }
 
@@ -66,14 +79,9 @@ final class GameCenterManager: NSObject, ObservableObject {
             leaderboardIDs: [leaderboardID]
         ) { error in
             if let error {
-                print("❌ Fehler beim Senden:", error.localizedDescription)
+                print("❌ Score Error:", error.localizedDescription)
             } else {
-                print(
-                    "🏆 Score erfolgreich gesendet →",
-                    leaderboardID,
-                    "Punkte:",
-                    score
-                )
+                print("🏆 Score gesendet:", leaderboardID, score)
             }
         }
     }

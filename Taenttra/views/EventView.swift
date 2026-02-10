@@ -182,25 +182,7 @@ struct EventDetailView: View {
     @EnvironmentObject private var game: SpiritGameController
 
     var body: some View {
-        VStack(spacing: 20) {
-
-            /*EventBackgroundView(background: event.background)
-                .clipShape(RoundedRectangle(cornerRadius: 20))
-                .frame(height: 200)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 20)
-                        .stroke(.white.opacity(0.6), lineWidth: 2)
-                )*/
-
-            // 🔥 CARD-Grid — NICHT fullscreen!
-            EventBackgroundView(background: event.background)
-                .clipShape(RoundedRectangle(cornerRadius: 20))
-                .frame(height: 200)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 20)
-                        .stroke(.white.opacity(0.6), lineWidth: 2)
-                )
-
+        VStack(spacing: 16) {
             Text(event.description)
                 .font(Font.body.italic())
                 .foregroundColor(.white)

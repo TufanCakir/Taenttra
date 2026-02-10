@@ -12,45 +12,63 @@ struct RaidOverlayView: View {
     @EnvironmentObject var game: SpiritGameController
 
     var body: some View {
-        VStack(spacing: 10) {
+        VStack(spacing: 16) {
 
-            // 🔥 RAID HEADER
-            HStack {
-                Text("🔥 RAID")
-                    .font(.headline)
-                    .foregroundColor(.red)
+            // ❤️ RAID HP BAR
+            if let hp = game.raidCurrentHP,
+                let max = game.raidMaxHP,
+                max > 0
+            {
 
-                Spacer()
+                let percent = CGFloat(hp) / CGFloat(max)
 
-                Text("\(game.eventBossIndex + 1) / \(game.eventBossList.count)")
-                    .font(.subheadline)
-                    .foregroundColor(.white)
-            }
+                ZStack {
+                    // Background
+                    Capsule()
+                        .fill(Color.black.opacity(0.4))
+                        .frame(height: 28)
 
-            // ❤️ HP BAR
-            VStack(alignment: .leading, spacing: 4) {
-                ProgressView(
-                    value: Double(game.currentHP),
-                    total: Double(game.current.hp)
-                )
-                .progressViewStyle(LinearProgressViewStyle(tint: .red))
+                    // HP fill
+                    Capsule()
+                        .fill(
+                            LinearGradient(
+                                colors: [
+                                    Color.red,
+                                    Color.orange,
+                                    Color(red: 0.6, green: 0.1, blue: 0.1),
+                                ],
+                                startPoint: .leading,
+                                endPoint: .trailing
+                            )
+                        )
+                        .frame(
+                            width: 320 * percent,
+                            height: 28
+                        )
+                        .animation(
+                            .easeInOut(duration: 0.35),
+                            value: hp
+                        )
 
-                Text("HP: \(game.currentHP)")
+                    // Text Overlay
+                    Text("\(hp) / \(max)")
+                        .font(.system(size: 17, weight: .heavy))
+                        .foregroundColor(.white)
+                        .shadow(radius: 3)
+                }
+                .frame(width: 320, height: 28)
+                .clipShape(Capsule())
+                .shadow(color: .red.opacity(0.6), radius: 8)
+
+            } else {
+                // ⏳ Loading state
+                Text("⏳ Lade Raid…")
                     .font(.caption)
                     .foregroundColor(.white)
             }
-
-            // 🎁 Belohnungshinweis
-            if game.eventBossIndex == game.eventBossList.count - 1 {
-                Text("🎁 Finale Raid-Belohnung")
-                    .font(.caption)
-                    .foregroundColor(.yellow)
-            }
-
         }
         .padding()
-        .background(Color.black.opacity(0.75))
-        .cornerRadius(14)
-        .padding()
+        .cornerRadius(16)
+        .padding(.horizontal)
     }
 }

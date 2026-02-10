@@ -48,6 +48,53 @@ struct EventGameView: View {
             // 🔥 3. HUD (Top + Bottom)
             // ---------------------------------------------------
             hudLayer
+            
+            // ⚡ FLOATING AUTO PLAY BUTTON (RECHTS MITTE)
+            VStack {
+                Spacer()
+                
+                HStack {
+                    Spacer()
+                    
+                    Button {
+                        game.toggleAutoBattle()
+                    } label: {
+                        Image(systemName: game.isAutoBattle ? "bolt.fill" : "bolt")
+                            .font(.system(size: 26, weight: .heavy))
+                            .foregroundColor(.white)
+                            .padding(20)
+                            .background(
+                                Circle().fill(
+                                    game.isAutoBattle
+                                    ? AnyShapeStyle(
+                                        LinearGradient(
+                                            colors: [.cyan, .blue],
+                                            startPoint: .top,
+                                            endPoint: .bottom
+                                        )
+                                    )
+                                    : AnyShapeStyle(
+                                        LinearGradient(
+                                            colors: [Color.black.opacity(0.6), Color.black.opacity(0.9)],
+                                            startPoint: .top,
+                                            endPoint: .bottom
+                                        )
+                                    )
+                                )
+                            )
+                            .overlay(
+                                Circle().stroke(Color.cyan.opacity(0.8), lineWidth: 2)
+                            )
+                            .shadow(color: .cyan.opacity(0.8), radius: 12)
+                    }
+                    .padding(.horizontal, 30)
+                    .padding(.bottom, 300)
+                }
+                
+                Spacer()
+            }
+            .zIndex(20)
+
         }
 
         // → Event abgeschlossen → zurück
@@ -138,39 +185,16 @@ extension EventGameView {
     fileprivate var topHUD: some View {
         VStack(spacing: 14) {
 
-            // Buttons oben rechts
-            HStack {
-                Spacer()
-                HStack(spacing: 12) {
-                    ForEach(eventButtons) { btn in
-                        gameButton(btn)
-                    }
-                }
-                .padding(.trailing, 120)
+         
+            
+            // HP-Bar (nur wenn KEIN Raid)
+            if game.activeEvent?.category != .raid {
+                normalHPBar
             }
-
-            // Spirit Points
-            Text("Spirit Points: \(EventShopManager.shared.spiritPoints)")
-                .font(.system(size: 24, weight: .heavy, design: .rounded))
-                .foregroundColor(.white)
-                .padding(.horizontal, 26)
-                .padding(.vertical, 6)
-                .background(
-                    LinearGradient(
-                        colors: [.cyan, .blue, .black],
-                        startPoint: .leading,
-                        endPoint: .trailing
-                    )
-                )
-                .clipShape(Capsule())
-                .shadow(color: .black.opacity(0.5), radius: 6, y: 3)
-
-            // HP-Bar
-            hpBar
         }
     }
-
-    fileprivate var hpBar: some View {
+    
+    private var normalHPBar: some View {
         let maxHP = max(game.current.hp, 1)
         let percent = CGFloat(game.currentHP) / CGFloat(maxHP)
 
@@ -198,17 +222,29 @@ extension EventGameView {
         .clipShape(Capsule())
     }
 
+
     fileprivate var bottomHUD: some View {
-        HStack(spacing: 22) {
-            footerButton(icon: "arrow.up.circle.fill", title: "Upgrade") {
+        HStack(spacing: 26) {
+
+            // Upgrade
+            footerButton(
+                icon: "arrow.up.circle.fill",
+                title: "Upgrade"
+            ) {
                 activeSheet = .upgrade
             }
-            footerButton(icon: "sparkles", title: "Artefakte") {
+
+            // Artefakte
+            footerButton(
+                icon: "sparkles",
+                title: "Artefakte"
+            ) {
                 activeSheet = .artefacts
             }
         }
         .padding(.bottom, 40)
     }
+
 
     @ViewBuilder
     fileprivate func footerButton(
@@ -224,62 +260,10 @@ extension EventGameView {
             .foregroundColor(.white)
             .padding(.horizontal, 28)
             .padding(.vertical, 12)
-            .background(.ultraThinMaterial)
             .clipShape(Capsule())
             .overlay(
                 Capsule().stroke(Color.white.opacity(0.7), lineWidth: 1)
             )
-        }
-    }
-}
-
-// MARK: - Buttons
-
-extension EventGameView {
-    fileprivate func gameButton(_ btn: EventGameButton) -> some View {
-        let active = (btn.type == "auto_battle" && game.isAutoBattle)
-
-        return Button {
-            handleGameButton(btn)
-        } label: {
-            HStack(spacing: 8) {
-                Image(systemName: btn.icon)
-                    .font(.system(size: 20, weight: .heavy))
-                Text(btn.title)
-                    .font(.system(size: 20, weight: .heavy))
-            }
-            .foregroundColor(.white)
-            .padding(.horizontal, 26)
-            .padding(.vertical, 8)
-            .background(
-                Capsule().fill(
-                    active
-                        ? AnyShapeStyle(
-                            LinearGradient(
-                                colors: [.cyan, .blue],
-                                startPoint: .top,
-                                endPoint: .bottom
-                            )
-                        )
-                        : AnyShapeStyle(Color.white.opacity(0.1))
-                )
-            )
-            .overlay(
-                Capsule().stroke(
-                    active ? .cyan : .white.opacity(0.3),
-                    lineWidth: 1.5
-                )
-            )
-            .shadow(color: .black.opacity(0.5), radius: 5, y: 3)
-        }
-    }
-
-    fileprivate func handleGameButton(_ btn: EventGameButton) {
-        switch btn.type {
-        case "auto_battle":
-            game.toggleAutoBattle()
-        default:
-            print("⚠️ Unbekannter Button:", btn.type)
         }
     }
 }
@@ -303,3 +287,4 @@ private let eventButtons: [EventGameButton] = [
     EventGameView()
         .environmentObject(SpiritGameController())
 }
+
