@@ -1,0 +1,26 @@
+[
+  {
+    "id": "slime",
+    "name": "Slime",
+    "hp": 50,
+    "attack": 5,
+    "coinDrop": 10,
+    "expDrop": 25
+  },
+  {
+    "id": "goblin",
+    "name": "Goblin",
+    "hp": 80,
+    "attack": 10,
+    "coinDrop": 20,
+    "expDrop": 40
+  },
+  {
+    "id": "dragon",
+    "name": "Dragon",
+    "hp": 200,
+    "attack": 25,
+    "coinDrop": 100,
+    "expDrop": 150
+  }
+]

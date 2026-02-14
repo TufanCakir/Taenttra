@@ -1,0 +1,34 @@
+{
+  "categories": [
+    {
+      "id": "normal",
+      "title": "Shop",
+      "icon": "shop_icon",
+      "items": [
+        {
+          "id": "gems_100",
+          "title": "100 Gems",
+          "description": "Small Gem Pack",
+          "price": "1.99",
+          "productId": "com.taenttra.gems100",
+          "image": "gems_small"
+        }
+      ]
+    },
+    {
+      "id": "event",
+      "title": "Event Shop",
+      "icon": "event_icon",
+      "items": [
+        {
+          "id": "event_ticket",
+          "title": "Raid Ticket",
+          "description": "Limited Event Item",
+          "price": "500",
+          "productId": "",
+          "image": "raid_ticket"
+        }
+      ]
+    }
+  ]
+}

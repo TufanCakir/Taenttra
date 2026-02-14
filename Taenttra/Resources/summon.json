@@ -1,0 +1,22 @@
+[
+  {
+    "id": "heaven_banner",
+    "title": "Heaven Portal",
+    "description": "Higher chance for Light Units",
+    "image": "summon_heaven",
+    "singleCost": 100,
+    "multiCost": 900,
+    "startDate": "2026-02-01",
+    "endDate": "2026-03-01",
+    "rates": {
+      "SSR": 0.05,
+      "SR": 0.20,
+      "R": 0.75
+    },
+    "pool": [
+      { "id": "light_knight", "rarity": "SSR" },
+      { "id": "holy_mage", "rarity": "SR" },
+      { "id": "angel_guardian", "rarity": "R" }
+    ]
+  }
+]

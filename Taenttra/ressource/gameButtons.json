@@ -1,9 +1,0 @@
-[
-    {
-        "id": "autobattle",
-        "title": "Auto Battle",
-        "icon": "bolt.fill",
-        "type": "auto_battle",
-        "value": 1
-    }
-]

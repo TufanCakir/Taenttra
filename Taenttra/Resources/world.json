@@ -1,0 +1,147 @@
+{
+  "dimensions": [
+    {
+      "id": "see",
+      "background": "bg_see",
+
+      "stages": [
+        {
+          "id": 1,
+          "name": "Stage 1",
+          "islandIds": [
+            "island_lava",
+            "island_ice",
+            "island_natur",
+            "island_void"
+          ]
+        }
+      ],
+
+      "islands": [
+        {
+          "id": "island_lava",
+          "image": "island_lava",
+          "x": 0.3,
+          "y": 0.55,
+          "unlockAfterIslandId": null,
+          "levels": [
+            {
+              "id": "lava_lvl1",
+              "number": 1,
+              "x": 0.25,
+              "y": 0.65,
+              "unlockAfter": null
+            },
+            {
+              "id": "lava_lvl2",
+              "number": 2,
+              "x": 0.5,
+              "y": 0.45,
+              "unlockAfter": "lava_lvl1"
+            },
+            {
+              "id": "lava_lvl3",
+              "number": 3,
+              "x": 0.7,
+              "y": 0.6,
+              "unlockAfter": "lava_lvl2"
+            }
+          ]
+        },
+
+        {
+          "id": "island_ice",
+          "image": "island_ice",
+          "x": 0.65,
+          "y": 0.4,
+          "unlockAfterIslandId": "island_lava",
+          "levels": [
+            {
+              "id": "ice_lvl1",
+              "number": 1,
+              "x": 0.3,
+              "y": 0.6,
+              "unlockAfter": null
+            },
+            {
+              "id": "ice_lvl2",
+              "number": 2,
+              "x": 0.55,
+              "y": 0.4,
+              "unlockAfter": "ice_lvl1"
+            },
+            {
+              "id": "ice_lvl3",
+              "number": 3,
+              "x": 0.75,
+              "y": 0.55,
+              "unlockAfter": "ice_lvl2"
+            }
+          ]
+        },
+
+        {
+          "id": "island_natur",
+          "image": "island_natur",
+          "x": 0.5,
+          "y": 0.75,
+          "unlockAfterIslandId": "island_ice",
+          "levels": [
+            {
+              "id": "natur_lvl1",
+              "number": 1,
+              "x": 0.35,
+              "y": 0.6,
+              "unlockAfter": null
+            },
+            {
+              "id": "natur_lvl2",
+              "number": 2,
+              "x": 0.6,
+              "y": 0.45,
+              "unlockAfter": "natur_lvl1"
+            },
+            {
+              "id": "natur_lvl3",
+              "number": 3,
+              "x": 0.75,
+              "y": 0.65,
+              "unlockAfter": "natur_lvl2"
+            }
+          ]
+        },
+
+        {
+          "id": "island_void",
+          "image": "island_void",
+          "x": 0.8,
+          "y": 0.7,
+          "unlockAfterIslandId": "island_natur",
+          "levels": [
+            {
+              "id": "void_lvl1",
+              "number": 1,
+              "x": 0.3,
+              "y": 0.65,
+              "unlockAfter": null
+            },
+            {
+              "id": "void_lvl2",
+              "number": 2,
+              "x": 0.55,
+              "y": 0.4,
+              "unlockAfter": "void_lvl1"
+            },
+            {
+              "id": "void_lvl3",
+              "number": 3,
+              "x": 0.75,
+              "y": 0.55,
+              "unlockAfter": "void_lvl2"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

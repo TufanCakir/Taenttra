@@ -1,0 +1,26 @@
+{
+  "background": {
+    "image": "bg_see",
+    "zoom": 1.2
+  },
+  "buttons": [
+    {
+      "id": "play",
+      "type": "sfSymbol",
+      "icon": "play.fill",
+      "x": 0.5,
+      "y": 0.6,
+      "color": "#FFFFFF",
+      "size": 40
+    },
+    {
+      "id": "settings",
+      "type": "png",
+      "icon": "settings_icon",
+      "x": 0.9,
+      "y": 0.1,
+      "color": "#FFAA00",
+      "size": 30
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+[
+  {
+    "id": "heaven_event_01",
+    "title": "Heaven Crystal Event",
+    "description": "Earn bonus crystals in Heaven World",
+    "image": "event_heaven",
+    "startDate": "2026-02-01",
+    "endDate": "2026-03-01",
+    "currency": {
+      "id": "heaven_crystal",
+      "name": "Heaven Crystal",
+      "icon": "coin_heaven"
+    },
+    "bonusMultiplier": 1.5,
+    "world": "heaven",
+    "isRaidEvent": true
+  }
+]

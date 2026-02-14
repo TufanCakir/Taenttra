@@ -1,0 +1,34 @@
+{
+  "categories": [
+    {
+      "id": "raid",
+      "title": "Raid Exchange",
+      "icon": "raid_icon",
+      "items": [
+        {
+          "id": "raid_ticket",
+          "title": "Raid Ticket",
+          "description": "Use for Raid Entry",
+          "cost": 200,
+          "currency": "raid_coin",
+          "image": "raid_ticket"
+        }
+      ]
+    },
+    {
+      "id": "event",
+      "title": "Event Exchange",
+      "icon": "event_icon",
+      "items": [
+        {
+          "id": "event_scroll",
+          "title": "Event Scroll",
+          "description": "Summon from Event Banner",
+          "cost": 500,
+          "currency": "event_coin",
+          "image": "event_scroll"
+        }
+      ]
+    }
+  ]
+}
