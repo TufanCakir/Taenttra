@@ -19,9 +19,17 @@ enum GameScreen: String, CaseIterable, Codable {
     case survival
     case training
     case events
+    case summon
+    case season
+    case missiona
+    case exchange
+    case gift
+    case daily
     case options
     case shop
+    case backgrounds
     case skin
+    case cards
 }
 
 enum PendingMode {
@@ -150,12 +158,33 @@ final class GameState: ObservableObject {
                 existing.unlockedCharacters.append(Constants.defaultCharacterKey)
             }
 
+            let defaultThemeID = BackgroundThemeLoader.load().defaultThemeID
+            if !existing.ownedBackgroundThemeIDs.contains(defaultThemeID) {
+                existing.ownedBackgroundThemeIDs.append(defaultThemeID)
+            }
+
+            if existing.selectedBackgroundThemeID.isEmpty {
+                existing.selectedBackgroundThemeID = defaultThemeID
+            }
+
+            let battleCardCatalog = BattleCardLoader.load()
+            if existing.ownedBattleCardIDs.isEmpty {
+                existing.ownedBattleCardIDs = BattleDeckService.starterOwnedCardIDs(from: battleCardCatalog)
+            }
+
+            if existing.deckSlotPayloads.isEmpty {
+                existing.deckSlotPayloads = BattleDeckService.defaultSlotPayloads(from: battleCardCatalog)
+            }
+
             equippedSkin = existing.equippedSkin
 
             return
         }
 
         let newWallet = PlayerWallet()
+        let battleCardCatalog = BattleCardLoader.load()
+        newWallet.ownedBattleCardIDs = BattleDeckService.starterOwnedCardIDs(from: battleCardCatalog)
+        newWallet.deckSlotPayloads = BattleDeckService.defaultSlotPayloads(from: battleCardCatalog)
         context.insert(newWallet)
         wallet = newWallet
         equippedSkin = newWallet.equippedSkin
@@ -253,6 +282,14 @@ extension GameState {
         switch screen {
         case .characterSelect, .story, .versus, .arcade, .training, .survival, .events:
             returnToHome(resetPendingMode: true)
+        case .summon:
+            returnToHome(resetPendingMode: false)
+        case .season, .missiona, .exchange, .gift, .daily:
+            screen = .summon
+        case .cards:
+            screen = .summon
+        case .backgrounds:
+            screen = .shop
         case .shop, .skin, .options:
             returnToHome(resetPendingMode: false)
         default:

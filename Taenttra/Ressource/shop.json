@@ -46,6 +46,53 @@
                     "productId": "com.taenttra.crystals.90"
                 }
             ]
+        },
+        {
+            "id": "backgrounds",
+            "title": "Backgrounds",
+            "icon": "photo.fill",
+            "items": [
+                {
+                    "type": "background",
+                    "backgroundId": "theme_aurora_grid",
+                    "name": "Aurora Grid",
+                    "price": 2400,
+                    "currency": "coins",
+                    "preview": "icon_crystal"
+                },
+                {
+                    "type": "background",
+                    "backgroundId": "theme_lotus_rings",
+                    "name": "Lotus Rings",
+                    "price": 4200,
+                    "currency": "coins",
+                    "preview": "icon_shard"
+                },
+                {
+                    "type": "background",
+                    "backgroundId": "theme_dojo_night",
+                    "name": "Dojo Night",
+                    "price": 320,
+                    "currency": "crystals",
+                    "preview": "dojo_night"
+                },
+                {
+                    "type": "background",
+                    "backgroundId": "theme_solar_halo",
+                    "name": "Solar Halo",
+                    "price": 420,
+                    "currency": "crystals",
+                    "preview": "icon_coin"
+                },
+                {
+                    "type": "background",
+                    "backgroundId": "theme_tournament",
+                    "name": "Tournament Dome",
+                    "price": 260,
+                    "currency": "shards",
+                    "preview": "tournament"
+                }
+            ]
         }
     ]
 }

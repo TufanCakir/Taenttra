@@ -1,0 +1,58 @@
+{
+  "currentSeasonID": "season_1",
+  "seasons": [
+    {
+      "id": "season_1",
+      "title": "Season 1",
+      "subtitle": "Portal Breakout",
+      "accentHex": "#34D399",
+      "xpPerTier": 100,
+      "fightWinXP": 40,
+      "summonPullXP": 10,
+      "tiers": [
+        {
+          "id": "tier_1",
+          "level": 1,
+          "title": "Opening Grant",
+          "rewardText": "+500 Coins",
+          "reward": { "type": "coins", "amount": 500 }
+        },
+        {
+          "id": "tier_2",
+          "level": 2,
+          "title": "Crystal Flow",
+          "rewardText": "+120 Crystals",
+          "reward": { "type": "crystals", "amount": 120 }
+        },
+        {
+          "id": "tier_3",
+          "level": 3,
+          "title": "Shard Stack",
+          "rewardText": "+80 Shards",
+          "reward": { "type": "shards", "amount": 80 }
+        },
+        {
+          "id": "tier_4",
+          "level": 4,
+          "title": "Pity Boost",
+          "rewardText": "+3 Summon Pity",
+          "reward": { "type": "pity", "amount": 3 }
+        },
+        {
+          "id": "tier_5",
+          "level": 5,
+          "title": "Crimson Flux",
+          "rewardText": "Unlock Crimson Flux Background",
+          "reward": { "type": "background_theme", "amount": 1, "themeID": "theme_crimson_flux" }
+        },
+        {
+          "id": "tier_6",
+          "level": 6,
+          "title": "Ember Drive",
+          "rewardText": "Unlock Ember Drive Background",
+          "reward": { "type": "background_theme", "amount": 1, "themeID": "theme_ember_drive" }
+        }
+      ]
+    }
+  ]
+}

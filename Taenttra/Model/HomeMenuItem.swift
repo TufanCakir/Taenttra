@@ -14,6 +14,7 @@ enum HomeMenuItem: CaseIterable {
     case events
     case versus
     case training
+    case summon
     case shop
     case skin
     case options
@@ -28,7 +29,7 @@ enum HomeMenuItem: CaseIterable {
         case .survival: return "1_6"
 
         // ✅ Meta & Kosmetik IMMER frei
-        case .shop, .skin, .story, .options:
+        case .shop, .skin, .story, .options, .summon:
             return nil
         }
     }
@@ -43,6 +44,7 @@ enum HomeMenuItem: CaseIterable {
         case .survival: return "Survival"
         case .events: return "Events"
         case .training: return "Training"
+        case .summon: return "Summon"
         case .shop: return "Shop"
         case .skin: return "Skin"
         case .options: return "Options"
@@ -57,6 +59,7 @@ enum HomeMenuItem: CaseIterable {
         case .events: return .purple
         case .versus: return .red
         case .training: return .green
+        case .summon: return .pink
         case .shop: return .yellow
         case .skin: return .cyan
         case .options: return .gray
@@ -72,6 +75,7 @@ enum HomeMenuItem: CaseIterable {
         case .survival: return .survival
         case .events: return .events
         case .training: return .training
+        case .summon: return .summon
         case .shop: return .shop
         case .skin: return .skin
         case .options: return .options

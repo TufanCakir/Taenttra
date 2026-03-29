@@ -8,22 +8,19 @@
 import SwiftUI
 
 struct ArcadeStageRow: View {
-
     let stage: ArcadeStage
 
     var body: some View {
         ZStack(alignment: .bottomLeading) {
-
-            // 🖼 BACKGROUND
             Image(stage.background)
                 .resizable()
                 .scaledToFill()
-                .frame(height: 140)
+                .frame(height: 168)
                 .overlay(
                     LinearGradient(
                         colors: [
-                            Color.black.opacity(0.05),
-                            Color.black.opacity(0.85),
+                            Color.black.opacity(0.12),
+                            Color.black.opacity(0.9),
                         ],
                         startPoint: .top,
                         endPoint: .bottom
@@ -31,42 +28,33 @@ struct ArcadeStageRow: View {
                 )
                 .clipped()
 
-            // 📝 CONTENT
             VStack(alignment: .leading, spacing: 10) {
+                HStack {
+                    statChip("ARCADE", color: .orange)
+                    Spacer()
+                    statChip("TIME \(stage.timeLimit)S", color: .white)
+                }
 
-                // 🏷 TITLE
-                Text(stage.title.uppercased())
-                    .font(.system(size: 16, weight: .heavy))
-                    .tracking(1.4)
-                    .foregroundColor(.white)
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 6)
-                    .background(
-                        Capsule()
-                            .fill(Color.black.opacity(0.65))
-                            .overlay(
-                                Capsule()
-                                    .stroke(
-                                        Color.orange.opacity(0.6),
-                                        lineWidth: 1
-                                    )
-                            )
-                    )
-                    .shadow(color: .orange.opacity(0.5), radius: 8)
+                Spacer()
 
-                // 📊 STATS
-                HStack(spacing: 10) {
+                VStack(alignment: .leading, spacing: 6) {
+                    Text(stage.title.uppercased())
+                        .font(.system(size: 22, weight: .black, design: .rounded))
+                        .tracking(1.4)
+                        .foregroundColor(.white)
 
-                    statChip("ENEMY", stage.enemy.uppercased(), color: .red)
-                    statChip("WAVES", "\(stage.waves)", color: .orange)
-                    statChip("TIME", "\(stage.timeLimit)s", color: .cyan)
+                    HStack(spacing: 8) {
+                        statChip("ENEMY \(stage.enemy.uppercased())", color: .red)
+                        statChip("WAVES \(stage.waves)", color: .orange)
+                        statChip("TIME \(stage.timeLimit)S", color: .cyan)
+                    }
                 }
             }
             .padding(16)
         }
-        .cornerRadius(16)
+        .clipShape(RoundedRectangle(cornerRadius: 24))
         .overlay(
-            RoundedRectangle(cornerRadius: 16)
+            RoundedRectangle(cornerRadius: 24)
                 .stroke(Color.white.opacity(0.12), lineWidth: 1)
         )
         .shadow(
@@ -76,31 +64,16 @@ struct ArcadeStageRow: View {
         )
     }
 
-    // MARK: - Stat Chip
-
-    private func statChip(
-        _ label: String,
-        _ value: String,
-        color: Color
-    ) -> some View {
-        HStack(spacing: 4) {
-            Text(label)
-                .opacity(0.7)
-
-            Text(value)
-                .fontWeight(.bold)
-        }
-        .font(.caption2)
-        .foregroundColor(.white)
-        .padding(.horizontal, 10)
-        .padding(.vertical, 4)
+    private func statChip(_ title: String, color: Color) -> some View {
+        Text(title)
+            .font(.system(size: 10, weight: .black, design: .rounded))
+            .tracking(1.1)
+            .foregroundStyle(.black)
+            .padding(.horizontal, 8)
+            .padding(.vertical, 5)
         .background(
             Capsule()
-                .fill(Color.black.opacity(0.55))
-                .overlay(
-                    Capsule()
-                        .stroke(color.opacity(0.6), lineWidth: 1)
-                )
+                .fill(color)
         )
     }
 }

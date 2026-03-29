@@ -8,6 +8,11 @@
 import SwiftUI
 
 struct EventView: View {
+    private enum Layout {
+        static let horizontalPadding: CGFloat = 18
+        static let heroHeight: CGFloat = 212
+    }
+
     @ObservedObject var viewModel: EventViewModel
     @EnvironmentObject var gameState: GameState
     @State private var selectedModeID: String?
@@ -40,15 +45,7 @@ struct EventView: View {
 
     var body: some View {
         ZStack(alignment: .topLeading) {
-            Color.black.ignoresSafeArea()
-
-            if let selectedMode {
-                Color(hex: selectedMode.ui.overlayColor)
-                    .opacity(selectedMode.ui.overlayOpacity)
-                    .ignoresSafeArea()
-                    .blendMode(.screen)
-                    .animation(.easeInOut(duration: 0.4), value: selectedMode.id)
-            }
+            backgroundLayer
 
             GameBackButton {
                 gameState.goBack()
@@ -57,13 +54,22 @@ struct EventView: View {
             .padding(.top, 12)
             .zIndex(10)
 
-            VStack(spacing: 24) {
-                if viewModel.modes.isEmpty {
-                    emptyState
-                } else {
-                    modeSelector
-                    eventList
+            ScrollView(showsIndicators: false) {
+                VStack(spacing: 18) {
+                    VersusHeaderView()
+
+                    heroCard
+
+                    if viewModel.modes.isEmpty {
+                        emptyState
+                    } else {
+                        modeSelector
+                        eventList
+                    }
                 }
+                .padding(.horizontal, Layout.horizontalPadding)
+                .padding(.top, 56)
+                .padding(.bottom, 28)
             }
         }
         .onAppear {
@@ -73,35 +79,165 @@ struct EventView: View {
         }
     }
 
-    private var modeSelector: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 12) {
-                ForEach(viewModel.modes) { mode in
-                    modeButton(mode)
+    private var backgroundLayer: some View {
+        ZStack {
+            LinearGradient(
+                colors: [
+                    Color(red: 0.02, green: 0.02, blue: 0.08),
+                    Color(red: 0.08, green: 0.02, blue: 0.14),
+                    Color.black,
+                ],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+            .ignoresSafeArea()
+
+            Circle()
+                .fill(Color.cyan.opacity(0.12))
+                .frame(width: 320, height: 320)
+                .blur(radius: 40)
+                .offset(x: -120, y: -230)
+
+            Circle()
+                .fill(activeAccentColor.opacity(0.16))
+                .frame(width: 360, height: 360)
+                .blur(radius: 48)
+                .offset(x: 150, y: 160)
+
+            if let selectedMode {
+                Color(hex: selectedMode.ui.overlayColor)
+                    .opacity(selectedMode.ui.overlayOpacity)
+                    .ignoresSafeArea()
+                    .blendMode(.screen)
+                    .animation(.easeInOut(duration: 0.4), value: selectedMode.id)
+            }
+        }
+    }
+
+    private var heroCard: some View {
+        ZStack(alignment: .bottomLeading) {
+            RoundedRectangle(cornerRadius: 30)
+                .fill(
+                    LinearGradient(
+                        colors: [
+                            activeAccentColor.opacity(0.4),
+                            Color.white.opacity(0.08),
+                            Color.black.opacity(0.92),
+                        ],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: 30)
+                        .stroke(Color.white.opacity(0.14), lineWidth: 1)
+                )
+
+            Circle()
+                .fill(activeAccentColor.opacity(0.22))
+                .frame(width: 180, height: 180)
+                .blur(radius: 18)
+                .offset(x: 132, y: -28)
+
+            VStack(alignment: .leading, spacing: 14) {
+                HStack {
+                    headerChip(title: "EVENT", color: activeAccentColor)
+                    Spacer()
+                    headerChip(title: selectedMode?.title.uppercased() ?? "ROTATION", color: .white)
+                }
+
+                Spacer()
+
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("EVENT HUB")
+                        .font(.system(size: 30, weight: .black, design: .rounded))
+                        .tracking(1.6)
+                        .foregroundStyle(.white)
+
+                    Text(heroSubtitle)
+                        .font(.system(size: 13, weight: .medium, design: .rounded))
+                        .foregroundStyle(.white.opacity(0.74))
                 }
             }
-            .padding(.horizontal, 16)
+            .padding(22)
         }
-        .padding(.top, 72)
+        .frame(height: Layout.heroHeight)
+        .shadow(color: activeAccentColor.opacity(0.18), radius: 20)
+    }
+
+    private var modeSelector: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Text("EVENT CHANNELS")
+                    .font(.system(size: 13, weight: .black, design: .rounded))
+                    .tracking(2)
+                    .foregroundStyle(activeAccentColor)
+
+                Spacer()
+
+                Circle()
+                    .fill(activeAccentColor)
+                    .frame(width: 8, height: 8)
+            }
+
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 10) {
+                    ForEach(viewModel.modes) { mode in
+                        modeButton(mode)
+                    }
+                }
+                .padding(.horizontal, 2)
+            }
+        }
+        .padding(18)
+        .background(sectionBackground(accent: activeAccentColor))
     }
 
     private var eventList: some View {
-        ScrollView {
-            VStack(spacing: 16) {
-                ForEach(filteredEvents) { event in
-                    Button {
-                        onStartEvent(event)
-                    } label: {
-                        EventRow(event: event)
-                    }
-                    .buttonStyle(.plain)
-                }
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Text("ACTIVE MISSIONS")
+                    .font(.system(size: 13, weight: .black, design: .rounded))
+                    .tracking(2)
+                    .foregroundStyle(.yellow)
+
+                Spacer()
+
+                Circle()
+                    .fill(Color.yellow)
+                    .frame(width: 8, height: 8)
             }
-            .padding(.horizontal, 12)
-            .padding(.bottom, 24)
-            .id(selectedModeID)
-            .transition(.opacity.combined(with: .scale(scale: 0.97)))
+
+            if filteredEvents.isEmpty {
+                VStack(spacing: 10) {
+                    Text("NO EVENTS READY")
+                        .font(.system(size: 22, weight: .black, design: .rounded))
+                        .tracking(1.6)
+                        .foregroundStyle(.white)
+
+                    Text("Switch channels or update your event data to load new missions.")
+                        .font(.system(size: 13, weight: .medium, design: .rounded))
+                        .foregroundStyle(.white.opacity(0.58))
+                        .multilineTextAlignment(.center)
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 42)
+            } else {
+                VStack(spacing: 16) {
+                    ForEach(filteredEvents) { event in
+                        Button {
+                            onStartEvent(event)
+                        } label: {
+                            EventRow(event: event)
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+                .id(selectedModeID)
+            }
         }
+        .padding(18)
+        .background(sectionBackground(accent: .yellow))
         .animation(.easeInOut(duration: 0.35), value: selectedModeID)
     }
 
@@ -115,43 +251,79 @@ struct EventView: View {
                 selectedModeID = mode.id
             }
         } label: {
-            Text(mode.title)
-                .font(.caption.weight(.bold))
-                .padding(.horizontal, 16)
-                .padding(.vertical, 9)
-                .foregroundColor(.black)
+            Text(mode.title.uppercased())
+                .font(.system(size: 11, weight: .black, design: .rounded))
+                .tracking(1.3)
+                .padding(.horizontal, 14)
+                .padding(.vertical, 10)
+                .foregroundColor(selectedModeID == mode.id ? .black : .white)
                 .background(
                     Capsule()
                         .fill(
                             Color(hex: mode.ui.buttonColor)
-                                .opacity(selectedModeID == mode.id ? 1.0 : 0.25)
+                                .opacity(selectedModeID == mode.id ? 1.0 : 0.18)
                         )
                         .overlay(
                             Capsule()
                                 .stroke(
-                                    Color(hex: mode.ui.buttonColor),
-                                    lineWidth: selectedModeID == mode.id ? 0 : 1
+                                    Color(hex: mode.ui.buttonColor).opacity(selectedModeID == mode.id ? 0 : 0.45),
+                                    lineWidth: 1
                                 )
                         )
                 )
-                .scaleEffect(selectedModeID == mode.id ? 1.08 : 1.0)
+                .scaleEffect(selectedModeID == mode.id ? 1.06 : 1.0)
         }
     }
 
     private var emptyState: some View {
         VStack(spacing: 12) {
-            Spacer()
-
-            Text("No Event Modes Available")
-                .font(.headline)
+            Text("NO EVENT MODES")
+                .font(.system(size: 22, weight: .black, design: .rounded))
+                .tracking(1.6)
                 .foregroundStyle(.white)
 
             Text("Check your event data and try again.")
-                .font(.caption)
-                .foregroundStyle(.secondary)
-
-            Spacer()
+                .font(.system(size: 13, weight: .medium, design: .rounded))
+                .foregroundStyle(.white.opacity(0.58))
         }
-        .padding(.top, 72)
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 48)
+        .background(sectionBackground(accent: activeAccentColor))
+    }
+
+    private var activeAccentColor: Color {
+        if let selectedMode {
+            return Color(hex: selectedMode.ui.buttonColor)
+        }
+
+        return .cyan
+    }
+
+    private var heroSubtitle: String {
+        if let selectedMode {
+            return "Rotate into \(selectedMode.title.lowercased()) missions, defeat featured enemies, and claim time-based rewards."
+        }
+
+        return "Choose an event channel and launch limited battle missions."
+    }
+
+    private func headerChip(title: String, color: Color) -> some View {
+        Text(title)
+            .font(.system(size: 10, weight: .black, design: .rounded))
+            .tracking(1.5)
+            .foregroundStyle(.black)
+            .padding(.horizontal, 10)
+            .padding(.vertical, 6)
+            .background(Capsule().fill(color))
+    }
+
+    private func sectionBackground(accent: Color) -> some View {
+        RoundedRectangle(cornerRadius: 26)
+            .fill(Color.white.opacity(0.05))
+            .overlay(
+                RoundedRectangle(cornerRadius: 26)
+                    .stroke(accent.opacity(0.24), lineWidth: 1)
+            )
+            .shadow(color: accent.opacity(0.12), radius: 12)
     }
 }

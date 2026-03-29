@@ -32,6 +32,7 @@ struct ShopItem: Codable, Identifiable {
     let type: ShopItemType   // 🔥 NEU
 
     let skinId: String?
+    let backgroundId: String?
     let amount: Int?         // 🔥 für Currency Packs
 
     let name: String
@@ -44,6 +45,7 @@ struct ShopItem: Codable, Identifiable {
         id: UUID = UUID(),
         type: ShopItemType,
         skinId: String? = nil,
+        backgroundId: String? = nil,
         amount: Int? = nil,
         name: String,
         price: Int,
@@ -54,6 +56,7 @@ struct ShopItem: Codable, Identifiable {
         self.id = id
         self.type = type
         self.skinId = skinId
+        self.backgroundId = backgroundId
         self.amount = amount
         self.name = name
         self.price = price
@@ -66,6 +69,7 @@ struct ShopItem: Codable, Identifiable {
         case id
         case type
         case skinId
+        case backgroundId
         case amount
         case name
         case price
@@ -81,6 +85,7 @@ struct ShopItem: Codable, Identifiable {
         self.id = try container.decodeIfPresent(UUID.self, forKey: .id) ?? UUID()
         self.type = try container.decode(ShopItemType.self, forKey: .type)
         self.skinId = try container.decodeIfPresent(String.self, forKey: .skinId)
+        self.backgroundId = try container.decodeIfPresent(String.self, forKey: .backgroundId)
         self.amount = try container.decodeIfPresent(Int.self, forKey: .amount)
         self.name = try container.decode(String.self, forKey: .name)
         self.price = try container.decodeIfPresent(Int.self, forKey: .price)
@@ -92,6 +97,7 @@ struct ShopItem: Codable, Identifiable {
 
 enum ShopItemType: String, Codable {
     case skin
+    case background
     case currency
 }
 

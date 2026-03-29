@@ -8,46 +8,46 @@
 import SwiftUI
 
 struct VictoryHeader: View {
-
     let title: String
     let subtitle: String?
 
     var body: some View {
         VStack(spacing: 14) {
-
-            // 🔱 TOP ACCENT
             Capsule()
                 .fill(
                     LinearGradient(
                         colors: [
-                            .white.opacity(0.05), .white.opacity(0.4),
+                            .clear,
+                            .cyan.opacity(0.85),
+                            .white.opacity(0.95),
+                            .cyan.opacity(0.85),
                             .white.opacity(0.05),
                         ],
                         startPoint: .leading,
                         endPoint: .trailing
                     )
                 )
-                .frame(width: 220, height: 2)
+                .frame(width: 220, height: 3)
 
-            // 🏆 TITLE
             Text(title)
                 .font(.system(size: 36, weight: .heavy, design: .rounded))
                 .tracking(3)
                 .foregroundStyle(.white)
-                .shadow(color: .black.opacity(0.6), radius: 6, y: 2)
+                .shadow(color: .cyan.opacity(0.34), radius: 12)
 
-            // ✨ SUBTITLE
             if let subtitle {
                 Text(subtitle.uppercased())
-                    .font(.caption.weight(.bold))
+                    .font(.system(size: 11, weight: .black, design: .rounded))
                     .tracking(2)
-                    .foregroundStyle(.white.opacity(0.75))
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 6)
+                    .background(Capsule().fill(Color.cyan))
+                    .foregroundStyle(.black)
             }
 
-            // 🔱 BOTTOM ACCENT
             Capsule()
-                .fill(Color.white.opacity(0.2))
-                .frame(width: 160, height: 1.5)
+                .fill(Color.white.opacity(0.24))
+                .frame(width: 160, height: 2)
         }
         .padding(.vertical, 12)
     }

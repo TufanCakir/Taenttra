@@ -8,6 +8,10 @@
 import SwiftUI
 
 struct FighterView: View {
+    private enum Layout {
+        static let width: CGFloat = 180
+        static let height: CGFloat = 280
+    }
 
     let character: Character
     let state: FighterAnimation
@@ -23,7 +27,7 @@ struct FighterView: View {
         )
         .resizable()
         .scaledToFit()
-        .frame(width: 180, height: 280)
+        .frame(width: Layout.width, height: Layout.height)
         .offset(x: (mirrored ? -1 : 1) * attackOffset)
         .scaleEffect(x: mirrored ? 1 : -1, y: 1)
         .rotation3DEffect(

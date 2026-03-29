@@ -8,68 +8,53 @@
 import SwiftUI
 
 struct TrainingModeRow: View {
-
     let mode: TrainingMode
 
     var body: some View {
         ZStack(alignment: .bottomLeading) {
-
-            // 🖼 BACKGROUND
             Image(mode.background)
                 .resizable()
                 .scaledToFill()
-                .frame(height: 120)
+                .frame(height: 164)
                 .clipped()
                 .allowsHitTesting(false)
 
-            // 🌑 SOFTER GRADIENT
             LinearGradient(
                 colors: [
-                    .black.opacity(0.15),
-                    .black.opacity(0.85),
+                    .black.opacity(0.12),
+                    .black.opacity(0.9),
                 ],
                 startPoint: .top,
                 endPoint: .bottom
             )
 
-            // 📝 CONTENT
-            VStack(alignment: .leading, spacing: 6) {
-
-                Text(mode.title.uppercased())
-                    .font(.headline.weight(.bold))
-                    .foregroundColor(.white)
-
-                HStack(spacing: 14) {
-
-                    Text(trainingTag(for: mode))
-                        .font(.caption2.weight(.bold))
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 4)
-                        .background(
-                            Capsule()
-                                .fill(tagColor(for: mode))
-                        )
-
-                    Text("VS \(mode.enemy.uppercased())")
-                        .font(.caption2)
-                        .foregroundColor(.white.opacity(0.8))
-
+            VStack(alignment: .leading, spacing: 10) {
+                HStack {
+                    statBadge(trainingTag(for: mode), accent: tagColor(for: mode))
+                    Spacer()
                     if mode.timeLimit < 100 {
-                        Text("ADVANCED")
-                            .font(.caption2.weight(.bold))
-                            .foregroundColor(.red)
+                        statBadge("ADVANCED", accent: .orange)
                     }
+                }
 
-                    Text("TIME ∞")
-                        .font(.caption2)
-                        .foregroundColor(.white.opacity(0.6))
+                Spacer()
+
+                VStack(alignment: .leading, spacing: 6) {
+                    Text(mode.title.uppercased())
+                        .font(.system(size: 22, weight: .black, design: .rounded))
+                        .foregroundColor(.white)
+
+                    HStack(spacing: 8) {
+                        statBadge("VS \(mode.enemy.uppercased())", accent: .white)
+                        statBadge(mode.timeLimit < 100 ? "TIME \(mode.timeLimit)S" : "TIME ∞", accent: .cyan)
+                    }
                 }
             }
-            .padding(14)
+            .padding(16)
         }
-        .cornerRadius(14)
+        .clipShape(RoundedRectangle(cornerRadius: 24))
         .overlay(
-            RoundedRectangle(cornerRadius: 14)
+            RoundedRectangle(cornerRadius: 24)
                 .stroke(Color.cyan.opacity(0.25), lineWidth: 1)
         )
         .shadow(
@@ -79,8 +64,6 @@ struct TrainingModeRow: View {
         )
     }
 
-    // MARK: - Helpers
-
     private func trainingTag(for mode: TrainingMode) -> String {
         mode.title.contains("COMBO") ? "COMBOS" : "BASICS"
     }
@@ -89,5 +72,15 @@ struct TrainingModeRow: View {
         mode.title.contains("COMBO")
             ? Color.purple.opacity(0.8)
             : Color.cyan.opacity(0.8)
+    }
+
+    private func statBadge(_ title: String, accent: Color) -> some View {
+        Text(title)
+            .font(.system(size: 10, weight: .black, design: .rounded))
+            .tracking(1.1)
+            .padding(.horizontal, 8)
+            .padding(.vertical, 5)
+            .background(Capsule().fill(accent))
+            .foregroundStyle(.black)
     }
 }

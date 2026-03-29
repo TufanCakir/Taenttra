@@ -25,10 +25,8 @@ struct GameView: View {
         ZStack {
 
             // 🌑 GLOBAL GAME BACKGROUND
-            LinearGradient(
-                colors: [.black, .black.opacity(0.9)],
-                startPoint: .top,
-                endPoint: .bottom
+            AppBackgroundView(
+                theme: BackgroundThemeService.theme(for: gameState.wallet?.selectedBackgroundThemeID)
             )
             .ignoresSafeArea()
 
@@ -102,8 +100,32 @@ struct GameView: View {
         case .shop:
             ShopView()
 
+        case .backgrounds:
+            BackgroundView()
+
+        case .summon:
+            SummonView()
+
+        case .season:
+            SeassonView()
+
+        case .missiona:
+            MissionaView()
+
+        case .exchange:
+            ExchangeView()
+
+        case .gift:
+            GiftView()
+
+        case .daily:
+            DailyView()
+
         case .skin:
             SkinSelectionView()
+
+        case .cards:
+            CardView()
         }
     }
 
@@ -209,6 +231,10 @@ struct GameView: View {
             rewards: rewards,
             to: wallet
         )
+        wallet.fightWins += 1
+        wallet.dailyFightWins += 1
+        wallet.weeklyFightWins += 1
+        wallet.seasonPassXP += SeasonPassLoader.load().currentSeason?.fightWinXP ?? 40
 
         gameState.unlockStoryRewards()
         advanceStoryProgressIfNeeded()
@@ -224,11 +250,26 @@ struct GameView: View {
             gameState.loadWallet(context: modelContext)
         }
 
+        syncSeasonState()
+        if let wallet = gameState.wallet {
+            MissionResetService.syncResets(for: wallet, catalog: MissionLoader.load())
+        }
         gameState.loadUnlockedModes()
         gameState.loadLastCompletedStorySection()
 
         // 🔥 Story korrekt rekonstruieren
         storyViewModel.rebuildUnlockedSections(using: gameState)
+    }
+
+    private func syncSeasonState() {
+        guard let wallet = gameState.wallet else { return }
+
+        let currentSeasonID = SeasonPassLoader.load().currentSeasonID
+        guard wallet.currentSeasonID != currentSeasonID else { return }
+
+        wallet.currentSeasonID = currentSeasonID
+        wallet.seasonPassXP = 0
+        wallet.claimedSeasonPassTierIDs = []
     }
 
     private func advanceStoryProgressIfNeeded() {

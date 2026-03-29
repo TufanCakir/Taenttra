@@ -1,0 +1,124 @@
+{
+  "defaults": [
+    {
+      "id": "default_striker",
+      "title": "Strike Burst",
+      "subtitle": "Close Combat",
+      "role": "attacker",
+      "rarity": "common",
+      "power": 2800,
+      "energyCost": 1,
+      "artworkName": "char_kenji_base_punch",
+      "skillText": "Quick strike deals fast frontline damage.",
+      "ultimateText": "Combo Overflow: double-hit rush through the center lane."
+    },
+    {
+      "id": "default_guard",
+      "title": "Barrier Pulse",
+      "subtitle": "Frontline Hold",
+      "role": "guardUnit",
+      "rarity": "rare",
+      "power": 3200,
+      "energyCost": 2,
+      "artworkName": "char_kenji_base_idle",
+      "skillText": "Barrier stance cuts incoming burst pressure.",
+      "ultimateText": "Pulse Fortress: converts guard into a full team wall."
+    },
+    {
+      "id": "default_boost",
+      "title": "Support Surge",
+      "subtitle": "Ki Relay",
+      "role": "booster",
+      "rarity": "epic",
+      "power": 3500,
+      "energyCost": 3,
+      "artworkName": "char_kenji_base_kick",
+      "skillText": "Relay surge boosts the next card attack.",
+      "ultimateText": "Ki Relay Storm: floods the board with amplified energy."
+    }
+  ],
+  "characters": [
+    {
+      "key": "kenji",
+      "cards": [
+        {
+          "id": "kenji_rush",
+          "title": "Tiger Rush",
+          "subtitle": "Dojo Break",
+          "role": "attacker",
+          "rarity": "rare",
+          "power": 3400,
+          "energyCost": 1,
+          "artworkName": "char_kenji_base_punch",
+          "skillText": "Tiger Rush tears open the first lane with fast pressure.",
+          "ultimateText": "Dojo Cataclysm: chained rush combo shatters enemy defense."
+        },
+        {
+          "id": "kenji_guard",
+          "title": "Iron Counter",
+          "subtitle": "Heavy Guard",
+          "role": "guardUnit",
+          "rarity": "epic",
+          "power": 3900,
+          "energyCost": 2,
+          "artworkName": "char_kenji_base_idle",
+          "skillText": "Iron Counter punishes heavy attacks with reflected force.",
+          "ultimateText": "Steel Mirror: every hit turns into a crushing counter wave."
+        },
+        {
+          "id": "kenji_focus",
+          "title": "Dragon Focus",
+          "subtitle": "Spirit Charge",
+          "role": "booster",
+          "rarity": "legendary",
+          "power": 4300,
+          "energyCost": 3,
+          "artworkName": "char_kenji_base_kick",
+          "skillText": "Dragon Focus channels spirit charge into every ally.",
+          "ultimateText": "Heaven Splitter: total field buff and finishing dragon burst."
+        }
+      ]
+    },
+    {
+      "key": "freeza",
+      "cards": [
+        {
+          "id": "freeza_beam",
+          "title": "Death Beam",
+          "subtitle": "Precision Kill",
+          "role": "attacker",
+          "rarity": "rare",
+          "power": 3500,
+          "energyCost": 1,
+          "artworkName": "char_freeza_base_punch",
+          "skillText": "Death Beam pierces the lane with surgical burst damage.",
+          "ultimateText": "Execution Ray: precision fire that deletes weakened targets."
+        },
+        {
+          "id": "freeza_shell",
+          "title": "Emperor Shield",
+          "subtitle": "Cold Armor",
+          "role": "guardUnit",
+          "rarity": "epic",
+          "power": 4000,
+          "energyCost": 2,
+          "artworkName": "char_freeza_base_idle",
+          "skillText": "Emperor Shield creates a cold barrier against assaults.",
+          "ultimateText": "Tyrant Guard: freezes momentum and locks the whole front."
+        },
+        {
+          "id": "freeza_core",
+          "title": "Void Tyrant",
+          "subtitle": "Malice Engine",
+          "role": "booster",
+          "rarity": "legendary",
+          "power": 4450,
+          "energyCost": 3,
+          "artworkName": "char_freeza_base_kick",
+          "skillText": "Void Tyrant turns malice into total board control.",
+          "ultimateText": "Absolute Dominion: overwhelming aura crushes every lane at once."
+        }
+      ]
+    }
+  ]
+}

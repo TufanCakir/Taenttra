@@ -44,7 +44,7 @@ struct TaenttraApp: App {
 
                     } else {
 
-                        GameView()
+                        RootView()
                             .environmentObject(gameState)
                             .transition(.opacity)
                             .zIndex(0)

@@ -1,0 +1,118 @@
+{
+  "seasonID": "season_1",
+  "missions": [
+    {
+      "id": "daily_summon_3",
+      "category": "daily",
+      "title": "Portal Warmup",
+      "detail": "Complete 3 summon pulls",
+      "rewardText": "+40 Crystals",
+      "accentHex": "#22D3EE",
+      "icon": "sparkles",
+      "requirement": {
+        "type": "summon_pulls",
+        "target": 3
+      },
+      "rewards": [
+        { "type": "crystals", "amount": 40 }
+      ]
+    },
+    {
+      "id": "daily_fight_1",
+      "category": "daily",
+      "title": "First Blood",
+      "detail": "Win 1 fight",
+      "rewardText": "+20 Shards",
+      "accentHex": "#34D399",
+      "icon": "flame.fill",
+      "requirement": {
+        "type": "fight_wins",
+        "target": 1
+      },
+      "rewards": [
+        { "type": "shards", "amount": 20 }
+      ]
+    },
+    {
+      "id": "weekly_summon_10",
+      "category": "weekly",
+      "title": "Portal Rookie",
+      "detail": "Complete 10 summon pulls",
+      "rewardText": "+120 Crystals",
+      "accentHex": "#FB923C",
+      "icon": "sparkles",
+      "requirement": {
+        "type": "summon_pulls",
+        "target": 10
+      },
+      "rewards": [
+        { "type": "crystals", "amount": 120 }
+      ]
+    },
+    {
+      "id": "weekly_fight_5",
+      "category": "weekly",
+      "title": "Arena Pressure",
+      "detail": "Win 5 fights",
+      "rewardText": "+90 Shards",
+      "accentHex": "#F97316",
+      "icon": "flame.fill",
+      "requirement": {
+        "type": "fight_wins",
+        "target": 5
+      },
+      "rewards": [
+        { "type": "shards", "amount": 90 }
+      ]
+    },
+    {
+      "id": "weekly_pass_200",
+      "category": "weekly",
+      "title": "Pass Climber",
+      "detail": "Earn 200 season XP",
+      "rewardText": "+1500 Coins",
+      "accentHex": "#FACC15",
+      "icon": "shield.lefthalf.filled.badge.checkmark",
+      "requirement": {
+        "type": "season_xp",
+        "target": 200
+      },
+      "rewards": [
+        { "type": "coins", "amount": 1500 }
+      ]
+    },
+    {
+      "id": "event_daily_3",
+      "category": "event",
+      "title": "Check-In Chain",
+      "detail": "Reach a 3 day daily streak",
+      "rewardText": "+80 Shards",
+      "accentHex": "#EC4899",
+      "icon": "calendar",
+      "requirement": {
+        "type": "daily_streak",
+        "target": 3
+      },
+      "rewards": [
+        { "type": "shards", "amount": 80 }
+      ]
+    },
+    {
+      "id": "event_gate_master",
+      "category": "event",
+      "title": "Gate Master",
+      "detail": "Complete 25 summon pulls",
+      "rewardText": "Unlock Void Shards + 120 Crystals",
+      "accentHex": "#F472B6",
+      "icon": "checklist.checked",
+      "requirement": {
+        "type": "summon_pulls",
+        "target": 25
+      },
+      "rewards": [
+        { "type": "background_theme", "amount": 1, "themeID": "theme_void_shards" },
+        { "type": "crystals", "amount": 120 }
+      ]
+    }
+  ]
+}

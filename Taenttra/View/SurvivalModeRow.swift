@@ -8,64 +8,50 @@
 import SwiftUI
 
 struct SurvivalModeRow: View {
-
     let mode: SurvivalMode
 
     var body: some View {
         ZStack(alignment: .bottomLeading) {
-
-            // 🖼 BACKGROUND
             Image(mode.background)
                 .resizable()
                 .scaledToFill()
-                .frame(height: 130)
+                .frame(height: 164)
                 .clipped()
 
-            // 🌑 HEAVY GRADIENT
             LinearGradient(
                 colors: [
-                    .black.opacity(0.25),
-                    .black.opacity(0.9),
+                    .black.opacity(0.14),
+                    .black.opacity(0.92),
                 ],
                 startPoint: .top,
                 endPoint: .bottom
             )
 
-            // 📝 CONTENT
-            VStack(alignment: .leading, spacing: 8) {
+            VStack(alignment: .leading, spacing: 10) {
+                HStack {
+                    statBadge("SURVIVAL", accent: .red)
+                    Spacer()
+                    statBadge("TIME \(mode.timeLimit)S", accent: .white)
+                }
 
-                Text(mode.title.uppercased())
-                    .font(.headline.weight(.bold))
-                    .foregroundColor(.white)
+                Spacer()
 
-                HStack(spacing: 14) {
+                VStack(alignment: .leading, spacing: 6) {
+                    Text(mode.title.uppercased())
+                        .font(.system(size: 22, weight: .black, design: .rounded))
+                        .foregroundColor(.white)
 
-                    // TIME
-                    Text("TIME \(mode.timeLimit)s")
-                        .font(.caption2.weight(.bold))
-                        .foregroundColor(.white.opacity(0.85))
-
-                    // ENEMIES
-                    Text("\(mode.enemyPool.count) ENEMIES")
-                        .font(.caption2.weight(.bold))
-                        .foregroundColor(.red)
-
-                    // TAG
-                    Text("SURVIVAL")
-                        .font(.caption2.weight(.bold))
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 4)
-                        .background(
-                            Capsule()
-                                .fill(Color.red.opacity(0.8))
-                        )
+                    HStack(spacing: 8) {
+                        statBadge("\(mode.enemyPool.count) ENEMIES", accent: .red)
+                        statBadge(mode.enemyPool.first?.uppercased() ?? "RANDOM", accent: .orange)
+                    }
                 }
             }
-            .padding(14)
+            .padding(16)
         }
-        .cornerRadius(14)
+        .clipShape(RoundedRectangle(cornerRadius: 24))
         .overlay(
-            RoundedRectangle(cornerRadius: 14)
+            RoundedRectangle(cornerRadius: 24)
                 .stroke(Color.red.opacity(0.35), lineWidth: 1.2)
         )
         .shadow(
@@ -73,5 +59,15 @@ struct SurvivalModeRow: View {
             radius: 14,
             y: 8
         )
+    }
+
+    private func statBadge(_ title: String, accent: Color) -> some View {
+        Text(title)
+            .font(.system(size: 10, weight: .black, design: .rounded))
+            .tracking(1.1)
+            .padding(.horizontal, 8)
+            .padding(.vertical, 5)
+            .background(Capsule().fill(accent))
+            .foregroundStyle(.black)
     }
 }
