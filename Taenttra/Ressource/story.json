@@ -1,0 +1,175 @@
+{
+    "chapters": [
+        {
+            "id": "chapter_1",
+            "title": "Das Turnier",
+            "background": "dojo_night",
+            "music": "battle",
+            "arena": "dojo_night",
+            "introDialog": {
+                "image": "background1",
+                "text":
+                    "Nach Jahren im Exil kehrst du in das Gebiet zurück, wo alles begann."
+            },
+            "sections": [
+                {
+                    "id": "1_1",
+                    "title": "Ein neuer Kämpfer",
+                    "enemy": "kenji",
+                    "waves": 1,
+                    "boss": false,
+                    "timeLimit": 100,
+                    "music": "battle",
+                    "arena": "dojo_night",
+                    
+                    "rewards": {
+                        "coins": 150,
+                        "crystals": 5,
+                        "shards": 2
+                    },
+                    
+                    "introDialog": {
+                        "image": "dojo_night",
+                        "text":
+                            "Ein Junge namens Kenji will am Turnier teilnehmen."
+                    }
+                },
+                {
+                    "id": "1_2",
+                    "title": "Die Ausbildung",
+                    "enemy": "kenji",
+                    "waves": 1,
+                    "boss": false,
+                    "timeLimit": 100,
+                    "music": "battle",
+                    "arena": "dojo_night",
+                    
+                    "rewards": {
+                        "coins": 150,
+                        "crystals": 5,
+                        "shards": 2
+                    },
+                    "introDialog": {
+                        "image": "dojo_night",
+                        "text":
+                            "Kenji trainierte, um am Turnier teilnehmen zu können."
+                    }
+                },
+                {
+                    "id": "1_3",
+                    "title": "Der alte Mann",
+                    "enemy": "shiro",
+                    "waves": 1,
+                    "boss": false,
+                    "timeLimit": 100,
+                    "music": "battle",
+                    "arena": "shiro_arena",
+                    "unlocks": [
+                        "shiro"
+                    ],
+                    "rewards": {
+                        "coins": 150,
+                        "crystals": 5,
+                        "shards": 2
+                    },
+                    "introDialog": {
+                        "image": "shiro_arena",
+                        "text":
+                            "Der alte Mann bringt Kenji alles bei, was er weiß, damit er eines Tages der beste Kämpfer wird."
+                    }
+                },
+                {
+                    "id": "1_4",
+                    "title": "Verzweiflung",
+                    "enemy": "shiro",
+                    "waves": 1,
+                    "boss": false,
+                    "timeLimit": 100,
+                    "music": "battle",
+                    "arena": "shiro_arena",
+                    "rewards": {
+                        "coins": 150,
+                        "crystals": 5,
+                        "shards": 2
+                    },
+                    "introDialog": {
+                        "image": "shiro_arena",
+                        "text":
+                            "Kenji glaubt, endlich bereit zu sein. Doch der Kampf endet schneller, als er begonnen hat."
+                    }
+                },
+                {
+                    "id": "1_5",
+                    "title": "Die Schwester",
+                    "enemy": "reika",
+                    "waves": 1,
+                    "boss": false,
+                    "timeLimit": 100,
+                    "music": "battle",
+                    "arena": "reika_arena",
+                    "unlocks": [
+                        "reika"
+                    ],
+                    "rewards": {
+                        "coins": 150,
+                        "crystals": 5,
+                        "shards": 2
+                    },
+                    "introDialog": {
+                        "image": "reika_arena",
+                        "text":
+                            "Kenji’s Schwester taucht auf – sie hat genug davon, nur zuzusehen."
+                    }
+                },
+                {
+                    "id": "1_6",
+                    "title": "Der Bruder",
+                    "enemy": "rei",
+                    "waves": 1,
+                    "boss": false,
+                    "timeLimit": 100,
+                    "music": "battle",
+                    "arena": "rei_arena",
+                    "unlocks": [
+                        "rei"
+                    ],
+                    "rewards": {
+                        "coins": 150,
+                        "crystals": 5,
+                        "shards": 2
+                    },
+                    "introDialog": {
+                        "image": "rei_arena",
+                        "text":
+                            "Sein Bruder stellt sich ihm in den Weg – nicht aus Hass, sondern aus Stolz."
+                    }
+                },
+                {
+                    "id": "1_7",
+                    "title": "Der Wendepunkt",
+                    "enemy": [
+                        "kenji",
+                        "shiro",
+                        "reika",
+                        "rei"
+                    ],
+                    "waves": 4,
+                    "boss": true,
+                    "timeLimit": 100,
+                    "music": "battle",
+                    "arena": "dojo_night",
+                    "rewards": {
+                        "coins": 150,
+                        "crystals": 5,
+                        "shards": 2
+                    },
+                    "introDialog": {
+                        "image": "dojo_night",
+                        "text":
+                            "Doch Kenji ahnt nicht, dass das wahre Turnier erst beginnt."
+                    }
+                }
+            ]
+        }
+    ]
+}

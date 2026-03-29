@@ -1,0 +1,16 @@
+{
+    "songs": [
+        {
+            "key": "intro",
+            "file": "intro",
+            "loop": false,
+            "volume": 0.7
+        },
+        {
+            "key": "battle",
+            "file": "battle",
+            "loop": false,
+            "volume": 0.7
+        }
+    ]
+}

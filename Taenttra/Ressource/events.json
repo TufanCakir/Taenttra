@@ -1,0 +1,46 @@
+{
+    "events": [
+        {
+            "id": "tournament_1",
+            "title": "Das Turnier",
+            "type": "normal",
+            "background": "tournament",
+            "music": "battle",
+            "enemy": "rei",
+            "timeLimit": 100,
+            "rewardShards": 3,
+            "ui": {
+                "overlayColor": "#4682B4",
+                "overlayOpacity": 0.15
+            }
+        },
+        {
+            "id": "tournament_3",
+            "title": "Purpurner Lotus",
+            "type": "special",
+            "background": "reika_arena",
+            "music": "battle",
+            "enemy": "reika",
+            "timeLimit": 100,
+            "rewardShards": 3,
+            "ui": {
+                "overlayColor": "#8A2BE2",
+                "overlayOpacity": 0.15
+            }
+        },
+        {
+            "id": "tournament_2",
+            "title": "Turnier der Morgenröte",
+            "type": "boss",
+            "background": "rei_arena",
+            "music": "battle",
+            "enemy": "rei",
+            "timeLimit": 100,
+            "rewardShards": 3,
+            "ui": {
+                "overlayColor": "#880808",
+                "overlayOpacity": 0.15
+            }
+        }
+    ]
+}

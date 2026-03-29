@@ -1,0 +1,36 @@
+{
+    "modes": [
+        {
+            "id": "training_basic",
+            "title": "Basic Training: Kenji",
+            "background": "dojo_night",
+            "music": "battle",
+            "enemy": "kenji",
+            "timeLimit": 100
+        },
+        {
+            "id": "training_basic_2",
+            "title": "Basic Training: Shiro",
+            "background": "shiro_arena",
+            "music": "battle",
+            "enemy": "shiro",
+            "timeLimit": 100
+        },
+        {
+            "id": "training_basic_3",
+            "title": "Basic Training: Reika",
+            "background": "reika_arena",
+            "music": "battle",
+            "enemy": "reika",
+            "timeLimit": 100
+        },
+        {
+            "id": "training_basic_4",
+            "title": "Basic Training: Rei",
+            "background": "rei_arena",
+            "music": "battle",
+            "enemy": "rei",
+            "timeLimit": 100
+        }
+    ]
+}

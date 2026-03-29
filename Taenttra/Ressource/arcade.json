@@ -1,0 +1,40 @@
+{
+    "stages": [
+        {
+            "id": "arcade_1",
+            "title": "Kenji Trial",
+            "background": "dojo_night",
+            "music": "battle",
+            "enemy": "kenji",
+            "waves": 1,
+            "timeLimit": 100
+        },
+        {
+            "id": "arcade_2",
+            "title": "Shiro Trial",
+            "background": "shiro_arena",
+            "music": "battle",
+            "enemy": "shiro",
+            "waves": 1,
+            "timeLimit": 100
+        },
+        {
+            "id": "arcade_3",
+            "title": "reika Trial",
+            "background": "reika_arena",
+            "music": "battle",
+            "enemy": "reika",
+            "waves": 1,
+            "timeLimit": 100
+        },
+        {
+            "id": "arcade_4",
+            "title": "Rei Trial",
+            "background": "rei_arena",
+            "music": "battle",
+            "enemy": "rei",
+            "waves": 1,
+            "timeLimit": 100
+        }
+    ]
+}

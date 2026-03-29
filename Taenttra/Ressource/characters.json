@@ -1,0 +1,26 @@
+[
+    {
+        "key": "kenji",
+        "displayImage": "char_kenji_base_preview",
+        "name": "Kenji",
+        "locked": false
+    },
+    {
+        "key": "shiro",
+        "displayImage": "char_shiro_base_preview",
+        "name": "Shiro",
+        "locked": true
+    },
+    {
+        "key": "reika",
+        "displayImage": "char_reika_base_preview",
+        "name": "Reika",
+        "locked": true
+    },
+    {
+        "key": "rei",
+        "displayImage": "char_rei_base_preview",
+        "name": "Rei",
+        "locked": true
+    }
+]

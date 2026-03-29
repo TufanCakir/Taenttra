@@ -1,0 +1,38 @@
+{
+    "stages": [
+        {
+            "id": "dojo_night",
+            "name": "Abandoned Dojo",
+            "background": "dojo_night",
+            "music": "dojo_theme",
+            "waves": [
+                {
+                    "wave": 1,
+                    "enemies": [
+                        "kenji",
+                        "shiro"
+                    ],
+                    "timeLimit": 100
+                },
+                {
+                    "wave": 2,
+                    "enemies": [
+                        "reika",
+                        "rei"
+                    ],
+                    "timeLimit": 100
+                },
+                {
+                    "wave": 3,
+                    "enemies": [
+                        "kenji",
+                        "shiro",
+                        "reika",
+                        "rei"
+                    ],
+                    "timeLimit": 100
+                }
+            ]
+        }
+    ]
+}

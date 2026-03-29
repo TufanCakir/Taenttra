@@ -1,0 +1,23 @@
+//
+//  ArcadeViewModel.swift
+//  Taenttra
+//
+//  Created by Tufan Cakir on 28.03.26.
+//
+
+import Combine
+import Foundation
+
+final class ArcadeViewModel: ObservableObject {
+
+    @Published var stages: [ArcadeStage] = []
+    @Published var selectedStage: ArcadeStage?
+
+    init() {
+        stages = ArcadeLoader.load().stages
+    }
+
+    func select(_ stage: ArcadeStage) {
+        selectedStage = stage
+    }
+}

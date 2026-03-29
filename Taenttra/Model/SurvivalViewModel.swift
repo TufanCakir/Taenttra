@@ -1,0 +1,23 @@
+//
+//  SurvivalViewModel.swift
+//  Taenttra
+//
+//  Created by Tufan Cakir on 28.03.26.
+//
+
+import Combine
+import Foundation
+
+final class SurvivalViewModel: ObservableObject {
+
+    @Published var modes: [SurvivalMode] = []
+    @Published var selectedMode: SurvivalMode?
+
+    init() {
+        modes = SurvivalLoader.load().modes
+    }
+
+    func select(_ mode: SurvivalMode) {
+        selectedMode = mode
+    }
+}

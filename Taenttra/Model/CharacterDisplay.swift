@@ -1,0 +1,136 @@
+//
+//  CharacterDisplay.swift
+//  Taenttra
+//
+//  Created by Tufan Cakir on 28.03.26.
+//
+
+import Foundation
+import UIKit
+
+struct CharacterDisplay: Identifiable, Codable {
+
+    let id: UUID
+    let key: String
+    let displayImage: String
+    let name: String
+    let combatSpritePrefix: String?
+
+    private enum CodingKeys: String, CodingKey {
+        case id
+        case key
+        case displayImage
+        case name
+        case combatSpritePrefix
+    }
+
+    // MARK: - Codable
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        let decodedId = try container.decodeIfPresent(UUID.self, forKey: .id)
+
+        self.id = decodedId ?? UUID()
+        self.key = try container.decode(String.self, forKey: .key)
+        self.displayImage = try container.decode(
+            String.self,
+            forKey: .displayImage
+        )
+        self.name = try container.decode(String.self, forKey: .name)
+        self.combatSpritePrefix = try container.decodeIfPresent(
+            String.self,
+            forKey: .combatSpritePrefix
+        )
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(id, forKey: .id)
+        try container.encode(key, forKey: .key)
+        try container.encode(displayImage, forKey: .displayImage)
+        try container.encode(name, forKey: .name)
+        try container.encodeIfPresent(
+            combatSpritePrefix,
+            forKey: .combatSpritePrefix
+        )
+    }
+}
+
+extension CharacterDisplay {
+
+    /// Preview-Bild für Grid / Auswahl
+    func previewImage(using wallet: PlayerWallet?) -> String {
+        guard key == "kenji" else {
+            return displayImage
+        }
+
+        let skinId = wallet?.equippedSkin
+        return SkinLibrary.previewImage(
+            for: key,
+            skinId: skinId
+        )
+    }
+}
+
+extension CharacterDisplay {
+
+    /// Übergang in Fight-Character
+    func toCharacter(using wallet: PlayerWallet?) -> Character {
+        Character(
+            key: key,
+            spriteBaseKey: combatSpritePrefix,
+            skinId: SkinLibrary.spriteId(
+                from: wallet?.equippedSkin
+            ),
+            isLocked: false
+        )
+    }
+}
+
+enum SkinLibrary {
+    
+    
+    static func spriteId(from equippedSkinId: String?) -> String {
+
+        let normalized = normalizedSkinId(equippedSkinId)
+
+        if normalized == nil {
+            print("⚠️ No skin equipped → fallback to base")
+        } else {
+            print("🎨 Using skin:", normalized!)
+        }
+
+        return normalized ?? "base"
+    }
+    
+    // MARK: - Normalize Skin ID
+    static func normalizedSkinId(_ raw: String?) -> String? {
+        guard let raw else { return nil }
+        
+        // Falls alte Daten noch "kenji_*" enthalten
+        if raw.hasPrefix("kenji") {
+            return raw.replacingOccurrences(of: "kenji_", with: "")
+        }
+        
+        return raw
+    }
+    
+    // MARK: - Preview Images (UI)
+    static func previewImage(
+        for characterKey: String,
+        skinId rawSkinId: String?
+    ) -> String {
+        
+        let skin = normalizedSkinId(rawSkinId) ?? "base"
+        
+        let name = AssetName.preview(
+            key: characterKey,
+            skin: skin
+        )
+        
+        if UIImage(named: name) == nil {
+            print("❌ Missing preview:", name)
+        }
+        
+        return name
+    }
+}
