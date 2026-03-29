@@ -1,81 +1,54 @@
 {
-  "categories": [
-    {
-      "id": "kenji_chains_skin",
-      "title": "Kenji Chain Skin",
-      "icon": "tshirt",
-      "items": [
+    "categories": [
         {
-          "skinId": "kenji_chains",
-          "name": "Kdnji Chain",
-          "price": 300,
-          "currency": "coins",
-          "preview": "kenji_chains_preview"
-        }
-      ]
-    },
-    {
-      "id": "rei_chains_skin",
-      "title": "Rwi Chain Skin",
-      "icon": "tshirt",
-      "items": [
-        {
-          "skinId": "rei_chains",
-          "name": "Rei Chains",
-          "price": 300,
-          "currency": "shards",
-          "preview": "rei_chains_preview"
-        }
-      ]
-    },
-    {
-      "id": "real_money_skins",  
-      "title": "Premium Skins",
-      "icon": "star.fill",
-      "items": [
-        {
-          "skinId": "kenji_chains",
-          "name": "Kenji Chain",
-          "price": 0,
-          "currency": "realMoney",
-          "preview": "kenji_chains_preview",
-          "productId": "skin.kenji.chains"
-        }
-      ]
-    },
-    {
-      "id": "crystal_packs",
-      "title": "Crystals",
-      "icon": "icon_crystal",
-      "items": [
-          {
-            "type": "currency",
-            "name": "30 Crystals",
-            "amount": 30,
-            "price": 0,
-            "currency": "realMoney",
-            "preview": "crystal_pack_small",
-            "productId": "crystals.30"
-          },
-        {
-          "type": "currency",
-          "name": "60 Crystals",
-          "amount": 60,
-          "price": 0,
-          "currency": "realMoney",
-          "preview": "crystal_pack_medium",
-          "productId": "crystals.60"
+            "id": "premium_skins",
+            "title": "Premium",
+            "icon": "star.fill",
+            "items": [
+                {
+                    "type": "skin",
+                    "skinId": "kenji_chains",
+                    "name": "Kenji Chain",
+                    "price": 0,
+                    "currency": "realMoney",
+                    "preview": "kenji_chains_preview",
+                    "productId": "skin.kenji.chains"
+                }
+            ]
         },
         {
-          "type": "currency",
-          "name": "90 Crystals",
-          "amount": 90,
-          "price": 0,
-          "currency": "realMoney",
-          "preview": "crystal_pack_big",
-          "productId": "crystals.90"
+            "id": "crystal_packs",
+            "title": "Crystals",
+            "icon": "icon_crystal",
+            "items": [
+                {
+                    "type": "currency",
+                    "name": "30 Crystals",
+                    "amount": 30,
+                    "price": 0,
+                    "currency": "realMoney",
+                    "preview": "crystal_pack_small",
+                    "productId": "com.taenttra.crystals.30"
+                },
+                {
+                    "type": "currency",
+                    "name": "60 Crystals",
+                    "amount": 60,
+                    "price": 0,
+                    "currency": "realMoney",
+                    "preview": "crystal_pack_medium",
+                    "productId": "com.taenttra.crystals.60"
+                },
+                {
+                    "type": "currency",
+                    "name": "90 Crystals",
+                    "amount": 90,
+                    "price": 0,
+                    "currency": "realMoney",
+                    "preview": "crystal_pack_big",
+                    "productId": "com.taenttra.crystals.90"
+                }
+            ]
         }
-      ]
-    }
-  ]
+    ]
 }

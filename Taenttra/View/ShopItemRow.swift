@@ -187,16 +187,19 @@ struct ShopItemRow: View {
     }
 
     private var isOwned: Bool {
-        wallet.ownedSkins.contains(item.skinId)
+        guard let skinId = item.skinId else { return false }
+        return wallet.ownedSkins.contains(skinId)
     }
 
     private var isEquipped: Bool {
-        wallet.equippedSkin == item.skinId
+        guard let skinId = item.skinId else { return false }
+        return wallet.equippedSkin == skinId
     }
 
     private func buy() {
-        guard !isOwned, canAfford else { return }
+        guard canAfford else { return }
 
+        // 💰 Preis abziehen
         switch item.currency {
         case .coins: wallet.coins -= item.price
         case .crystals: wallet.crystals -= item.price
@@ -205,13 +208,34 @@ struct ShopItemRow: View {
             wallet.crystals -= item.price
         }
 
-        wallet.ownedSkins.append(item.skinId)
-        wallet.equippedSkin = item.skinId
+        // 🎯 ITEM LOGIK
+        switch item.type {
+
+        case .skin:
+            guard let skinId = item.skinId else { return }
+
+            if !wallet.ownedSkins.contains(skinId) {
+                wallet.ownedSkins.append(skinId)
+            }
+            wallet.equippedSkin = skinId
+
+        case .currency:
+            guard let amount = item.amount else { return }
+
+            switch item.currency {
+            case .coins: wallet.coins += amount
+            case .crystals: wallet.crystals += amount
+            case .shards: wallet.shards += amount
+            case .realMoney: break
+            }
+        }
     }
 
     private func equip() {
-        guard isOwned else { return }
-        wallet.equippedSkin = item.skinId
+        guard let skinId = item.skinId else { return }
+        guard wallet.ownedSkins.contains(skinId) else { return }
+
+        wallet.equippedSkin = skinId
     }
 
     private func tag(_ text: String) -> some View {
