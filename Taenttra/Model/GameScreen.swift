@@ -33,11 +33,24 @@ enum PendingMode {
     case versus
 }
 
+@MainActor
 final class GameState: ObservableObject {
+
+    private enum Constants {
+        static let defaultCharacterKey = "kenji"
+        static let defaultEnemyRoster = ["kenji", "shiro", "reika", "rei"]
+        static let defaultFightTime = 99
+        static let quickVersusID = "quick_versus"
+        static let quickVersusName = "Quick Versus"
+        static let quickVersusBackground = "dojo_night"
+        static let quickVersusMusic = "dojo_theme"
+        static let unlockedModesKey = "unlocked_modes"
+        static let lastStorySectionKey = "last_story_section"
+    }
 
     @Published var characterDisplays: [CharacterDisplay] = []
 
-    @Published var selectedCharacterKey: String = "kenji"
+    @Published var selectedCharacterKey: String = Constants.defaultCharacterKey
 
     func loadCharacterDisplays() -> [CharacterDisplay] {
         guard
@@ -51,16 +64,11 @@ final class GameState: ObservableObject {
                 from: data
             )
         else {
-            print("⚠️ Failed to load characters.json")
             return []
         }
 
         return decoded
     }
-
-    private let unlockedModesKey = "unlocked_modes"
-
-    private let lastStorySectionKey = "last_story_section"
 
     @Published var lastCompletedStorySectionId: String?
 
@@ -69,7 +77,7 @@ final class GameState: ObservableObject {
     @Published var unlockedModes: Set<GameScreen> = [.story]
 
     @Published var playerSide: FighterSide = .left
-    @Published var wallet: PlayerWallet!
+    @Published var wallet: PlayerWallet?
 
     @Published var screen: GameScreen = .start
     @Published var pendingMode: PendingMode?
@@ -84,25 +92,14 @@ final class GameState: ObservableObject {
 
     @Published var leftHealth: CGFloat = 0
     @Published var rightHealth: CGFloat = 0
-    @Published var time: Int = 99
+    @Published var time: Int = Constants.defaultFightTime
 
     @Published var equippedSkinSprite: String = "fighter_default"
     @Published var equippedSkin: String?  // frei wechselbar
     @Published var activeSkin: String?  // fight-locked
 
     func exitVersusAfterKO() {
-        print("🚪 exitVersusAfterKO")
-
-        AudioManager.shared.endFight()
-
-        versusViewModel = nil
-        pendingMode = nil
-        leftCharacter = nil
-        rightCharacter = nil
-        currentStage = nil
-
-        screen = .home
-        print("🏠 screen =", screen)
+        returnToHome(resetPendingMode: true)
     }
 
     func loadCharactersIfNeeded() {
@@ -112,25 +109,25 @@ final class GameState: ObservableObject {
 
     private func saveUnlockedModes() {
         let rawValues = unlockedModes.map { $0.rawValue }
-        UserDefaults.standard.set(rawValues, forKey: unlockedModesKey)
+        UserDefaults.standard.set(rawValues, forKey: Constants.unlockedModesKey)
     }
 
     func saveLastCompletedStorySection() {
         UserDefaults.standard.set(
             lastCompletedStorySectionId,
-            forKey: lastStorySectionKey
+            forKey: Constants.lastStorySectionKey
         )
     }
 
     func loadLastCompletedStorySection() {
         lastCompletedStorySectionId =
-            UserDefaults.standard.string(forKey: lastStorySectionKey)
+            UserDefaults.standard.string(forKey: Constants.lastStorySectionKey)
     }
 
     func loadUnlockedModes() {
         guard
             let rawValues = UserDefaults.standard.array(
-                forKey: unlockedModesKey
+                forKey: Constants.unlockedModesKey
             ) as? [String]
         else {
             unlockedModes = [.story]
@@ -149,9 +146,11 @@ final class GameState: ObservableObject {
             wallet = existing
 
             // 🔥 MIGRATION FIX
-            if wallet.unlockedCharacters.isEmpty {
-                wallet.unlockedCharacters.append("kenji")
+            if existing.unlockedCharacters.isEmpty {
+                existing.unlockedCharacters.append(Constants.defaultCharacterKey)
             }
+
+            equippedSkin = existing.equippedSkin
 
             return
         }
@@ -159,52 +158,42 @@ final class GameState: ObservableObject {
         let newWallet = PlayerWallet()
         context.insert(newWallet)
         wallet = newWallet
+        equippedSkin = newWallet.equippedSkin
     }
 
     func startQuickVersus() {
-
         let player = Character.player(
             key: selectedCharacterKey,
             skinId: activeSkin
         )
         leftCharacter = player
 
-        let enemyPool = ["kenji", "shiro", "reika", "rei"]
+        let enemyPool = Constants.defaultEnemyRoster
             .filter { $0 != selectedCharacterKey }
             .shuffled()
 
-        let enemies = enemyPool.isEmpty ? ["kenji", "shiro", "reika", "rei"] : enemyPool
-
-        let stage = VersusStage(
-            id: "quick_versus",
-            name: "Quick Versus",
-            background: "dojo_night",
-            music: "dojo_theme",
-            waves: [
-                VersusWave(
-                    wave: 1,
-                    enemies: enemies,
-                    timeLimit: 60
-                )
-            ]
+        let enemies = enemyPool.isEmpty ? Constants.defaultEnemyRoster : enemyPool
+        let openingEnemy = enemies.first ?? Constants.defaultCharacterKey
+        let stage = makeStage(
+            id: Constants.quickVersusID,
+            name: Constants.quickVersusName,
+            background: Constants.quickVersusBackground,
+            music: Constants.quickVersusMusic,
+            enemies: enemies,
+            timeLimit: 60
         )
-
-        let vm = VersusViewModel(
-            stages: [stage],
-            gameState: self
-        )
-
-        versusViewModel = vm
 
         rightCharacter = Character.enemy(
-            key: enemies.first!,
+            key: openingEnemy,
             skinId: "base"
         )
-
-        screen = .versus
+        pendingMode = .versus
+        startVersusStage(stage)
     }
 
     func syncSkin(from wallet: PlayerWallet, skins: [SkinItem]) {
+        equippedSkin = wallet.equippedSkin
+
         guard let equipped = wallet.equippedSkin,
             let skin = skins.first(where: { $0.id == equipped })
         else {
@@ -228,6 +217,25 @@ final class GameState: ObservableObject {
             }
         }
     }
+
+    private func resetFightState(resetPendingMode: Bool) {
+        versusViewModel = nil
+        leftCharacter = nil
+        rightCharacter = nil
+        currentStage = nil
+        activeSkin = nil
+        time = Constants.defaultFightTime
+
+        if resetPendingMode {
+            pendingMode = nil
+        }
+    }
+
+    private func returnToHome(resetPendingMode: Bool) {
+        AudioManager.shared.endFight()
+        resetFightState(resetPendingMode: resetPendingMode)
+        screen = .home
+    }
 }
 
 extension GameState {
@@ -243,33 +251,21 @@ extension GameState {
 
     func goBack() {
         switch screen {
-
-        case .story, .versus:
-            AudioManager.shared.endFight()
-            screen = .home
-
+        case .characterSelect, .story, .versus, .arcade, .training, .survival, .events:
+            returnToHome(resetPendingMode: true)
         case .shop, .skin, .options:
-            AudioManager.shared.endFight()
-            screen = .home
-
-        case .arcade, .training, .survival, .events:
-            AudioManager.shared.endFight()
-            screen = .home
-
-        case .characterSelect:
-            screen = .home
-
+            returnToHome(resetPendingMode: false)
         default:
             screen = .home
         }
     }
 
     private func startVersusStage(_ stage: VersusStage) {
-
         // 🎵 Musik via SongLibrary
         AudioManager.shared.playFightMusic(key: stage.music)
 
         currentStage = stage
+        time = stage.waves.first?.timeLimit ?? Constants.defaultFightTime
         versusViewModel = VersusViewModel(
             stages: [stage],
             gameState: self
@@ -278,56 +274,40 @@ extension GameState {
     }
 
     func startEvent(mode: EventMode) {
-        let stage = VersusStage(
+        let stage = makeStage(
             id: mode.id,
             name: mode.title,
             background: mode.background,
             music: mode.music,
-            waves: [
-                VersusWave(
-                    wave: 1,
-                    enemies: [mode.enemy],
-                    timeLimit: mode.timeLimit
-                )
-            ]
+            enemies: [mode.enemy],
+            timeLimit: mode.timeLimit
         )
 
         startVersusStage(stage)
     }
 
     func startTraining(mode: TrainingMode) {
-        let stage = VersusStage(
+        let stage = makeStage(
             id: mode.id,
             name: mode.title,
             background: mode.background,
             music: mode.music,
-            waves: [
-                VersusWave(
-                    wave: 1,
-                    enemies: [mode.enemy],
-                    timeLimit: mode.timeLimit
-                )
-            ]
+            enemies: [mode.enemy],
+            timeLimit: mode.timeLimit
         )
 
         startVersusStage(stage)
     }
 
     func startSurvival(mode: SurvivalMode) {
-        let enemy = mode.enemyPool.randomElement() ?? "kenji"
-
-        let stage = VersusStage(
+        let enemy = mode.enemyPool.randomElement() ?? Constants.defaultCharacterKey
+        let stage = makeStage(
             id: mode.id,
             name: mode.title,
             background: mode.background,
             music: mode.music,
-            waves: [
-                VersusWave(
-                    wave: 1,
-                    enemies: [enemy],
-                    timeLimit: mode.timeLimit
-                )
-            ]
+            enemies: [enemy],
+            timeLimit: mode.timeLimit
         )
 
         startVersusStage(stage)
@@ -371,7 +351,7 @@ extension GameState {
                 let enemy =
                     section.enemies.indices.contains(index)
                     ? section.enemies[index]
-                    : section.enemies.last ?? "kenji"
+                    : section.enemies.last ?? Constants.defaultCharacterKey
 
                 return VersusWave(
                     wave: index + 1,
@@ -382,6 +362,29 @@ extension GameState {
         )
 
         startVersusStage(stage)
+    }
+
+    private func makeStage(
+        id: String,
+        name: String,
+        background: String,
+        music: String,
+        enemies: [String],
+        timeLimit: Int
+    ) -> VersusStage {
+        VersusStage(
+            id: id,
+            name: name,
+            background: background,
+            music: music,
+            waves: [
+                VersusWave(
+                    wave: 1,
+                    enemies: enemies,
+                    timeLimit: timeLimit
+                )
+            ]
+        )
     }
 }
 

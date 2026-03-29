@@ -57,23 +57,17 @@ struct CharacterDisplay: Identifiable, Codable {
 
 extension CharacterDisplay {
 
-    /// Preview-Bild für Grid / Auswahl
     func previewImage(using wallet: PlayerWallet?) -> String {
         guard key == "kenji" else {
             return displayImage
         }
 
-        let skinId = wallet?.equippedSkin
         return SkinLibrary.previewImage(
             for: key,
-            skinId: skinId
+            skinId: wallet?.equippedSkin
         )
     }
-}
-
-extension CharacterDisplay {
-
-    /// Übergang in Fight-Character
+    
     func toCharacter(using wallet: PlayerWallet?) -> Character {
         Character(
             key: key,
@@ -87,50 +81,40 @@ extension CharacterDisplay {
 }
 
 enum SkinLibrary {
-    
-    
+
+    private static let baseSkinID = "base"
+    private static let legacyKenjiPrefix = "kenji_"
+
     static func spriteId(from equippedSkinId: String?) -> String {
-
-        let normalized = normalizedSkinId(equippedSkinId)
-
-        if normalized == nil {
-            print("⚠️ No skin equipped → fallback to base")
-        } else {
-            print("🎨 Using skin:", normalized!)
-        }
-
-        return normalized ?? "base"
+        normalizedSkinId(equippedSkinId) ?? baseSkinID
     }
-    
-    // MARK: - Normalize Skin ID
+
     static func normalizedSkinId(_ raw: String?) -> String? {
         guard let raw else { return nil }
-        
-        // Falls alte Daten noch "kenji_*" enthalten
-        if raw.hasPrefix("kenji") {
-            return raw.replacingOccurrences(of: "kenji_", with: "")
+
+        if raw.hasPrefix(legacyKenjiPrefix) {
+            return raw.replacingOccurrences(of: legacyKenjiPrefix, with: "")
         }
-        
+
         return raw
     }
-    
-    // MARK: - Preview Images (UI)
+
     static func previewImage(
         for characterKey: String,
         skinId rawSkinId: String?
     ) -> String {
-        
-        let skin = normalizedSkinId(rawSkinId) ?? "base"
-        
-        let name = AssetName.preview(
+        let assetName = AssetName.preview(
             key: characterKey,
-            skin: skin
+            skin: normalizedSkinId(rawSkinId) ?? baseSkinID
         )
-        
-        if UIImage(named: name) == nil {
-            print("❌ Missing preview:", name)
-        }
-        
-        return name
+
+        return UIImage(named: assetName) == nil ? fallbackPreview(for: characterKey) : assetName
+    }
+
+    private static func fallbackPreview(for characterKey: String) -> String {
+        AssetName.preview(
+            key: characterKey,
+            skin: baseSkinID
+        )
     }
 }

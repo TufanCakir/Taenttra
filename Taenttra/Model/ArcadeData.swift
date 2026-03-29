@@ -32,7 +32,7 @@ final class ArcadeLoader {
             let data = try? Data(contentsOf: url),
             let decoded = try? JSONDecoder().decode(ArcadeData.self, from: data)
         else {
-            fatalError("❌ arcade.json missing or invalid")
+            return ArcadeData(stages: [])
         }
 
         return decoded

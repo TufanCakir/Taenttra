@@ -118,7 +118,7 @@ final class StoryLoader {
             let data = try? Data(contentsOf: url),
             let story = try? JSONDecoder().decode(StoryData.self, from: data)
         else {
-            fatalError("story.json fehlt oder kaputt")
+            return StoryData(chapters: [])
         }
 
         return story

@@ -11,7 +11,7 @@
                     "name": "Kenji Chain",
                     "price": 0,
                     "currency": "realMoney",
-                    "preview": "kenji_chains_preview",
+                    "preview": "char_kenji_chains_preview",
                     "productId": "skin.kenji.chains"
                 }
             ]
@@ -25,27 +25,24 @@
                     "type": "currency",
                     "name": "30 Crystals",
                     "amount": 30,
-                    "price": 0,
-                    "currency": "realMoney",
-                    "preview": "crystal_pack_small",
+                    "currency": "crystals",
+                    "preview": "icon_crystal",
                     "productId": "com.taenttra.crystals.30"
                 },
                 {
                     "type": "currency",
                     "name": "60 Crystals",
                     "amount": 60,
-                    "price": 0,
-                    "currency": "realMoney",
-                    "preview": "crystal_pack_medium",
+                    "currency": "crystals",
+                    "preview": "icon_crystal",
                     "productId": "com.taenttra.crystals.60"
                 },
                 {
                     "type": "currency",
                     "name": "90 Crystals",
                     "amount": 90,
-                    "price": 0,
-                    "currency": "realMoney",
-                    "preview": "crystal_pack_big",
+                    "currency": "crystals",
+                    "preview": "icon_crystal",
                     "productId": "com.taenttra.crystals.90"
                 }
             ]

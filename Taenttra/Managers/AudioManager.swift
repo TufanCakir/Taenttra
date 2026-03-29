@@ -7,7 +7,6 @@
 
 import AVFoundation
 import Combine
-import SwiftUI
 
 enum MusicContext {
     case none
@@ -16,28 +15,7 @@ enum MusicContext {
 }
 
 final class AudioManager: NSObject, ObservableObject {
-
-    static let shared = AudioManager()
-    private var context: MusicContext = .none
-
-    // MARK: - Public Settings
-    @Published var musicEnabled: Bool = true
-    @Published var volume: Float = 0.7 {
-        didSet {
-            UserDefaults.standard.set(volume, forKey: AudioDefaults.volume)
-            if let song = currentSong {
-                player?.volume = song.volume * volume
-            }
-        }
-    }
-
-    // MARK: - State
-    private var player: AVAudioPlayer?
-    private var currentSong: Song?
-    private var playlist: [Song] = []
-    private var playlistIndex: Int = 0
-
-    private enum AudioDefaults {
+    private enum Defaults {
         static let musicEnabled = "musicEnabled"
         static let volume = "musicVolume"
     }
@@ -47,29 +25,43 @@ final class AudioManager: NSObject, ObservableObject {
         case playlist
     }
 
+    static let shared = AudioManager()
+
+    @Published var musicEnabled: Bool = true
+    @Published var volume: Float = 0.7 {
+        didSet {
+            UserDefaults.standard.set(volume, forKey: Defaults.volume)
+
+            if let song = currentSong {
+                player?.volume = song.volume * volume
+            }
+        }
+    }
+
+    private var context: MusicContext = .none
     private var mode: Mode = .playlist
+    private var player: AVAudioPlayer?
+    private var currentSong: Song?
+    private var playlist: [Song] = []
+    private var playlistIndex = 0
 
     private override init() {
         super.init()
 
         musicEnabled =
-            UserDefaults.standard.object(forKey: AudioDefaults.musicEnabled)
-            as? Bool ?? true
-
+            UserDefaults.standard.object(forKey: Defaults.musicEnabled) as? Bool
+            ?? true
         volume =
-            UserDefaults.standard.object(forKey: AudioDefaults.volume)
-            as? Float ?? 0.7
+            UserDefaults.standard.object(forKey: Defaults.volume) as? Float
+            ?? 0.7
     }
 
-    // MARK: - Menu Music (Playlist)
-
     func playMenuMusic() {
-        guard musicEnabled else {
-            print("🔇 Music disabled – menu music blocked")
+        guard musicEnabled else { return }
+        guard context != .fight else { return }
+        guard !(context == .menu && mode == .playlist && player?.isPlaying == true) else {
             return
         }
-
-        guard context != .fight else { return }
 
         context = .menu
         mode = .playlist
@@ -79,15 +71,9 @@ final class AudioManager: NSObject, ObservableObject {
         playNext()
     }
 
-    // MARK: - Fight Music (Single)
-
     func playFightMusic(key: String) {
-        guard musicEnabled else {
-            print("🔇 Music disabled – fight music blocked")
-            return
-        }
-
-        if context == .fight, currentSong?.key == key {
+        guard musicEnabled else { return }
+        guard !(context == .fight && currentSong?.key == key && player?.isPlaying == true) else {
             return
         }
 
@@ -96,35 +82,40 @@ final class AudioManager: NSObject, ObservableObject {
     }
 
     func endFight() {
-        print("🎵 Audio Context:", context)
-        stopMusic()
-        context = .none
+        resetPlayback(clearContext: true)
     }
 
-    // MARK: - Core Playback
-
     func playSong(key: String) {
-        guard musicEnabled else {
-            print("🔇 Music disabled – playSong blocked:", key)
-            return
-        }
+        guard musicEnabled else { return }
+        guard let song = SongLibrary.shared.song(for: key) else { return }
 
-        guard let song = SongLibrary.shared.song(for: key) else {
-            print("❌ Song not found:", key)
-            return
-        }
-
+        context = context == .none ? .menu : context
         mode = .single
         playlist.removeAll()
+        playlistIndex = 0
         play(song)
     }
 
+    func stopMusic() {
+        resetPlayback(clearContext: false)
+    }
+
+    func setEnabled(_ enabled: Bool) {
+        musicEnabled = enabled
+        UserDefaults.standard.set(enabled, forKey: Defaults.musicEnabled)
+
+        guard enabled else {
+            resetPlayback(clearContext: true)
+            return
+        }
+
+        if context == .menu || context == .none {
+            playMenuMusic()
+        }
+    }
+
     private func playNext() {
-        guard
-            musicEnabled,
-            mode == .playlist,
-            !playlist.isEmpty
-        else { return }
+        guard musicEnabled, mode == .playlist, !playlist.isEmpty else { return }
 
         let song = playlist[playlistIndex]
         playlistIndex = (playlistIndex + 1) % playlist.count
@@ -132,8 +123,6 @@ final class AudioManager: NSObject, ObservableObject {
     }
 
     private func play(_ song: Song) {
-
-        // ✅ gleicher Song läuft → nichts tun
         if let current = currentSong,
             current.file == song.file,
             player?.isPlaying == true
@@ -141,7 +130,7 @@ final class AudioManager: NSObject, ObservableObject {
             return
         }
 
-        stopMusic()
+        resetPlayback(clearContext: false)
 
         guard
             let url = Bundle.main.url(
@@ -149,48 +138,42 @@ final class AudioManager: NSObject, ObservableObject {
                 withExtension: "mp3"
             )
         else {
-            print("❌ Missing file:", song.file)
             return
         }
 
         do {
-            player = try AVAudioPlayer(contentsOf: url)
-            player?.delegate = self
-            player?.numberOfLoops = song.loop ? -1 : 0
-            player?.volume = song.volume * volume
-            player?.play()
+            let audioPlayer = try AVAudioPlayer(contentsOf: url)
+            audioPlayer.delegate = self
+            audioPlayer.numberOfLoops = song.loop ? -1 : 0
+            audioPlayer.volume = song.volume * volume
+            audioPlayer.play()
+
+            player = audioPlayer
             currentSong = song
         } catch {
-            print("❌ Audio error:", error)
+            resetPlayback(clearContext: false)
         }
     }
 
-    // MARK: - Control
-
-    func stopMusic() {
+    private func resetPlayback(clearContext: Bool) {
         player?.stop()
         player = nil
         currentSong = nil
-    }
 
-    func setEnabled(_ enabled: Bool) {
-        musicEnabled = enabled
-        UserDefaults.standard.set(enabled, forKey: AudioDefaults.musicEnabled)
+        if mode == .single {
+            playlist.removeAll()
+            playlistIndex = 0
+        }
 
-        if !enabled {
-            stopMusic()
-            context = .none  // 🔥 extrem wichtig
+        if clearContext {
+            context = .none
             mode = .single
             playlist.removeAll()
-        } else {
-            if context == .menu {
-                playMenuMusic()
-            }
+            playlistIndex = 0
         }
     }
 }
 
-// MARK: - AVAudioPlayerDelegate
 extension AudioManager: AVAudioPlayerDelegate {
     func audioPlayerDidFinishPlaying(
         _ player: AVAudioPlayer,

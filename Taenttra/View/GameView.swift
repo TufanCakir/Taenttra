@@ -12,6 +12,7 @@ struct GameView: View {
 
     @EnvironmentObject var gameState: GameState
 
+    @State private var hasLoadedPersistentState = false
     @StateObject private var storyViewModel = StoryViewModel()
     @StateObject private var arcadeViewModel = ArcadeViewModel()
     @StateObject private var survivalViewModel = SurvivalViewModel()
@@ -42,9 +43,8 @@ struct GameView: View {
         }
         .environmentObject(gameState)
         .animation(.easeInOut(duration: 0.25), value: gameState.screen)
-        .onAppear(perform: loadPersistentState)
-        .onChange(of: gameState.screen) { oldValue, newValue in
-            print("📺 SCREEN CHANGED →", newValue)
+        .task {
+            loadPersistentStateIfNeeded()
         }
     }
 
@@ -110,8 +110,6 @@ struct GameView: View {
     // MARK: - Versus Screen
     @ViewBuilder
     private var versusScreen: some View {
-
-        // 🥊 FIGHT
         if let left = gameState.leftCharacter,
             let right = gameState.rightCharacter,
             let vm = gameState.versusViewModel
@@ -123,6 +121,9 @@ struct GameView: View {
                 leftCharacter: left,
                 rightCharacter: right
             )
+        } else {
+            ProgressView("Preparing Fight…")
+                .foregroundStyle(.white)
         }
     }
 
@@ -172,61 +173,53 @@ struct GameView: View {
     // MARK: - Navigation Helpers
 
     private func startEvent(_ event: EventMode) {
-        gameState.pendingMode = .eventMode(event)
-        gameState.screen = .characterSelect
+        navigateToCharacterSelect(for: .eventMode(event))
     }
 
     private func startTraining(_ mode: TrainingMode) {
-        gameState.pendingMode = .trainingMode(mode)
-        gameState.screen = .characterSelect
+        navigateToCharacterSelect(for: .trainingMode(mode))
     }
 
     private func startSurvival(_ mode: SurvivalMode) {
-        gameState.pendingMode = .survivalMode(mode)
-        gameState.screen = .characterSelect
+        navigateToCharacterSelect(for: .survivalMode(mode))
     }
 
     private func startArcade(_ stage: ArcadeStage) {
-        gameState.pendingMode = .arcadeStage(stage)
-        gameState.screen = .characterSelect
+        navigateToCharacterSelect(for: .arcadeStage(stage))
     }
 
     private func startStoryFight(
         _ chapter: StoryChapter,
         _ section: StorySection
     ) {
-        gameState.pendingMode = .story(chapter, section)
+        navigateToCharacterSelect(for: .story(chapter, section))
+    }
+
+    private func navigateToCharacterSelect(for mode: PendingMode) {
+        gameState.pendingMode = mode
         gameState.screen = .characterSelect
     }
 
     // MARK: - Victory Handling
 
     private func handleVictory(_ rewards: VictoryRewards) {
+        guard let wallet = gameState.wallet else { return }
 
-        // 💰 Rewards
-        gameState.wallet.coins += rewards.coins
-        gameState.wallet.crystals += rewards.crystals
-        gameState.wallet.shards += rewards.shards
+        RewardManager.shared.apply(
+            rewards: rewards,
+            to: wallet
+        )
 
-        // 🔓 Unlocks
         gameState.unlockStoryRewards()
-
-        if case .story(_, let section) = gameState.pendingMode {
-            storyViewModel.unlockNextSection(after: section)
-            gameState.unlockModes(after: section)
-
-            gameState.lastCompletedStorySectionId = section.id
-            gameState.saveLastCompletedStorySection()
-        }
-
-        // 🧹 Cleanup
-        gameState.versusViewModel = nil
-        gameState.pendingMode = nil
-        gameState.screen = .home
+        advanceStoryProgressIfNeeded()
+        gameState.goBack()
     }
 
     // MARK: - Persistence
-    private func loadPersistentState() {
+    private func loadPersistentStateIfNeeded() {
+        guard !hasLoadedPersistentState else { return }
+        hasLoadedPersistentState = true
+
         if gameState.wallet == nil {
             gameState.loadWallet(context: modelContext)
         }
@@ -236,5 +229,14 @@ struct GameView: View {
 
         // 🔥 Story korrekt rekonstruieren
         storyViewModel.rebuildUnlockedSections(using: gameState)
+    }
+
+    private func advanceStoryProgressIfNeeded() {
+        guard case .story(_, let section) = gameState.pendingMode else { return }
+
+        storyViewModel.unlockNextSection(after: section)
+        gameState.unlockModes(after: section)
+        gameState.lastCompletedStorySectionId = section.id
+        gameState.saveLastCompletedStorySection()
     }
 }

@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct ShopItemRow: View {
-
     @State private var showConfirm = false
 
     let item: ShopItem
@@ -18,11 +17,50 @@ struct ShopItemRow: View {
         item.currency == .shards
     }
 
+    private var isOwned: Bool {
+        guard let id = item.skinId else { return false }
+        return wallet.ownedSkins.contains(id)
+    }
+
+    private var isEquipped: Bool {
+        guard let id = item.skinId else { return false }
+        return wallet.equippedSkin == id
+    }
+
+    private var canAfford: Bool {
+        guard item.productId == nil else { return true }
+
+        switch item.currency {
+        case .coins:
+            return wallet.coins >= item.price ?? 0
+        case .crystals:
+            return wallet.crystals >= item.price ?? 0
+        case .shards:
+            return wallet.shards >= item.price ?? 0
+        case .realMoney:
+            return false
+        }
+    }
+
+    private var confirmTitle: String {
+        "Buy • \(item.price ?? 0) \(currencyName)"
+    }
+
+    private var currencyName: String {
+        switch item.currency {
+        case .coins:
+            return "Coins"
+        case .crystals:
+            return "Crystals"
+        case .shards:
+            return "Shards"
+        case .realMoney:
+            return "Premium"
+        }
+    }
+
     var body: some View {
-
         HStack(spacing: 14) {
-
-            // 🖼 Preview
             Image(item.preview)
                 .resizable()
                 .scaledToFit()
@@ -34,7 +72,6 @@ struct ShopItemRow: View {
                 )
 
             VStack(alignment: .leading, spacing: 6) {
-
                 HStack(spacing: 6) {
                     Text(item.name)
                         .font(.headline)
@@ -73,19 +110,19 @@ struct ShopItemRow: View {
         }
     }
 
-    // MARK: - Price
-
     private var priceView: some View {
         HStack(spacing: 6) {
-
             Image(currencyIcon)
                 .resizable()
                 .scaledToFit()
-                .frame(width: 14, height: 14)
+                .frame(width: 30, height: 30)
 
-            Text("\(item.price)")
-                .font(.caption.weight(.bold))
-                .monospacedDigit()
+            if let amount = item.amount {
+                Text("+\(amount)")
+                    .foregroundStyle(.cyan)
+            } else {
+                Text("\(item.price ?? 0)")
+            }
         }
         .padding(.horizontal, 8)
         .padding(.vertical, 4)
@@ -97,10 +134,9 @@ struct ShopItemRow: View {
                         : Color(.tertiarySystemBackground)
                 )
         )
-        .foregroundColor(canAfford ? .primary : .red)
+        .foregroundStyle(canAfford ? Color.primary : Color.red)
     }
 
-    // MARK: - Buttons
     private var actionButton: some View {
         Group {
             if isEquipped {
@@ -125,7 +161,7 @@ struct ShopItemRow: View {
                 Capsule()
                     .fill(color.opacity(0.15))
             )
-            .foregroundColor(color)
+            .foregroundStyle(color)
     }
 
     private var buyButton: some View {
@@ -146,96 +182,45 @@ struct ShopItemRow: View {
                                 : Color.gray.opacity(0.3)
                         )
                 )
-                .foregroundColor(.black)
+                .foregroundStyle(.black)
         }
     }
 
-    // MARK: - Helpers
-
     private var currencyIcon: String {
         switch item.currency {
-        case .coins: return "icon_coin"
-        case .crystals: return "icon_crystal"
-        case .shards: return "icon_shard"
+        case .coins:
+            return "icon_coin"
+        case .crystals:
+            return "icon_crystal"
+        case .shards:
+            return "icon_shard"
         case .realMoney:
             return "icon_crystal"
         }
     }
 
-    private var confirmTitle: String {
-        "Buy • \(item.price) \(currencyName)"
-    }
-
-    private var currencyName: String {
-        switch item.currency {
-        case .coins: return "Coins"
-        case .crystals: return "Crystals"
-        case .shards: return "Shards"
-        case .realMoney:
-            return "Crystals"
-        }
-    }
-
-    private var canAfford: Bool {
-        switch item.currency {
-        case .coins: return wallet.coins >= item.price
-        case .crystals: return wallet.crystals >= item.price
-        case .shards: return wallet.shards >= item.price
-        case .realMoney:
-            return wallet.crystals >= item.price
-        }
-    }
-
-    private var isOwned: Bool {
-        guard let skinId = item.skinId else { return false }
-        return wallet.ownedSkins.contains(skinId)
-    }
-
-    private var isEquipped: Bool {
-        guard let skinId = item.skinId else { return false }
-        return wallet.equippedSkin == skinId
-    }
-
     private func buy() {
-        guard canAfford else { return }
-
-        // 💰 Preis abziehen
-        switch item.currency {
-        case .coins: wallet.coins -= item.price
-        case .crystals: wallet.crystals -= item.price
-        case .shards: wallet.shards -= item.price
-        case .realMoney:
-            wallet.crystals -= item.price
-        }
-
-        // 🎯 ITEM LOGIK
-        switch item.type {
-
-        case .skin:
-            guard let skinId = item.skinId else { return }
-
-            if !wallet.ownedSkins.contains(skinId) {
-                wallet.ownedSkins.append(skinId)
-            }
-            wallet.equippedSkin = skinId
-
-        case .currency:
-            guard let amount = item.amount else { return }
-
-            switch item.currency {
-            case .coins: wallet.coins += amount
-            case .crystals: wallet.crystals += amount
-            case .shards: wallet.shards += amount
-            case .realMoney: break
-            }
-        }
+        guard !isOwned, canAfford, let skin = skinItem else { return }
+        _ = SkinService.buy(skin: skin, wallet: wallet)
     }
 
-    private func equip() {
-        guard let skinId = item.skinId else { return }
-        guard wallet.ownedSkins.contains(skinId) else { return }
+    private var skinItem: SkinItem? {
+        guard
+            item.type == .skin,
+            let skinId = item.skinId,
+            let price = item.price
+        else {
+            return nil
+        }
 
-        wallet.equippedSkin = skinId
+        return SkinItem(
+            id: skinId,
+            name: item.name,
+            previewImage: item.preview,
+            fighterSprite: skinId,
+            price: price,
+            currency: item.currency
+        )
     }
 
     private func tag(_ text: String) -> some View {
@@ -247,6 +232,6 @@ struct ShopItemRow: View {
                 Capsule()
                     .fill(Color.yellow.opacity(0.8))
             )
-            .foregroundColor(.black)
+            .foregroundStyle(.black)
     }
 }

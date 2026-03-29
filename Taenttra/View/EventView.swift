@@ -8,10 +8,11 @@
 import SwiftUI
 
 struct EventView: View {
-
     @ObservedObject var viewModel: EventViewModel
     @EnvironmentObject var gameState: GameState
-    @State private var selectedMode: EventCategory
+    @State private var selectedModeID: String?
+
+    let onStartEvent: (EventMode) -> Void
 
     init(
         viewModel: EventViewModel,
@@ -19,29 +20,36 @@ struct EventView: View {
     ) {
         self.viewModel = viewModel
         self.onStartEvent = onStartEvent
-        _selectedMode = State(initialValue: viewModel.modes.first!)
+        _selectedModeID = State(initialValue: viewModel.modes.first?.id)
     }
 
-    let onStartEvent: (EventMode) -> Void
+    private var selectedMode: EventCategory? {
+        if let selectedModeID,
+            let matchingMode = viewModel.modes.first(where: { $0.id == selectedModeID })
+        {
+            return matchingMode
+        }
+
+        return viewModel.modes.first
+    }
 
     private var filteredEvents: [EventMode] {
-        viewModel.events(for: selectedMode)
+        guard let selectedMode else { return [] }
+        return viewModel.events(for: selectedMode)
     }
 
     var body: some View {
         ZStack(alignment: .topLeading) {
-
-            // 🌑 BASE
             Color.black.ignoresSafeArea()
 
-            // 🎨 MODE OVERLAY
-            Color(hex: selectedMode.ui.overlayColor)
-                .opacity(selectedMode.ui.overlayOpacity)
-                .ignoresSafeArea()
-                .blendMode(.screen)
-                .animation(.easeInOut(duration: 0.4), value: selectedMode.id)
+            if let selectedMode {
+                Color(hex: selectedMode.ui.overlayColor)
+                    .opacity(selectedMode.ui.overlayOpacity)
+                    .ignoresSafeArea()
+                    .blendMode(.screen)
+                    .animation(.easeInOut(duration: 0.4), value: selectedMode.id)
+            }
 
-            // ⬅️ BACK
             GameBackButton {
                 gameState.goBack()
             }
@@ -50,49 +58,61 @@ struct EventView: View {
             .zIndex(10)
 
             VStack(spacing: 24) {
-
-                // 🧭 MODE SELECTOR
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 12) {
-                        ForEach(viewModel.modes) { mode in
-                            modeButton(mode)
-                        }
-                    }
-                    .padding(.horizontal, 16)
+                if viewModel.modes.isEmpty {
+                    emptyState
+                } else {
+                    modeSelector
+                    eventList
                 }
-                .padding(.top, 72)
-
-                // 📜 EVENTS
-                ScrollView {
-                    VStack(spacing: 16) {
-                        ForEach(filteredEvents) { event in
-                            Button {
-                                onStartEvent(event)
-                            } label: {
-                                EventRow(event: event)
-                            }
-                            .buttonStyle(.plain)
-                        }
-                    }
-                    .padding(.horizontal, 12)
-                    .padding(.bottom, 24)
-                    .id(selectedMode.id)
-                    .transition(.opacity.combined(with: .scale(scale: 0.97)))
-                }
-                .animation(.easeInOut(duration: 0.35), value: selectedMode.id)
+            }
+        }
+        .onAppear {
+            if selectedModeID == nil {
+                selectedModeID = viewModel.modes.first?.id
             }
         }
     }
 
-    // MARK: - Mode Button
+    private var modeSelector: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 12) {
+                ForEach(viewModel.modes) { mode in
+                    modeButton(mode)
+                }
+            }
+            .padding(.horizontal, 16)
+        }
+        .padding(.top, 72)
+    }
+
+    private var eventList: some View {
+        ScrollView {
+            VStack(spacing: 16) {
+                ForEach(filteredEvents) { event in
+                    Button {
+                        onStartEvent(event)
+                    } label: {
+                        EventRow(event: event)
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+            .padding(.horizontal, 12)
+            .padding(.bottom, 24)
+            .id(selectedModeID)
+            .transition(.opacity.combined(with: .scale(scale: 0.97)))
+        }
+        .animation(.easeInOut(duration: 0.35), value: selectedModeID)
+    }
+
     @ViewBuilder
     private func modeButton(_ mode: EventCategory) -> some View {
         Button {
-            guard selectedMode.id != mode.id else { return }
+            guard selectedModeID != mode.id else { return }
             UIImpactFeedbackGenerator(style: .medium).impactOccurred()
 
             withAnimation(.easeInOut(duration: 0.45)) {
-                selectedMode = mode
+                selectedModeID = mode.id
             }
         } label: {
             Text(mode.title)
@@ -104,20 +124,34 @@ struct EventView: View {
                     Capsule()
                         .fill(
                             Color(hex: mode.ui.buttonColor)
-                                .opacity(
-                                    selectedMode.id == mode.id ? 1.0 : 0.25
-                                )
+                                .opacity(selectedModeID == mode.id ? 1.0 : 0.25)
                         )
                         .overlay(
                             Capsule()
                                 .stroke(
                                     Color(hex: mode.ui.buttonColor),
-                                    lineWidth: selectedMode.id == mode.id
-                                        ? 0 : 1
+                                    lineWidth: selectedModeID == mode.id ? 0 : 1
                                 )
                         )
                 )
-                .scaleEffect(selectedMode.id == mode.id ? 1.08 : 1.0)
+                .scaleEffect(selectedModeID == mode.id ? 1.08 : 1.0)
         }
+    }
+
+    private var emptyState: some View {
+        VStack(spacing: 12) {
+            Spacer()
+
+            Text("No Event Modes Available")
+                .font(.headline)
+                .foregroundStyle(.white)
+
+            Text("Check your event data and try again.")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+
+            Spacer()
+        }
+        .padding(.top, 72)
     }
 }

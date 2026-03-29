@@ -13,49 +13,42 @@ enum DialogPhase {
     case section
 }
 
+@MainActor
 final class StoryViewModel: ObservableObject {
+    private enum Constants {
+        static let initialSectionID = "1_1"
+    }
 
-    // MARK: - Published State
     @Published var activeDialog: StoryDialog?
     @Published var pendingFight: (StoryChapter, StorySection)?
     @Published var chapters: [StoryChapter] = []
 
     @Published var selectedChapter: StoryChapter?
     @Published var selectedSection: StorySection?
+    @Published var unlockedSectionIds: Set<String> = [Constants.initialSectionID]
 
-    // 🔓 Story Progress
-    @Published var unlockedSectionIds: Set<String> = ["1_1"]
-
-    // MARK: - Init
     init() {
         chapters = StoryLoader.load().chapters
     }
 
-    // MARK: - Section Handling
     func startSection(_ chapter: StoryChapter, _ section: StorySection) {
         guard isSectionUnlocked(section) else { return }
 
-        selectedChapter = chapter
-        selectedSection = section
+        select(chapter: chapter, section: section)
         pendingFight = (chapter, section)
-
-        let music = section.music ?? chapter.music
-        AudioManager.shared.playSong(key: music)
-
+        AudioManager.shared.playSong(key: musicKey(for: chapter, section: section))
         activeDialog = section.introDialog
     }
 
     func continueAfterDialog() {
         activeDialog = nil
+        pendingFight = nil
     }
 
-    // MARK: - Unlock Logic
     func unlockNextSection(after section: StorySection) {
         guard
-            let chapter = selectedChapter,
-            let index = chapter.sections.firstIndex(where: {
-                $0.id == section.id
-            })
+            let chapter = chapter(containing: section),
+            let index = sectionIndex(for: section, in: chapter)
         else { return }
 
         let nextIndex = index + 1
@@ -69,9 +62,8 @@ final class StoryViewModel: ObservableObject {
         unlockedSectionIds.contains(section.id)
     }
 
-    // 🔥 HIER der wichtige Rebuild
     func rebuildUnlockedSections(using gameState: GameState) {
-        unlockedSectionIds = ["1_1"]
+        unlockedSectionIds = [Constants.initialSectionID]
 
         guard let lastId = gameState.lastCompletedStorySectionId else { return }
 
@@ -83,5 +75,33 @@ final class StoryViewModel: ObservableObject {
                 }
             }
         }
+    }
+
+    private func select(chapter: StoryChapter, section: StorySection) {
+        selectedChapter = chapter
+        selectedSection = section
+    }
+
+    private func musicKey(for chapter: StoryChapter, section: StorySection) -> String {
+        section.music ?? chapter.music
+    }
+
+    private func chapter(containing section: StorySection) -> StoryChapter? {
+        if let selectedChapter,
+            selectedChapter.sections.contains(where: { $0.id == section.id })
+        {
+            return selectedChapter
+        }
+
+        return chapters.first { chapter in
+            chapter.sections.contains(where: { $0.id == section.id })
+        }
+    }
+
+    private func sectionIndex(
+        for section: StorySection,
+        in chapter: StoryChapter
+    ) -> Int? {
+        chapter.sections.firstIndex(where: { $0.id == section.id })
     }
 }

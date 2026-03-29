@@ -38,7 +38,7 @@ final class EventLoader {
             let data = try? Data(contentsOf: url),
             let decoded = try? JSONDecoder().decode(EventData.self, from: data)
         else {
-            fatalError("❌ events.json missing or invalid")
+            return EventData(events: [])
         }
 
         return decoded

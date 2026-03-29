@@ -67,10 +67,5 @@ struct ConnectionRequiredView: View {
 
 
 private func retryConnection() {
-    print("🔁 Retry tapped")
-
-    // 🔧 hier kannst du später machen:
-    // - Internet check
-    // - Server reconnect
-    // - Game reload
+    // Placeholder for future reconnect handling.
 }

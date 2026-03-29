@@ -34,7 +34,7 @@ final class SurvivalLoader {
                 from: data
             )
         else {
-            fatalError("❌ survival.json missing or invalid")
+            return SurvivalData(modes: [])
         }
 
         return decoded

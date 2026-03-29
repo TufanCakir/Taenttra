@@ -8,7 +8,14 @@
 import Combine
 import SwiftUI
 
+@MainActor
 final class VersusViewModel: ObservableObject {
+
+    private enum Constants {
+        static let defaultTimeLimit = 99
+        static let attackDistance: CGFloat = 14
+        static let enemyAdvanceDelay = 0.4
+    }
 
     @Published private(set) var koOccurred: Bool = false
 
@@ -34,7 +41,6 @@ final class VersusViewModel: ObservableObject {
 
     // MARK: - Stages
     let stages: [VersusStage]
-    @Published var currentStageIndex: Int = 0
 
     @Published var currentStage: VersusStage
     @Published var currentWaveIndex: Int = 0
@@ -57,20 +63,38 @@ final class VersusViewModel: ObservableObject {
     private let attacks: [FighterAnimation] = [.punch, .kick]
     private var timerCancellable: AnyCancellable?
 
-    private let gameState: GameState  // 🔥 NEU
+    private let gameState: GameState
 
     // MARK: - Enemy AI
     private var enemyAttackCancellable: AnyCancellable?
     private let enemyAttackInterval: ClosedRange<Double> = 1.2...2.4
 
+    private var playerSide: FighterSide {
+        gameState.playerSide
+    }
+
+    private var enemySide: FighterSide {
+        playerSide == .left ? .right : .left
+    }
+
+    private var currentEnemyKey: String? {
+        guard let wave = currentWave, wave.enemies.indices.contains(currentEnemyIndex) else {
+            return nil
+        }
+        return wave.enemies[currentEnemyIndex]
+    }
+
     // MARK: - Init
     init(stages: [VersusStage], gameState: GameState) {
+        precondition(!stages.isEmpty, "VersusViewModel requires at least one stage.")
         self.stages = stages
-        self.currentStage = stages.first!
+        self.currentStage = stages[0]
         self.gameState = gameState
-        self.phase = .intro
+    }
 
-        currentEnemyIndex = 0  // 🔥 zusätzlich
+    deinit {
+        timerCancellable?.cancel()
+        enemyAttackCancellable?.cancel()
     }
 
     private func startEnemyAttacks() {
@@ -92,10 +116,6 @@ final class VersusViewModel: ObservableObject {
     private func enemyAttack() {
         guard fightState == .fighting else { return }
 
-        // Gegner greift immer von der Gegenseite an
-        let enemySide: FighterSide =
-            gameState.playerSide == .left ? .right : .left
-
         performRandomAttack(from: enemySide)
     }
 
@@ -104,49 +124,23 @@ final class VersusViewModel: ObservableObject {
         enemyAttackCancellable = nil
     }
 
-    func loadStage(_ stage: VersusStage) {
-        withAnimation(.easeInOut(duration: 0.4)) {
-            currentStage = stage
-        }
-
-        currentWaveIndex = 0
-        leftHealth = 1
-        rightHealth = 1
-        fightState = .fighting
-
-        leftAnimation = .idle
-        rightAnimation = .idle
-        leftAttackOffset = 0
-        rightAttackOffset = 0
-    }
-
     func startFight() {
         koOccurred = false
+        rewards = nil
+        winner = nil
         phase = .fighting
 
         currentWaveIndex = 0
-        currentEnemyIndex = 0  // 🔥 GANZ WICHTIG
-
-        print("🧼 RESET enemyIndex -> 0")
-
-        spawnCurrentEnemy()
-
-        startTimer()
-        startEnemyAttacks()
+        currentEnemyIndex = 0
+        updateEnemyCharacter()
+        prepareRound()
     }
 
-    private func resetForNextWave() {
-
-        stopEnemyAttacks()  // 🔥 GANZ WICHTIG
-
+    private func prepareRound() {
+        stopCombatLoops()
         fightState = .fighting
         winner = nil
-        leftHealth = 1
-        rightHealth = 1
-        leftAnimation = .idle
-        rightAnimation = .idle
-        leftAttackOffset = 0
-        rightAttackOffset = 0
+        resetRoundState()
         startTimer()
         startEnemyAttacks()
     }
@@ -157,7 +151,7 @@ final class VersusViewModel: ObservableObject {
         let limit =
             currentWave?.timeLimit
             ?? currentStage.waves.last?.timeLimit
-            ?? 99
+            ?? Constants.defaultTimeLimit
 
         timeRemaining = limit
         isTimerRunning = true
@@ -182,28 +176,25 @@ final class VersusViewModel: ObservableObject {
     }
 
     private func handleTimeout() {
-        timerCancellable?.cancel()
-        stopEnemyAttacks()
-        isTimerRunning = false
-
-        // Sieger anhand HP bestimmen
-        if leftHealth > rightHealth {
-            winner = .left
-        } else if rightHealth > leftHealth {
-            winner = .right
-        } else {
-            winner = .right  // oder .left oder sudden death
-        }
+        let winningSide: FighterSide = {
+            if leftHealth > rightHealth {
+                return .left
+            }
+            if rightHealth > leftHealth {
+                return .right
+            }
+            return enemySide
+        }()
 
         withAnimation(.easeOut(duration: 0.3)) {
-            leftAnimation = .idle
-            rightAnimation = .idle
-            leftAttackOffset = 0
-            rightAttackOffset = 0
+            resetFighterPresentation()
         }
-        
-        fightState = .victory  // ⬅️ direkt vorbei
-        rewards = calculateRewards()
+
+        finishFight(
+            state: .victory,
+            winner: winningSide,
+            rewards: calculateRewards()
+        )
     }
 
     private func triggerHitStop(duration: Double) {
@@ -231,44 +222,18 @@ final class VersusViewModel: ObservableObject {
 
     // MARK: - Attack
     func performRandomAttack(from side: FighterSide = .left) {
-        guard fightState == .fighting else { return }
-
-        if side == .left {
-            guard !leftIsAttacking else { return }
-            leftIsAttacking = true
-        } else {
-            guard !rightIsAttacking else { return }
-            rightIsAttacking = true
-        }
+        guard fightState == .fighting, beginAttack(for: side) else { return }
 
         let attack = attacks.randomElement() ?? .punch
         let config = data(for: attack)
-        let target: FighterSide = side == .left ? .right : .left
+        let target = opposingSide(of: side)
 
-        withAnimation(.easeOut(duration: 0.08)) {
-            if side == .left {
-                leftAnimation = attack
-                leftAttackOffset = 14
-            } else {
-                rightAnimation = attack
-                rightAttackOffset = -14
-            }
-        }
+        animateAttack(attack, from: side)
 
         applyDamage(to: target, amount: config.damage, hitStop: config.hitStop)
 
         DispatchQueue.main.asyncAfter(deadline: .now() + config.recovery) {
-            withAnimation(.easeOut(duration: 0.12)) {
-                if side == .left {
-                    self.leftAnimation = .idle
-                    self.leftAttackOffset = 0
-                    self.leftIsAttacking = false
-                } else {
-                    self.rightAnimation = .idle
-                    self.rightAttackOffset = 0
-                    self.rightIsAttacking = false
-                }
-            }
+            self.endAttack(for: side)
         }
     }
 
@@ -291,31 +256,18 @@ final class VersusViewModel: ObservableObject {
     }
 
     private func handleKO(loser: FighterSide) {
-
-        let playerSide = gameState.playerSide
+        let playerSide = self.playerSide
         let playerLost = loser == playerSide
 
-        timerCancellable?.cancel()
-        stopEnemyAttacks()
-        isTimerRunning = false
-
         if playerLost {
-            // ❌ PLAYER KO
             koOccurred = true
-            fightState = .ko
-            winner = loser == .left ? .right : .left
+            let winner = opposingSide(of: loser)
 
             withAnimation(.easeOut(duration: 0.25)) {
-                if loser == .left {
-                    leftAnimation = .ko
-                } else {
-                    rightAnimation = .ko
-                }
+                setAnimation(.ko, for: loser)
             }
-
+            finishFight(state: .ko, winner: winner, rewards: nil)
         } else {
-            // ✅ ENEMY KO → WEITER
-            fightState = .fighting
             winner = playerSide
 
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
@@ -325,120 +277,62 @@ final class VersusViewModel: ObservableObject {
     }
 
     private func advanceAfterKO() {
+        guard let wave = currentWave else { return }
 
-        stopEnemyAttacks()  // ✅ GANZ WICHTIG
-
-        guard let wave = currentWave else {
-            // KO = Ende → NICHT Victory
-            return
-        }
-
-        // 🔥 NÄCHSTER GEGNER IN DERSELBEN WAVE
         if currentEnemyIndex + 1 < wave.enemies.count {
             currentEnemyIndex += 1
-            spawnCurrentEnemy()
-            resetForNextEnemy()
+            updateEnemyCharacter()
+            prepareRound()
             return
         }
 
-        // 🟢 Wave fertig → nächste Wave
         currentEnemyIndex = 0
 
         if currentWaveIndex + 1 < currentStage.waves.count {
             nextWave()
-            resetForNextWave()
+            prepareRound()
             return
         }
 
-        // 🏆 ALLES GESCHAFFT
         handleVictory()
     }
 
-    private func spawnCurrentEnemy() {
-        guard let wave = currentWave else { return }
-
-        if currentEnemyIndex >= wave.enemies.count {
-            print("❌ INVALID enemyIndex:", currentEnemyIndex)
-            currentEnemyIndex = 0  // fallback
+    private func updateEnemyCharacter() {
+        guard let enemyKey = currentEnemyKey else {
+            currentEnemyIndex = 0
+            return
         }
-
-        let enemyKey = wave.enemies[currentEnemyIndex]
-
-        print("🎯 SPAWN:", enemyKey, "index:", currentEnemyIndex)
 
         let enemy = Character.enemy(
             key: enemyKey,
             skinId: nil
         )
 
-        if gameState.playerSide == .left {
+        if playerSide == .left {
             gameState.rightCharacter = enemy
         } else {
             gameState.leftCharacter = enemy
         }
     }
 
-    private func resetForNextEnemy() {
-
-        stopEnemyAttacks()  // 🔥 STOP FIRST
-
-        fightState = .fighting
-        winner = nil
-        leftHealth = 1
-        rightHealth = 1
-
-        leftAnimation = .idle
-        rightAnimation = .idle
-        leftAttackOffset = 0
-        rightAttackOffset = 0
-
-        startTimer()
-        startEnemyAttacks()
-    }
-
     private func handleVictory() {
-        timerCancellable?.cancel()
-        stopEnemyAttacks()
-        isTimerRunning = false
-
-        // ❌ KEINE REWARDS NACH KO
-        if !koOccurred {
-            rewards = calculateRewards()
-
-        } else {
-            rewards = nil
-        }
-
-        withAnimation(.easeOut(duration: 0.3)) {
-            fightState = .victory
-        }
-    }
-
-    private func calculateLeaderboardScore() -> Int {
-
-        let stageScore = (currentStageIndex + 1) * 1_000
-        let waveScore = currentWaveIndex * 250
-        let healthBonus = Int(leftHealth * 1_000)
-
-        return stageScore + waveScore + healthBonus
+        finishFight(
+            state: .victory,
+            winner: playerSide,
+            rewards: koOccurred ? nil : calculateRewards()
+        )
     }
 
     // MARK: - Rewards
     private func calculateRewards() -> VictoryRewards {
-
-        // 🎯 STORY MODE → feste Rewards
         if case .story(_, let section) = gameState.pendingMode {
-
             if let rewards = section.rewards {
-                print("🎁 Using custom story rewards:", rewards)
                 return rewards
             }
 
-            print("⚠️ No rewards defined → fallback")
             return .zero
         }
 
-        // 🎮 ANDERE MODES → default system
         let baseCoins = 100
         let baseCrystals = 5
 
@@ -479,23 +373,106 @@ final class VersusViewModel: ObservableObject {
         guard currentWaveIndex + 1 < currentStage.waves.count else { return }
 
         currentWaveIndex += 1
-        currentEnemyIndex = 0  // 🔥 GANZ WICHTIG
+        currentEnemyIndex = 0
+        updateEnemyCharacter()
+    }
 
-        guard let wave = currentWave else { return }
+    private func resetRoundState() {
+        leftHealth = 1
+        rightHealth = 1
+        hitStopActive = false
+        hitShakeOffset = 0
+        resetAttackState()
+        resetFighterPresentation()
+    }
 
-        let enemyKey = wave.enemies[currentEnemyIndex]
+    private func resetAttackState() {
+        leftIsAttacking = false
+        rightIsAttacking = false
+    }
 
-        let enemyCharacter = Character.enemy(
-            key: enemyKey,
-            skinId: nil
-        )
+    private func resetFighterPresentation() {
+        leftAnimation = .idle
+        rightAnimation = .idle
+        leftAttackOffset = 0
+        rightAttackOffset = 0
+    }
 
-        if gameState.playerSide == .left {
-            gameState.rightCharacter = enemyCharacter
-        } else {
-            gameState.leftCharacter = enemyCharacter
+    private func stopCombatLoops() {
+        timerCancellable?.cancel()
+        timerCancellable = nil
+        stopEnemyAttacks()
+        isTimerRunning = false
+    }
+
+    private func finishFight(
+        state: FightState,
+        winner: FighterSide?,
+        rewards: VictoryRewards?
+    ) {
+        stopCombatLoops()
+        resetAttackState()
+        self.winner = winner
+        self.rewards = rewards
+
+        withAnimation(.easeOut(duration: 0.3)) {
+            fightState = state
+        }
+    }
+
+    private func beginAttack(for side: FighterSide) -> Bool {
+        switch side {
+        case .left:
+            guard !leftIsAttacking else { return false }
+            leftIsAttacking = true
+        case .right:
+            guard !rightIsAttacking else { return false }
+            rightIsAttacking = true
+        }
+        return true
+    }
+
+    private func endAttack(for side: FighterSide) {
+        withAnimation(.easeOut(duration: 0.12)) {
+            setAnimation(.idle, for: side)
+            setAttackOffset(0, for: side)
         }
 
-        print("👊 Wave:", currentWaveIndex + 1, "Enemy:", enemyKey)
+        switch side {
+        case .left:
+            leftIsAttacking = false
+        case .right:
+            rightIsAttacking = false
+        }
+    }
+
+    private func animateAttack(_ attack: FighterAnimation, from side: FighterSide) {
+        withAnimation(.easeOut(duration: 0.08)) {
+            setAnimation(attack, for: side)
+            let direction: CGFloat = side == .left ? 1 : -1
+            setAttackOffset(Constants.attackDistance * direction, for: side)
+        }
+    }
+
+    private func setAnimation(_ animation: FighterAnimation, for side: FighterSide) {
+        switch side {
+        case .left:
+            leftAnimation = animation
+        case .right:
+            rightAnimation = animation
+        }
+    }
+
+    private func setAttackOffset(_ value: CGFloat, for side: FighterSide) {
+        switch side {
+        case .left:
+            leftAttackOffset = value
+        case .right:
+            rightAttackOffset = value
+        }
+    }
+
+    private func opposingSide(of side: FighterSide) -> FighterSide {
+        side == .left ? .right : .left
     }
 }

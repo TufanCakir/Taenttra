@@ -35,7 +35,7 @@ struct ShopItem: Codable, Identifiable {
     let amount: Int?         // 🔥 für Currency Packs
 
     let name: String
-    let price: Int
+    let price: Int?
     let currency: Currency
     let preview: String
     let productId: String?
@@ -83,7 +83,7 @@ struct ShopItem: Codable, Identifiable {
         self.skinId = try container.decodeIfPresent(String.self, forKey: .skinId)
         self.amount = try container.decodeIfPresent(Int.self, forKey: .amount)
         self.name = try container.decode(String.self, forKey: .name)
-        self.price = try container.decode(Int.self, forKey: .price)
+        self.price = try container.decodeIfPresent(Int.self, forKey: .price)
         self.currency = try container.decode(Currency.self, forKey: .currency)
         self.preview = try container.decode(String.self, forKey: .preview)
         self.productId = try container.decodeIfPresent(String.self, forKey: .productId)
@@ -103,7 +103,7 @@ enum Currency: String, Codable {
 }
 
 extension ShopItem {
-    var isSkin: Bool { true }  // später erweiterbar
+    var isSkin: Bool { type == .skin }
 }
 
 final class ShopLoader {
@@ -112,12 +112,13 @@ final class ShopLoader {
             let url = Bundle.main.url(
                 forResource: "shop",
                 withExtension: "json"
-            )
+            ),
+            let data = try? Data(contentsOf: url),
+            let decoded = try? JSONDecoder().decode(ShopData.self, from: data)
         else {
-            fatalError("shop.json not found")
+            return ShopData(categories: [])
         }
 
-        let data = try! Data(contentsOf: url)
-        return try! JSONDecoder().decode(ShopData.self, from: data)
+        return decoded
     }
 }

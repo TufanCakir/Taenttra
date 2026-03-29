@@ -8,8 +8,19 @@
 import SwiftUI
 
 struct VersusHeaderView: View {
-
     @EnvironmentObject var gameState: GameState
+
+    private var coins: Int {
+        gameState.wallet?.coins ?? 0
+    }
+
+    private var crystals: Int {
+        gameState.wallet?.crystals ?? 0
+    }
+
+    private var shards: Int {
+        gameState.wallet?.shards ?? 0
+    }
 
     var body: some View {
         HStack {
@@ -18,19 +29,19 @@ struct VersusHeaderView: View {
             HStack(spacing: 20) {
                 currencyView(
                     icon: "icon_coin",
-                    value: gameState.wallet.coins,
+                    value: coins,
                     accent: .yellow
                 )
 
                 currencyView(
                     icon: "icon_crystal",
-                    value: gameState.wallet.crystals,
+                    value: crystals,
                     accent: .cyan
                 )
 
                 currencyView(
                     icon: "icon_shard",
-                    value: gameState.wallet.shards,
+                    value: shards,
                     accent: .orange
                 )
             }

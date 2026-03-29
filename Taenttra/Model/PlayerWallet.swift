@@ -10,15 +10,15 @@ import SwiftData
 @Model
 final class PlayerWallet {
 
-    var coins: Int
-    var crystals: Int
-    var shards: Int
+    var coins: Int = 0
+    var crystals: Int = 0
+    var shards: Int = 0
 
-    var ownedSkins: [String]
-    var equippedSkin: String?
-    var xp: Int
-    var level: Int
-    var unlockedCharacters: [String]
+    var ownedSkins: [String] = []
+    var equippedSkin: String? = nil
+    var xp: Int = 0
+    var level: Int = 1
+    var unlockedCharacters: [String] = ["kenji"]
 
     init(
         coins: Int = 0,

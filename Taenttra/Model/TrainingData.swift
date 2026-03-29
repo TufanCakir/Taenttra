@@ -34,7 +34,7 @@ final class TrainingLoader {
                 from: data
             )
         else {
-            fatalError("❌ training.json missing or invalid")
+            return TrainingData(modes: [])
         }
         return decoded
     }

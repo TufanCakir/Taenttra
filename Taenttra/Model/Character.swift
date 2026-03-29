@@ -38,9 +38,6 @@ struct Character: Identifiable {
 }
 
 enum SpriteResolver {
-
-    static var debugMode = true
-
     static func resolve(
         baseKey: String,
         skinId: String?,
@@ -81,90 +78,7 @@ enum SpriteResolver {
             }
         }
 
-        // ❌ DEBUG
-        if debugMode {
-            print("❌ SPRITE NOT FOUND")
-            print("👉 baseKey:", baseKey)
-            print("👉 skin:", skin)
-            print("👉 state:", state.rawValue)
-            print("👉 expected format:")
-            print("   char_<key>_<skin>_<state>")
-            print("👉 tried:")
-            candidates.forEach { print("   - \($0)") }
-            print("----------------------------------")
-        }
-
         return "char_kenji_base_idle"
-    }
-}
-
-func validateAllSprites(for characters: [CharacterDisplay]) {
-
-    print("🧪 VALIDATING SPRITES...")
-
-    for char in characters {
-
-        for state in CharacterState.allCases {
-
-            let name = "char_\(char.key)_base_\(state.rawValue)"
-
-            if UIImage(named: name) == nil {
-                print("❌ Missing:", name)
-            } else {
-                print("✅ OK:", name)
-            }
-        }
-    }
-
-    print("🧪 VALIDATION DONE")
-}
-
-func validateAllSprites(
-    for characters: [CharacterDisplay],
-    skins: [String] = ["base", "chains", "event"]
-) {
-
-    print("🧪 VALIDATING SPRITES...")
-
-    for char in characters {
-        for skin in skins {
-            for state in CharacterState.allCases {
-
-                let name = AssetName.character(
-                    key: char.key,
-                    skin: skin,
-                    state: state.rawValue
-                )
-
-                if UIImage(named: name) == nil {
-                    print("❌ Missing:", name)
-                } else {
-                    print("✅ OK:", name)
-                }
-            }
-
-            // Preview check
-            let preview = AssetName.preview(
-                key: char.key,
-                skin: skin
-            )
-
-            if UIImage(named: preview) == nil {
-                print("❌ Missing preview:", preview)
-            }
-        }
-    }
-
-    print("🧪 DONE")
-}
-
-extension Character {
-    func debugSprites() {
-        print("👤 Character:", key)
-        for state in CharacterState.allCases {
-            let name = spriteName(for: state)
-            print("   \(state.rawValue): \(name)")
-        }
     }
 }
 
@@ -230,4 +144,3 @@ extension Character {
         )
     }
 }
-

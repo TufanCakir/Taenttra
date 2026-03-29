@@ -9,16 +9,42 @@ import SwiftUI
 
 struct CharacterGridView: View {
 
-    @EnvironmentObject var gameState: GameState
-    private var characters: [CharacterDisplay] {
-        gameState.loadCharacterDisplays()
+    private enum Layout {
+        static let horizontalPadding: CGFloat = 16
+        static let selectedRosterSize: CGFloat = 68
+        static let rosterSize: CGFloat = 56
+        static let previewHeight: CGFloat = 170
+        static let fallbackEnemyKey = "kenji"
+        static let fallbackEnemyPreview = "char_kenji_base_preview"
     }
+
+    @EnvironmentObject var gameState: GameState
+
+    private var characters: [CharacterDisplay] {
+        gameState.characterDisplays
+    }
+
     @State private var selectedIndex: Int = 0
     @State private var selectedSide: FighterSide = .left
 
     private var selectedCharacter: CharacterDisplay? {
         guard characters.indices.contains(selectedIndex) else { return nil }
         return characters[selectedIndex]
+    }
+
+    private var isStartDisabled: Bool {
+        selectedCharacter.map(isLocked) ?? true
+    }
+
+    private var enemyCharacter: CharacterDisplay? {
+        guard
+            let key = enemyKey,
+            let enemy = characters.first(where: { $0.key == key })
+        else {
+            return nil
+        }
+
+        return enemy
     }
 
     var body: some View {
@@ -38,13 +64,7 @@ struct CharacterGridView: View {
                         )
                     )
                     .shadow(color: .cyan.opacity(0.6), radius: 12)
-                    .onAppear {
-                        debugSelection()
-                    }
-                    .onChange(of: selectedIndex) { _, _ in
-                        debugSelection()
-                    }
-                
+
                 versusPreview
 
                 characterRoster
@@ -55,8 +75,15 @@ struct CharacterGridView: View {
 
                 startButton
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, Layout.horizontalPadding)
             .padding(.top, 12)
+        }
+        .onAppear {
+            gameState.loadCharactersIfNeeded()
+            normalizeSelection()
+        }
+        .onChange(of: characters.count) { _, _ in
+            normalizeSelection()
         }
     }
 
@@ -75,7 +102,6 @@ struct CharacterGridView: View {
             )
 
             HStack(spacing: 32) {
-
                 fighterPreview(
                     image: selectedCharacter?.previewImage(
                         using: gameState.wallet
@@ -90,8 +116,8 @@ struct CharacterGridView: View {
                     .shadow(color: .red.opacity(0.8), radius: 16)
 
                 fighterPreview(
-                    image: enemyPreviewImage,
-                    name: enemyDisplayName,
+                    image: enemyCharacter?.displayImage ?? Layout.fallbackEnemyPreview,
+                    name: enemyCharacter?.name ?? "Rival",
                     color: .red
                 )
             }
@@ -109,7 +135,7 @@ struct CharacterGridView: View {
                 Image(image)
                     .resizable()
                     .scaledToFit()
-                    .frame(height: 170)
+                    .frame(height: Layout.previewHeight)
                     .shadow(color: color.opacity(0.6), radius: 16)
             }
 
@@ -130,7 +156,7 @@ struct CharacterGridView: View {
                     rosterItem(character, index: index)
                 }
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, Layout.horizontalPadding)
         }
     }
 
@@ -146,8 +172,8 @@ struct CharacterGridView: View {
             .resizable()
             .scaledToFill()
             .frame(
-                width: isSelected ? 68 : 56,
-                height: isSelected ? 68 : 56
+                width: isSelected ? Layout.selectedRosterSize : Layout.rosterSize,
+                height: isSelected ? Layout.selectedRosterSize : Layout.rosterSize
             )
             .clipShape(RoundedRectangle(cornerRadius: 10))
             .overlay(
@@ -203,33 +229,14 @@ struct CharacterGridView: View {
                 .cornerRadius(10)
                 .shadow(color: .cyan.opacity(0.8), radius: 20)
         }
-        .disabled(selectedCharacter.map(isLocked) ?? true)
-        .opacity((selectedCharacter.map(isLocked) ?? true) ? 0.4 : 1)
+        .disabled(isStartDisabled)
+        .opacity(isStartDisabled ? 0.4 : 1)
     }
 
     // MARK: - Helpers
     private func isLocked(_ character: CharacterDisplay) -> Bool {
         guard let wallet = gameState.wallet else { return true }
         return !wallet.unlockedCharacters.contains(character.key)
-    }
-
-    private var enemyPreviewImage: String {
-        if let key = enemyKey,
-            let enemy = characters.first(where: { $0.key == key })
-        {
-            return enemy.displayImage
-        }
-        return "char_kenji_base_preview"
-    }
-
-    private var enemyDisplayName: String {
-        guard
-            let key = enemyKey,
-            let enemy = characters.first(where: { $0.key == key })
-        else {
-            return "Rival"
-        }
-        return enemy.name
     }
 
     private var enemyKey: String? {
@@ -254,21 +261,18 @@ struct CharacterGridView: View {
         gameState.playerSide = selectedSide
 
         let player = selected.toCharacter(using: gameState.wallet)
-        let enemy = Character.enemy(key: enemyKey ?? "kenji")
-
-        if selectedSide == .left {
-            gameState.leftCharacter = player
-            gameState.rightCharacter = enemy
-        } else {
-            gameState.leftCharacter = enemy
-            gameState.rightCharacter = player
-        }
+        let enemy = Character.enemy(key: enemyKey ?? Layout.fallbackEnemyKey)
+        assignCharacters(player: player, enemy: enemy)
 
         switch gameState.pendingMode {
-        case .eventMode(let event): gameState.startEvent(mode: event)
-        case .trainingMode(let mode): gameState.startTraining(mode: mode)
-        case .survivalMode(let mode): gameState.startSurvival(mode: mode)
-        case .arcadeStage(let stage): gameState.startArcade(stage: stage)
+        case .eventMode(let event):
+            gameState.startEvent(mode: event)
+        case .trainingMode(let mode):
+            gameState.startTraining(mode: mode)
+        case .survivalMode(let mode):
+            gameState.startSurvival(mode: mode)
+        case .arcadeStage(let stage):
+            gameState.startArcade(stage: stage)
         case .story(let chapter, let section):
             gameState.startVersus(from: chapter, section: section)
         case .versus:
@@ -283,86 +287,24 @@ struct CharacterGridView: View {
         }
     }
 
-    private var enemySkinId: String? {
-        switch gameState.pendingMode {
-
-        case .story(_, let section):
-            return section.boss == true ? "boss" : nil
-
-        case .eventMode:
-            return "event"
-
-        case .arcadeStage:
-            return nil
-
-        case .trainingMode:
-            return nil
-
-        case .survivalMode:
-            return nil
-
-        case .versus:
-            return nil
-
-        case .none:
-            return nil
-        }
-    }
-
-
-    private func debugSelection() {
-        print("------ 🎮 CHARACTER DEBUG ------")
-
-        print("wallet:", gameState.wallet as Any)
-
-        print("characters count:", characters.count)
-
-        if let selected = selectedCharacter {
-            print("✅ selectedCharacter:", selected.key)
-
-            let locked = isLocked(selected)
-            print("🔒 isLocked:", locked)
-
-            print(
-                "wallet unlocked:",
-                gameState.wallet?.unlockedCharacters ?? []
-            )
-
+    private func assignCharacters(player: Character, enemy: Character) {
+        if selectedSide == .left {
+            gameState.leftCharacter = player
+            gameState.rightCharacter = enemy
         } else {
-            print("❌ NO CHARACTER SELECTED")
+            gameState.leftCharacter = enemy
+            gameState.rightCharacter = player
         }
-
-        print("selectedIndex:", selectedIndex)
-
-        print("--------------------------------")
     }
 
-}
+    private func normalizeSelection() {
+        guard !characters.isEmpty else {
+            selectedIndex = 0
+            return
+        }
 
-struct CharacterSlot: View {
-
-    @EnvironmentObject var gameState: GameState
-
-    let character: CharacterDisplay
-    let isSelected: Bool
-    let locked: Bool
-
-    var body: some View {
-        ZStack {
-            if locked {
-                Text("???")
-                    .foregroundColor(.cyan)
-            } else {
-                Image(character.displayImage)
-                    .resizable()
-                    .scaledToFill()
-            }
-
-            RoundedRectangle(cornerRadius: 6)
-                .stroke(
-                    isSelected ? .cyan : .cyan.opacity(0.25),
-                    lineWidth: isSelected ? 2.5 : 1
-                )
+        if !characters.indices.contains(selectedIndex) {
+            selectedIndex = 0
         }
     }
 }

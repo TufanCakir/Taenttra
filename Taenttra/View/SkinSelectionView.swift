@@ -16,6 +16,7 @@ struct SkinSelectionView: View {
     private var skins: [ShopItem] {
         data.categories
             .flatMap { $0.items }
+            .filter { $0.type == .skin }   // 🔥 FIX
             .sorted { $0.name < $1.name }
     }
 
@@ -66,29 +67,121 @@ struct SkinSelectionView: View {
         wallet: PlayerWallet
     ) -> some View {
 
-        guard let skinId = skin.skinId else {
-            return AnyView(EmptyView()) // oder skip
-        }
+        let owned = skin.skinId.map { wallet.ownedSkins.contains($0) } ?? false
+        let equipped = (wallet.equippedSkin ?? "") == (skin.skinId ?? "")
+        let isEventSkin = skin.currency == .shards
 
-        let owned = wallet.ownedSkins.contains(skinId)
-        let equipped = wallet.equippedSkin == skinId
+        return VStack(spacing: 12) {
 
-        return AnyView(
-            VStack(spacing: 12) {
-                Button {
-                    withAnimation(.easeInOut(duration: 0.15)) {
-                        if equipped {
-                            wallet.equippedSkin = nil
-                        } else if owned {
-                            wallet.equippedSkin = skinId   // ✅ FIX
+            ZStack(alignment: .topTrailing) {
+
+                // 🖼️ Preview
+                Image(skin.preview)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(height: 160)
+                    .padding()
+                    .background(
+                        RoundedRectangle(cornerRadius: 16)
+                            .fill(Color(.tertiarySystemBackground))
+                    )
+                    .overlay {
+                        if !owned {
+                            Color.black.opacity(0.45)
+                            Image(systemName: "lock.fill")
+                                .font(.title)
+                                .foregroundStyle(.white)
                         }
                     }
-                } label: {
-                    Text(equipped ? "Use Base" : "Equip")
+
+                // 🏆 EVENT BADGE
+                if isEventSkin {
+                    Text("Event")
+                        .font(.caption2.weight(.bold))
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(
+                            Capsule()
+                                .fill(Color.yellow)
+                        )
+                        .foregroundColor(.black)
+                        .padding(8)
                 }
-                .disabled(!owned)
             }
+
+            // 🏷️ Name + Status
+            VStack(spacing: 4) {
+                Text(skin.name)
+                    .font(.headline)
+
+                if equipped {
+                    statusTag("Equipped", color: .cyan)
+                } else if owned {
+                    statusTag("Owned", color: .white)
+                } else {
+                    Text("Locked")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+            }
+
+            // 🎯 Action Button
+            Button {
+                withAnimation(.easeInOut(duration: 0.15)) {
+                    if equipped {
+                        wallet.equippedSkin = nil
+                    } else if owned {
+                        wallet.equippedSkin = skin.skinId
+                    }
+                }
+            } label: {
+                Text(equipped ? "Use Base" : "Equip")
+                    .font(.caption.weight(.bold))
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 10)
+                    .background(
+                        Capsule()
+                            .fill(
+                                owned
+                                    ? (isEventSkin ? Color.yellow : Color.cyan)
+                                    : Color.gray.opacity(0.3)
+                            )
+                    )
+                    .foregroundColor(.white)
+            }
+            .disabled(!owned)
+        }
+        .frame(width: 220)
+        .padding(16)
+        .background(
+            RoundedRectangle(cornerRadius: 22)
+                .fill(Color.black)
+                .overlay {
+                    RoundedRectangle(cornerRadius: 22)
+                        .stroke(
+                            (isEventSkin
+                                ? AnyShapeStyle(
+                                    LinearGradient(
+                                        colors: [.yellow, .orange],
+                                        startPoint: .topLeading,
+                                        endPoint: .bottomTrailing
+                                    )
+                                )
+                                : AnyShapeStyle(Color.cyan.opacity(0.8))),
+                            lineWidth: isEventSkin ? 3 : 2
+                        )
+                }
+                .shadow(
+                    color: isEventSkin
+                        ? Color.yellow.opacity(0.35)
+                        : Color.cyan.opacity(0.35),
+                    radius: equipped ? 18 : 10,
+                    y: equipped ? 6 : 3
+                )
         )
+
+        .scaleEffect(equipped ? 1.05 : 1.0)
+        .animation(.easeOut(duration: 0.2), value: equipped)
     }
 
     private func statusTag(_ text: String, color: Color) -> some View {
@@ -125,32 +218,82 @@ struct SkinSelectionView: View {
     }
 
     // MARK: - Skin Row
+
     private func skinRow(
         _ skin: ShopItem,
         wallet: PlayerWallet
     ) -> some View {
 
-        guard let skinId = skin.skinId else {
-            return AnyView(EmptyView())
-        }
+        let owned = skin.skinId.map { wallet.ownedSkins.contains($0) } ?? false
+        let equipped = (wallet.equippedSkin ?? "") == (skin.skinId ?? "")
 
-        let owned = wallet.ownedSkins.contains(skinId)
-        let equipped = wallet.equippedSkin == skinId
+        return HStack(spacing: 12) {
 
-        return AnyView(
-            HStack {
-                Button {
-                    withAnimation {
-                        if equipped {
-                            wallet.equippedSkin = nil
-                        } else if owned {
-                            wallet.equippedSkin = skinId   // ✅ FIX
-                        }
+            Image(skin.preview)
+                .resizable()
+                .scaledToFit()
+                .frame(width: 48, height: 48)
+                .padding(6)
+                .background(
+                    RoundedRectangle(cornerRadius: 10)
+                        .fill(Color(.tertiarySystemBackground))
+                )
+                .overlay {
+                    if !owned {
+                        Color.black.opacity(0.35)
+                        Image(systemName: "lock.fill")
+                            .font(.caption)
+                            .foregroundStyle(.white.opacity(0.8))
                     }
-                } label: {
-                    Text(equipped ? "Unequip" : "Equip")
                 }
+
+            VStack(alignment: .leading, spacing: 6) {
+
+                HStack(spacing: 8) {
+                    Text(skin.name)
+                        .font(.headline)
+
+                    if equipped {
+                        tag("Equipped")
+                    } else if owned {
+                        tag("Owned")
+                    }
+                }
+
+                Text(owned ? "Tap to equip" : "Buy in shop")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
             }
+
+            Spacer()
+
+            Button {
+                withAnimation(.easeInOut(duration: 0.15)) {
+
+                    if equipped {
+                        // 🔥 SKIN ABLEGEN → BASE
+                        wallet.equippedSkin = nil
+                    } else if owned {
+                        // 🔥 SKIN ANLEGEN
+                        wallet.equippedSkin = skin.skinId
+                    }
+                }
+            } label: {
+                Text(equipped ? "Unequip" : "Equip")
+                    .font(.caption.weight(.semibold))
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 8)
+                    .background(
+                        Capsule()
+                            .fill(Color(.secondarySystemBackground))
+                    )
+            }
+            .disabled(!owned || equipped)
+        }
+        .padding(12)
+        .background(
+            RoundedRectangle(cornerRadius: 14)
+                .fill(Color(.secondarySystemBackground))
         )
     }
 
@@ -167,3 +310,4 @@ struct SkinSelectionView: View {
             )
     }
 }
+
