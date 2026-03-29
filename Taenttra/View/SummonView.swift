@@ -1035,7 +1035,9 @@ struct SummonView: View {
     }
 
     private func applyBattleCardReward(to wallet: PlayerWallet) -> SummonDrop {
-        let pool = battleCardCatalog.characters.flatMap(\.cards) + battleCardCatalog.defaults
+        let pool = (
+            battleCardCatalog.characters.flatMap(\.cards) + battleCardCatalog.defaults
+        ).filter { $0.isTransformVariant != true }
         guard let rolledCard = pool.randomElement() else {
             wallet.shards += 25
             return .shards(25)

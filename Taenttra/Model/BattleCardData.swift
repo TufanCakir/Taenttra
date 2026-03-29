@@ -46,6 +46,9 @@ struct BattleCardTemplate: Codable, Identifiable {
     let artworkName: String?
     let skillText: String
     let ultimateText: String
+    let transformThreshold: Int?
+    let transformIntoID: String?
+    let isTransformVariant: Bool?
 }
 
 struct BattleCardCharacterCatalog: Codable {
@@ -84,10 +87,12 @@ enum BattleDeckService {
     private static let cardSeparator = ","
 
     static func starterOwnedCardIDs(from catalog: BattleCardCatalog) -> [String] {
-        var ids = catalog.defaults.map(\.id)
+        var ids = catalog.defaults
+            .filter { $0.isTransformVariant != true }
+            .map(\.id)
 
         if let kenji = catalog.characters.first(where: { $0.key == "kenji" }) {
-            ids.append(contentsOf: kenji.cards.map(\.id))
+            ids.append(contentsOf: kenji.cards.filter { $0.isTransformVariant != true }.map(\.id))
         }
 
         return Array(Set(ids)).sorted()
@@ -96,9 +101,9 @@ enum BattleDeckService {
     static func defaultSlotPayloads(from catalog: BattleCardCatalog) -> [String] {
         let starterCards: [String]
         if let kenji = catalog.characters.first(where: { $0.key == "kenji" }), !kenji.cards.isEmpty {
-            starterCards = Array(kenji.cards.prefix(3).map(\.id))
+            starterCards = Array(kenji.cards.filter { $0.isTransformVariant != true }.prefix(3).map(\.id))
         } else {
-            starterCards = Array(catalog.defaults.prefix(3).map(\.id))
+            starterCards = Array(catalog.defaults.filter { $0.isTransformVariant != true }.prefix(3).map(\.id))
         }
 
         return [
@@ -144,10 +149,10 @@ enum BattleDeckService {
             let characterSet = catalog.characters.first(where: { $0.key.caseInsensitiveCompare(key) == .orderedSame }),
             !characterSet.cards.isEmpty
         {
-            return characterSet.cards
+            return characterSet.cards.filter { $0.isTransformVariant != true }
         }
 
-        return catalog.defaults
+        return catalog.defaults.filter { $0.isTransformVariant != true }
     }
 
     static func resolvePlayerTemplates(

@@ -154,6 +154,18 @@ struct BattleCardView: View {
                     .foregroundStyle(rarityColor)
             }
             .padding(10)
+
+            if card.isTransformed {
+                Text("AWAKENED")
+                    .font(.system(size: 8, weight: .black))
+                    .tracking(1.1)
+                    .foregroundStyle(.black)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 5)
+                    .background(Capsule().fill(Color.yellow))
+                    .padding(8)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
+            }
         }
         .frame(height: Layout.heroHeight)
         .padding(.horizontal, 10)
@@ -188,6 +200,36 @@ struct BattleCardView: View {
                 .foregroundStyle(.white.opacity(0.72))
                 .lineLimit(2)
                 .frame(maxWidth: .infinity, alignment: .leading)
+
+            if let threshold = card.transformThreshold {
+                VStack(alignment: .leading, spacing: 4) {
+                    HStack {
+                        Text("TRANSFORM")
+                            .font(.system(size: 7, weight: .black))
+                            .tracking(0.8)
+                            .foregroundStyle(.yellow)
+                        Spacer()
+                        Text("\(card.transformCharge)/\(threshold)")
+                            .font(.system(size: 7, weight: .black))
+                            .foregroundStyle(.white.opacity(0.82))
+                    }
+
+                    Capsule()
+                        .fill(Color.white.opacity(0.12))
+                        .frame(height: 6)
+                        .overlay(alignment: .leading) {
+                            Capsule()
+                                .fill(
+                                    LinearGradient(
+                                        colors: [.yellow, .orange],
+                                        startPoint: .leading,
+                                        endPoint: .trailing
+                                    )
+                                )
+                                .frame(width: max(8, 98 * CGFloat(card.transformCharge) / CGFloat(max(threshold, 1))), height: 6)
+                        }
+                }
+            }
         }
         .padding(.horizontal, 12)
         .padding(.top, 10)

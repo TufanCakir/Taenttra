@@ -24,6 +24,10 @@ struct BattleCard: Identifiable, Equatable {
     let ultimateText: String
     let isEnemy: Bool
     let slot: Int
+    let transformCharge: Int
+    let transformThreshold: Int?
+    let transformIntoID: String?
+    let isTransformed: Bool
 }
 
 @MainActor
@@ -36,6 +40,29 @@ final class VersusViewModel: ObservableObject {
         static let startingEnergy: Int = 3
         static let maxEnergy: Int = 5
         static let handSize: Int = 3
+    }
+
+    private struct CardEffectPayload {
+        let damageMultiplier: CGFloat
+        let bonusDamage: CGFloat
+        let shieldGain: CGFloat
+        let boostGain: Int
+        let energyGain: Int
+        let stripBoost: Bool
+        let shieldPierce: CGFloat
+        let isUltimate: Bool
+        let actionSuffix: String
+    }
+
+    struct TransformationShowcase: Identifiable, Equatable {
+        let id = UUID()
+        let title: String
+        let subtitle: String
+        let artworkName: String
+        let rarity: BattleCardRarity
+        let accentColor: Color
+        let frameColor: Color
+        let side: FighterSide
     }
 
     @Published private(set) var koOccurred: Bool = false
@@ -79,6 +106,7 @@ final class VersusViewModel: ObservableObject {
     @Published var enemyBoostStacks: Int = 0
     @Published var playerStatusText: String = "NEUTRAL"
     @Published var enemyStatusText: String = "NEUTRAL"
+    @Published var transformationShowcase: TransformationShowcase?
 
     let stages: [VersusStage]
 
@@ -268,7 +296,7 @@ final class VersusViewModel: ObservableObject {
         let attack = attacks.randomElement() ?? .punch
         let config = data(for: attack)
         let effect = effectPayload(for: card, attackerSide: attackerSide, targetSide: targetSide)
-        let damage = effectiveDamage(for: card, baseDamage: config.damage) * effect.damageMultiplier
+        let damage = effectiveDamage(for: card, baseDamage: config.damage) * effect.damageMultiplier + effect.bonusDamage
 
         spendEnergy(card.energyCost, for: attackerSide)
         animateAttack(attack, from: attackerSide)
@@ -278,13 +306,21 @@ final class VersusViewModel: ObservableObject {
             for: card,
             attackerSide: attackerSide,
             damage: damage,
-            effectText: effect.actionSuffix
+            effectText: effect.isUltimate ? "ULTIMATE • \(effect.actionSuffix)" : effect.actionSuffix
         )
 
-        applyDamage(to: targetSide, amount: damage, hitStop: config.hitStop)
+        applyDamage(
+            to: targetSide,
+            amount: damage,
+            hitStop: config.hitStop,
+            shieldPierce: effect.shieldPierce
+        )
 
         DispatchQueue.main.asyncAfter(deadline: .now() + config.recovery) {
-            self.replaceUsedCard(card, for: attackerSide)
+            let retainedCard = self.advanceTransformation(for: card, effect: effect, attackerSide: attackerSide)
+            if !retainedCard {
+                self.replaceUsedCard(card, for: attackerSide)
+            }
             self.recoverEnergyAfterExchange()
             self.clearHighlights()
             self.endAttack(for: attackerSide)
@@ -331,13 +367,14 @@ final class VersusViewModel: ObservableObject {
     private func applyDamage(
         to side: FighterSide,
         amount: CGFloat,
-        hitStop: Double
+        hitStop: Double,
+        shieldPierce: CGFloat = 0
     ) {
         guard fightState == .fighting else { return }
 
         triggerHitStop(duration: hitStop)
 
-        let mitigatedAmount = consumeShield(for: side, incomingDamage: amount)
+        let mitigatedAmount = consumeShield(for: side, incomingDamage: amount, shieldPierce: shieldPierce)
         let newHealth = max(0, health(for: side) - mitigatedAmount)
         setHealth(newHealth, for: side)
 
@@ -476,6 +513,7 @@ final class VersusViewModel: ObservableObject {
         enemyBoostStacks = 0
         playerStatusText = "NEUTRAL"
         enemyStatusText = "NEUTRAL"
+        transformationShowcase = nil
         resetAttackState()
         resetFighterPresentation()
     }
@@ -639,7 +677,11 @@ final class VersusViewModel: ObservableObject {
                         skillText: template.skillText,
                         ultimateText: template.ultimateText,
                         isEnemy: side == enemySide,
-                        slot: index
+                        slot: index,
+                        transformCharge: 0,
+                        transformThreshold: template.transformThreshold,
+                        transformIntoID: template.transformIntoID,
+                        isTransformed: template.isTransformVariant == true
                     )
                 )
             }
@@ -668,7 +710,11 @@ final class VersusViewModel: ObservableObject {
                 skillText: card.skillText,
                 ultimateText: card.ultimateText,
                 isEnemy: card.isEnemy,
-                slot: index
+                slot: index,
+                transformCharge: card.transformCharge,
+                transformThreshold: card.transformThreshold,
+                transformIntoID: card.transformIntoID,
+                isTransformed: card.isTransformed
             )
             hand.append(card)
         }
@@ -709,7 +755,11 @@ final class VersusViewModel: ObservableObject {
                     skillText: card.skillText,
                     ultimateText: card.ultimateText,
                     isEnemy: card.isEnemy,
-                    slot: playerCards.count
+                    slot: playerCards.count,
+                    transformCharge: card.transformCharge,
+                    transformThreshold: card.transformThreshold,
+                    transformIntoID: card.transformIntoID,
+                    isTransformed: card.isTransformed
                 )
                 playerCards.append(card)
             }
@@ -732,7 +782,11 @@ final class VersusViewModel: ObservableObject {
                     skillText: card.skillText,
                     ultimateText: card.ultimateText,
                     isEnemy: card.isEnemy,
-                    slot: enemyCards.count
+                    slot: enemyCards.count,
+                    transformCharge: card.transformCharge,
+                    transformThreshold: card.transformThreshold,
+                    transformIntoID: card.transformIntoID,
+                    isTransformed: card.isTransformed
                 )
                 enemyCards.append(card)
             }
@@ -805,11 +859,136 @@ final class VersusViewModel: ObservableObject {
         enemyEnergy = min(maxEnergy, enemyEnergy + 1)
     }
 
+    private func advanceTransformation(
+        for card: BattleCard,
+        effect: CardEffectPayload,
+        attackerSide: FighterSide
+    ) -> Bool {
+        guard
+            let threshold = card.transformThreshold,
+            let transformIntoID = card.transformIntoID,
+            !card.isTransformed
+        else {
+            return false
+        }
+
+        let chargeGain = transformChargeGain(for: card, effect: effect)
+        let updatedCharge = min(threshold, card.transformCharge + chargeGain)
+
+        guard updatedCharge >= threshold else {
+            updateCard(card.id, for: attackerSide) { current in
+                BattleCard(
+                    id: current.id,
+                    templateID: current.templateID,
+                    title: current.title,
+                    subtitle: current.subtitle,
+                    power: current.power,
+                    role: current.role,
+                    rarity: current.rarity,
+                    energyCost: current.energyCost,
+                    accentColor: current.accentColor,
+                    frameColor: current.frameColor,
+                    artworkName: current.artworkName,
+                    skillText: current.skillText,
+                    ultimateText: current.ultimateText,
+                    isEnemy: current.isEnemy,
+                    slot: current.slot,
+                    transformCharge: updatedCharge,
+                    transformThreshold: current.transformThreshold,
+                    transformIntoID: current.transformIntoID,
+                    isTransformed: current.isTransformed
+                )
+            }
+            setStatusText("SYNC \(updatedCharge)/\(threshold)", for: attackerSide)
+            return true
+        }
+
+        let templateMap = BattleDeckService.templateMap(from: catalog)
+        guard let transformedTemplate = templateMap[transformIntoID] else { return false }
+
+        updateCard(card.id, for: attackerSide) { current in
+            BattleCard(
+                id: current.id,
+                templateID: transformedTemplate.id,
+                title: transformedTemplate.title,
+                subtitle: transformedTemplate.subtitle,
+                power: max(
+                    current.power + 700,
+                    transformedTemplate.power + currentWaveIndex * 140 + currentEnemyIndex * 110
+                ),
+                role: transformedTemplate.role,
+                rarity: transformedTemplate.rarity,
+                energyCost: transformedTemplate.energyCost,
+                accentColor: current.accentColor,
+                frameColor: current.frameColor,
+                artworkName: transformedTemplate.artworkName ?? current.artworkName,
+                skillText: transformedTemplate.skillText,
+                ultimateText: transformedTemplate.ultimateText,
+                isEnemy: current.isEnemy,
+                slot: current.slot,
+                transformCharge: threshold,
+                transformThreshold: nil,
+                transformIntoID: nil,
+                isTransformed: true
+            )
+        }
+        setStatusText("TRANSFORM SHIFT", for: attackerSide)
+        lastActionText = "\(attackerSide == playerSide ? "PLAYER" : "ENEMY") \(transformedTemplate.title.uppercased())  •  AWAKENED"
+        transformationShowcase = TransformationShowcase(
+            title: transformedTemplate.title,
+            subtitle: transformedTemplate.subtitle,
+            artworkName: transformedTemplate.artworkName ?? card.artworkName,
+            rarity: transformedTemplate.rarity,
+            accentColor: card.accentColor,
+            frameColor: card.frameColor,
+            side: attackerSide
+        )
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.25) {
+            if self.transformationShowcase?.title == transformedTemplate.title {
+                withAnimation(.easeOut(duration: 0.2)) {
+                    self.transformationShowcase = nil
+                }
+            }
+        }
+        return true
+    }
+
+    private func transformChargeGain(for card: BattleCard, effect: CardEffectPayload) -> Int {
+        var gain = 1
+        if card.role == .booster {
+            gain += 1
+        }
+        if effect.isUltimate {
+            gain += 1
+        }
+        if card.rarity == .legendary {
+            gain += 1
+        }
+        return gain
+    }
+
+    private func updateCard(
+        _ cardID: BattleCard.ID,
+        for side: FighterSide,
+        transform: (BattleCard) -> BattleCard
+    ) {
+        if side == playerSide {
+            guard let index = playerCards.firstIndex(where: { $0.id == cardID }) else { return }
+            playerCards[index] = transform(playerCards[index])
+            if selectedPlayerCardID == cardID {
+                selectedPlayerCardID = playerCards[index].id
+            }
+        } else {
+            guard let index = enemyCards.firstIndex(where: { $0.id == cardID }) else { return }
+            enemyCards[index] = transform(enemyCards[index])
+        }
+    }
+
     private func effectPayload(
         for card: BattleCard,
         attackerSide: FighterSide,
         targetSide: FighterSide
-    ) -> (damageMultiplier: CGFloat, shieldGain: CGFloat, boostGain: Int, energyGain: Int, stripBoost: Bool, actionSuffix: String) {
+    ) -> CardEffectPayload {
         let rarityBonus: CGFloat = {
             switch card.rarity {
             case .common:
@@ -825,41 +1004,175 @@ final class VersusViewModel: ObservableObject {
 
         let currentBoostStacks = boostStacks(for: attackerSide)
         let boostMultiplier = CGFloat(currentBoostStacks) * 0.18
+        let attackerShield = shield(for: attackerSide)
+        let targetShield = shield(for: targetSide)
 
-        switch card.role {
-        case .attacker:
-            setBoostStacks(0, for: attackerSide)
-            return (
-                damageMultiplier: 1.18 + rarityBonus + boostMultiplier,
-                shieldGain: 0,
-                boostGain: 0,
-                energyGain: 0,
-                stripBoost: false,
-                actionSuffix: currentBoostStacks > 0 ? "BOOST BREAK" : "FINISHER"
+        let baseEffect: CardEffectPayload = {
+            switch card.role {
+            case .attacker:
+                setBoostStacks(0, for: attackerSide)
+                return CardEffectPayload(
+                    damageMultiplier: 1.18 + rarityBonus + boostMultiplier,
+                    bonusDamage: 0,
+                    shieldGain: 0,
+                    boostGain: 0,
+                    energyGain: 0,
+                    stripBoost: false,
+                    shieldPierce: 0,
+                    isUltimate: false,
+                    actionSuffix: currentBoostStacks > 0 ? "BOOST BREAK" : "FINISHER"
+                )
+            case .booster:
+                return CardEffectPayload(
+                    damageMultiplier: 0.88 + rarityBonus + boostMultiplier * 0.45,
+                    bonusDamage: 0,
+                    shieldGain: 0,
+                    boostGain: 1 + (card.rarity == .legendary ? 1 : 0),
+                    energyGain: card.rarity == .common ? 1 : 2,
+                    stripBoost: false,
+                    shieldPierce: 0,
+                    isUltimate: false,
+                    actionSuffix: "TEAM BOOST"
+                )
+            case .guardUnit:
+                return CardEffectPayload(
+                    damageMultiplier: 0.95 + rarityBonus,
+                    bonusDamage: 0,
+                    shieldGain: 0.12 + rarityBonus * 0.6,
+                    boostGain: 0,
+                    energyGain: 1,
+                    stripBoost: boostStacks(for: targetSide) > 0,
+                    shieldPierce: 0,
+                    isUltimate: false,
+                    actionSuffix: "BARRIER UP"
+                )
+            }
+        }()
+
+        let attackerEnergy = attackerSide == playerSide ? playerEnergy : enemyEnergy
+        let targetHealth = health(for: targetSide)
+        switch card.templateID {
+        case "kenji_rush":
+            let isUltimate = currentBoostStacks >= 2
+            return CardEffectPayload(
+                damageMultiplier: baseEffect.damageMultiplier + (isUltimate ? 0.4 : currentBoostStacks > 0 ? 0.22 : 0.08),
+                bonusDamage: baseEffect.bonusDamage + (isUltimate ? 0.05 : currentBoostStacks > 0 ? 0.02 : 0),
+                shieldGain: baseEffect.shieldGain,
+                boostGain: baseEffect.boostGain,
+                energyGain: baseEffect.energyGain + (isUltimate ? 2 : currentBoostStacks > 0 ? 1 : 0),
+                stripBoost: baseEffect.stripBoost,
+                shieldPierce: baseEffect.shieldPierce,
+                isUltimate: isUltimate,
+                actionSuffix: isUltimate ? "DOJO CATACLYSM" : currentBoostStacks > 0 ? "RUSH CHAIN" : "OPENING RUSH"
             )
-        case .booster:
-            return (
-                damageMultiplier: 0.88 + rarityBonus + boostMultiplier * 0.45,
-                shieldGain: 0,
-                boostGain: 1 + (card.rarity == .legendary ? 1 : 0),
-                energyGain: card.rarity == .common ? 1 : 2,
-                stripBoost: false,
-                actionSuffix: "TEAM BOOST"
+        case "kenji_guard":
+            let isUltimate = attackerShield >= 0.16
+            return CardEffectPayload(
+                damageMultiplier: baseEffect.damageMultiplier + (isUltimate ? 0.24 : attackerShield > 0 ? 0.12 : 0.04),
+                bonusDamage: baseEffect.bonusDamage + (isUltimate ? 0.035 : attackerShield > 0 ? 0.025 : 0),
+                shieldGain: baseEffect.shieldGain + (isUltimate ? 0.14 : attackerShield > 0 ? 0.1 : 0.05),
+                boostGain: baseEffect.boostGain,
+                energyGain: baseEffect.energyGain + (isUltimate ? 1 : 0),
+                stripBoost: true,
+                shieldPierce: baseEffect.shieldPierce,
+                isUltimate: isUltimate,
+                actionSuffix: isUltimate ? "STEEL MIRROR" : attackerShield > 0 ? "IRON COUNTER" : "COUNTER WALL"
             )
-        case .guardUnit:
-            return (
-                damageMultiplier: 0.95 + rarityBonus,
-                shieldGain: 0.12 + rarityBonus * 0.6,
-                boostGain: 0,
-                energyGain: 1,
-                stripBoost: boostStacks(for: targetSide) > 0,
-                actionSuffix: "BARRIER UP"
+        case "kenji_focus":
+            let isUltimate = attackerEnergy >= maxEnergy - 1
+            return CardEffectPayload(
+                damageMultiplier: baseEffect.damageMultiplier + (isUltimate ? 0.18 : 0.08),
+                bonusDamage: baseEffect.bonusDamage,
+                shieldGain: baseEffect.shieldGain,
+                boostGain: baseEffect.boostGain + (isUltimate ? 2 : 1),
+                energyGain: baseEffect.energyGain + (isUltimate ? 2 : 1),
+                stripBoost: baseEffect.stripBoost,
+                shieldPierce: baseEffect.shieldPierce,
+                isUltimate: isUltimate,
+                actionSuffix: isUltimate ? "HEAVEN SPLITTER" : "DRAGON CHARGE"
             )
+        case "freeza_beam":
+            let isUltimate = targetHealth <= 0.4
+            return CardEffectPayload(
+                damageMultiplier: baseEffect.damageMultiplier + (isUltimate ? 0.32 : targetShield > 0 ? 0.1 : 0.04),
+                bonusDamage: baseEffect.bonusDamage + (isUltimate ? 0.04 : 0),
+                shieldGain: baseEffect.shieldGain,
+                boostGain: baseEffect.boostGain,
+                energyGain: baseEffect.energyGain,
+                stripBoost: baseEffect.stripBoost,
+                shieldPierce: max(baseEffect.shieldPierce, isUltimate ? 0.55 : targetShield > 0 ? 0.32 : 0.12),
+                isUltimate: isUltimate,
+                actionSuffix: isUltimate ? "EXECUTION RAY" : targetShield > 0 ? "DEATH PIERCE" : "EXECUTION LINE"
+            )
+        case "freeza_shell":
+            let isUltimate = boostStacks(for: targetSide) >= 2
+            return CardEffectPayload(
+                damageMultiplier: baseEffect.damageMultiplier + (isUltimate ? 0.16 : 0.05),
+                bonusDamage: baseEffect.bonusDamage,
+                shieldGain: baseEffect.shieldGain + (isUltimate ? 0.14 : 0.08),
+                boostGain: baseEffect.boostGain,
+                energyGain: baseEffect.energyGain + (isUltimate ? 1 : 0),
+                stripBoost: true,
+                shieldPierce: baseEffect.shieldPierce,
+                isUltimate: isUltimate,
+                actionSuffix: isUltimate ? "TYRANT GUARD" : "COLD LOCK"
+            )
+        case "freeza_core":
+            let isUltimate = currentBoostStacks >= 2 || attackerEnergy >= maxEnergy - 1
+            return CardEffectPayload(
+                damageMultiplier: baseEffect.damageMultiplier + (isUltimate ? 0.34 : 0.14) + CGFloat(currentBoostStacks) * 0.06,
+                bonusDamage: baseEffect.bonusDamage + (isUltimate ? 0.05 : 0.015),
+                shieldGain: baseEffect.shieldGain,
+                boostGain: baseEffect.boostGain + (isUltimate ? 2 : 1),
+                energyGain: baseEffect.energyGain + (isUltimate ? 2 : 1),
+                stripBoost: baseEffect.stripBoost,
+                shieldPierce: baseEffect.shieldPierce,
+                isUltimate: isUltimate,
+                actionSuffix: isUltimate ? "ABSOLUTE DOMINION" : "TYRANT ENGINE"
+            )
+        case "default_striker":
+            return CardEffectPayload(
+                damageMultiplier: baseEffect.damageMultiplier,
+                bonusDamage: baseEffect.bonusDamage,
+                shieldGain: baseEffect.shieldGain,
+                boostGain: baseEffect.boostGain,
+                energyGain: baseEffect.energyGain + (targetShield == 0 ? 1 : 0),
+                stripBoost: baseEffect.stripBoost,
+                shieldPierce: baseEffect.shieldPierce,
+                isUltimate: false,
+                actionSuffix: targetShield == 0 ? "OPEN LINE" : baseEffect.actionSuffix
+            )
+        case "default_guard":
+            return CardEffectPayload(
+                damageMultiplier: baseEffect.damageMultiplier,
+                bonusDamage: baseEffect.bonusDamage,
+                shieldGain: baseEffect.shieldGain + 0.04,
+                boostGain: baseEffect.boostGain,
+                energyGain: baseEffect.energyGain,
+                stripBoost: baseEffect.stripBoost,
+                shieldPierce: baseEffect.shieldPierce,
+                isUltimate: false,
+                actionSuffix: "FORTIFY"
+            )
+        case "default_boost":
+            return CardEffectPayload(
+                damageMultiplier: baseEffect.damageMultiplier,
+                bonusDamage: baseEffect.bonusDamage,
+                shieldGain: baseEffect.shieldGain,
+                boostGain: baseEffect.boostGain + 1,
+                energyGain: baseEffect.energyGain,
+                stripBoost: baseEffect.stripBoost,
+                shieldPierce: baseEffect.shieldPierce,
+                isUltimate: false,
+                actionSuffix: "SURGE CHAIN"
+            )
+        default:
+            return baseEffect
         }
     }
 
     private func applyEffectPayload(
-        _ effect: (damageMultiplier: CGFloat, shieldGain: CGFloat, boostGain: Int, energyGain: Int, stripBoost: Bool, actionSuffix: String),
+        _ effect: CardEffectPayload,
         attackerSide: FighterSide,
         targetSide: FighterSide
     ) {
@@ -879,16 +1192,28 @@ final class VersusViewModel: ObservableObject {
             setBoostStacks(0, for: targetSide)
             setStatusText("BOOST JAMMED", for: targetSide)
         }
+
+        if effect.shieldPierce > 0, shield(for: targetSide) > 0 {
+            setStatusText("SHIELD PIERCED", for: targetSide)
+        }
+
+        if effect.isUltimate {
+            setStatusText("ULT READY", for: attackerSide)
+        }
     }
 
-    private func consumeShield(for side: FighterSide, incomingDamage: CGFloat) -> CGFloat {
+    private func consumeShield(for side: FighterSide, incomingDamage: CGFloat, shieldPierce: CGFloat = 0) -> CGFloat {
         let currentShield = shield(for: side)
+        let clampedPierce = min(0.75, max(0, shieldPierce))
         guard currentShield > 0 else { return incomingDamage }
 
-        let absorbed = min(currentShield, incomingDamage)
-        let remaining = max(0, incomingDamage - absorbed)
+        let piercedDamage = incomingDamage * clampedPierce
+        let shieldableDamage = max(0, incomingDamage - piercedDamage)
+
+        let absorbed = min(currentShield, shieldableDamage)
+        let remaining = max(0, shieldableDamage - absorbed) + piercedDamage
         setShield(max(0, currentShield - absorbed), for: side)
-        if remaining == 0 {
+        if remaining == 0, piercedDamage == 0 {
             setStatusText("SHIELD HOLD", for: side)
         }
         return remaining

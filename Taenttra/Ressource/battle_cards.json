@@ -51,7 +51,9 @@
           "energyCost": 1,
           "artworkName": "char_kenji_base_punch",
           "skillText": "Tiger Rush tears open the first lane with fast pressure.",
-          "ultimateText": "Dojo Cataclysm: chained rush combo shatters enemy defense."
+          "ultimateText": "Dojo Cataclysm: chained rush combo shatters enemy defense.",
+          "transformThreshold": 3,
+          "transformIntoID": "kenji_rush_awakened"
         },
         {
           "id": "kenji_guard",
@@ -75,7 +77,35 @@
           "energyCost": 3,
           "artworkName": "char_kenji_base_kick",
           "skillText": "Dragon Focus channels spirit charge into every ally.",
-          "ultimateText": "Heaven Splitter: total field buff and finishing dragon burst."
+          "ultimateText": "Heaven Splitter: total field buff and finishing dragon burst.",
+          "transformThreshold": 4,
+          "transformIntoID": "kenji_focus_awakened"
+        },
+        {
+          "id": "kenji_rush_awakened",
+          "title": "Azure Fang",
+          "subtitle": "Awakened Rush",
+          "role": "attacker",
+          "rarity": "legendary",
+          "power": 5200,
+          "energyCost": 2,
+          "artworkName": "char_kenji_base_kick",
+          "skillText": "Azure Fang rips through the lane with awakened combo pressure.",
+          "ultimateText": "Skybreaker Blitz: awakened rush detonates through every opening.",
+          "isTransformVariant": true
+        },
+        {
+          "id": "kenji_focus_awakened",
+          "title": "Dragon Ascendant",
+          "subtitle": "Awakened Spirit",
+          "role": "booster",
+          "rarity": "legendary",
+          "power": 6100,
+          "energyCost": 4,
+          "artworkName": "char_kenji_base_idle",
+          "skillText": "Dragon Ascendant floods the team with awakened ki and boost.",
+          "ultimateText": "Celestial Splitter: ascended aura overwhelms the whole board.",
+          "isTransformVariant": true
         }
       ]
     },
@@ -92,7 +122,9 @@
           "energyCost": 1,
           "artworkName": "char_freeza_base_punch",
           "skillText": "Death Beam pierces the lane with surgical burst damage.",
-          "ultimateText": "Execution Ray: precision fire that deletes weakened targets."
+          "ultimateText": "Execution Ray: precision fire that deletes weakened targets.",
+          "transformThreshold": 3,
+          "transformIntoID": "freeza_beam_awakened"
         },
         {
           "id": "freeza_shell",
@@ -116,7 +148,35 @@
           "energyCost": 3,
           "artworkName": "char_freeza_base_kick",
           "skillText": "Void Tyrant turns malice into total board control.",
-          "ultimateText": "Absolute Dominion: overwhelming aura crushes every lane at once."
+          "ultimateText": "Absolute Dominion: overwhelming aura crushes every lane at once.",
+          "transformThreshold": 4,
+          "transformIntoID": "freeza_core_awakened"
+        },
+        {
+          "id": "freeza_beam_awakened",
+          "title": "Emperor Ray",
+          "subtitle": "Awakened Beam",
+          "role": "attacker",
+          "rarity": "legendary",
+          "power": 5350,
+          "energyCost": 2,
+          "artworkName": "char_freeza_base_kick",
+          "skillText": "Emperor Ray carves through shields with awakened precision fire.",
+          "ultimateText": "Final Execution: awakened beam erases weakened targets outright.",
+          "isTransformVariant": true
+        },
+        {
+          "id": "freeza_core_awakened",
+          "title": "Golden Tyrant",
+          "subtitle": "Awakened Core",
+          "role": "booster",
+          "rarity": "legendary",
+          "power": 6250,
+          "energyCost": 4,
+          "artworkName": "char_freeza_base_idle",
+          "skillText": "Golden Tyrant converts domination into brutal teamwide pressure.",
+          "ultimateText": "Absolute Ruin: awakened malice crushes the entire grid.",
+          "isTransformVariant": true
         }
       ]
     }

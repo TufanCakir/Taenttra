@@ -15,6 +15,9 @@ struct VersusView: View {
     }
 
     @EnvironmentObject var gameState: GameState
+    @State private var transformationFlash = false
+    @State private var transformationBurst = false
+    @State private var transformationFlip = false
 
     @ObservedObject var viewModel: VersusViewModel
     let onVictoryContinue: (VictoryRewards) -> Void
@@ -54,6 +57,33 @@ struct VersusView: View {
             }
         }
         .animation(.easeInOut(duration: 0.35), value: viewModel.fightState)
+        .onChange(of: viewModel.transformationShowcase?.id) { _, _ in
+            guard viewModel.transformationShowcase != nil else { return }
+            transformationFlash = false
+            transformationBurst = false
+            transformationFlip = false
+
+            withAnimation(.easeOut(duration: 0.18)) {
+                transformationFlash = true
+            }
+            withAnimation(.spring(response: 0.7, dampingFraction: 0.7)) {
+                transformationBurst = true
+            }
+            withAnimation(.easeInOut(duration: 0.56).delay(0.08)) {
+                transformationFlip = true
+            }
+
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.34) {
+                withAnimation(.easeOut(duration: 0.5)) {
+                    transformationFlash = false
+                }
+            }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                withAnimation(.easeOut(duration: 0.35)) {
+                    transformationBurst = false
+                }
+            }
+        }
     }
 
     private var fightView: some View {
@@ -77,6 +107,9 @@ struct VersusView: View {
         }
         .overlay(alignment: .center) {
             introOverlay
+        }
+        .overlay {
+            transformationOverlay
         }
         .overlay(alignment: .top) {
             hudOverlay
@@ -369,6 +402,219 @@ struct VersusView: View {
     private var hudOverlay: some View {
         if viewModel.phase == .fighting {
             GameHUDView(viewModel: viewModel)
+        }
+    }
+
+    @ViewBuilder
+    private var transformationOverlay: some View {
+        if let showcase = viewModel.transformationShowcase {
+            ZStack {
+                Color.black.opacity(0.34)
+                    .ignoresSafeArea()
+
+                transformationFXLayer(for: showcase)
+
+                VStack(spacing: 14) {
+                    Text(showcase.side == gameState.playerSide ? "PLAYER AWAKENING" : "ENEMY AWAKENING")
+                        .font(.system(size: 12, weight: .black))
+                        .tracking(2)
+                        .foregroundStyle(.yellow)
+
+                    ZStack(alignment: .bottomLeading) {
+                        transformationCardFace(showcase: showcase)
+                            .opacity(transformationFlip ? 0 : 1)
+                            .rotation3DEffect(.degrees(transformationFlip ? -90 : 0), axis: (x: 0, y: 1, z: 0), perspective: 0.72)
+
+                        awakenedCardFace(showcase: showcase)
+                            .opacity(transformationFlip ? 1 : 0)
+                            .rotation3DEffect(.degrees(transformationFlip ? 0 : 90), axis: (x: 0, y: 1, z: 0), perspective: 0.72)
+                    }
+
+                    Text("TRANSFORM SHIFT")
+                        .font(.system(size: 18, weight: .black, design: .rounded))
+                        .tracking(1.4)
+                        .foregroundStyle(.white)
+                }
+                .padding(26)
+                .background(
+                    RoundedRectangle(cornerRadius: 34, style: .continuous)
+                        .fill(Color.black.opacity(0.62))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 34, style: .continuous)
+                                .stroke(Color.white.opacity(0.12), lineWidth: 1)
+                        )
+                )
+                .scaleEffect(1.02)
+                .transition(.asymmetric(insertion: .scale(scale: 0.88).combined(with: .opacity), removal: .opacity))
+            }
+            .zIndex(40)
+        }
+    }
+
+    private func transformationFXLayer(for showcase: VersusViewModel.TransformationShowcase) -> some View {
+        ZStack {
+            RadialGradient(
+                colors: [
+                    .white.opacity(transformationFlash ? 0.9 : 0),
+                    showcase.accentColor.opacity(transformationFlash ? 0.42 : 0),
+                    .clear
+                ],
+                center: .center,
+                startRadius: 8,
+                endRadius: transformationFlash ? 260 : 120
+            )
+            .blendMode(.screen)
+            .ignoresSafeArea()
+
+            Circle()
+                .stroke(
+                    LinearGradient(
+                        colors: [.white.opacity(0.8), showcase.accentColor, .yellow],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    ),
+                    lineWidth: 5
+                )
+                .frame(width: transformationBurst ? 360 : 180, height: transformationBurst ? 360 : 180)
+                .blur(radius: transformationBurst ? 0 : 1.5)
+                .opacity(transformationBurst ? 0 : 0.95)
+
+            Circle()
+                .stroke(showcase.frameColor.opacity(0.85), lineWidth: 2)
+                .frame(width: transformationBurst ? 440 : 220, height: transformationBurst ? 440 : 220)
+                .opacity(transformationBurst ? 0 : 0.75)
+
+            ForEach(0..<14, id: \.self) { index in
+                let angle = Double(index) / 14.0 * .pi * 2
+                let startRadius: CGFloat = 36
+                let endRadius: CGFloat = transformationBurst ? 210 : 74
+                let x = cos(angle) * endRadius
+                let y = sin(angle) * endRadius
+
+                RoundedRectangle(cornerRadius: 4, style: .continuous)
+                    .fill(index.isMultiple(of: 2) ? showcase.accentColor : .yellow)
+                    .frame(width: 8, height: 28)
+                    .rotationEffect(.radians(angle))
+                    .offset(
+                        x: transformationBurst ? x : cos(angle) * startRadius,
+                        y: transformationBurst ? y : sin(angle) * startRadius
+                    )
+                    .opacity(transformationBurst ? 0 : 0.95)
+                    .blur(radius: transformationBurst ? 1 : 0)
+            }
+        }
+        .allowsHitTesting(false)
+    }
+
+    private func transformationCardFace(showcase: VersusViewModel.TransformationShowcase) -> some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: 30, style: .continuous)
+                .fill(
+                    LinearGradient(
+                        colors: [
+                            showcase.frameColor.opacity(0.82),
+                            showcase.accentColor.opacity(0.38),
+                            Color.black.opacity(0.96)
+                        ],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+                .frame(width: 248, height: 320)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 30, style: .continuous)
+                        .stroke(
+                            LinearGradient(
+                                colors: [.white.opacity(0.7), showcase.frameColor, .yellow.opacity(0.7)],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            ),
+                            lineWidth: 3
+                        )
+                )
+                .shadow(color: showcase.frameColor.opacity(0.4), radius: 22)
+
+            Circle()
+                .fill(showcase.accentColor.opacity(0.22))
+                .frame(width: 132, height: 132)
+                .blur(radius: 10)
+
+            Circle()
+                .stroke(Color.white.opacity(0.8), lineWidth: 2)
+                .frame(width: 114, height: 114)
+
+            Circle()
+                .stroke(showcase.accentColor.opacity(0.9), lineWidth: 5)
+                .frame(width: 92, height: 92)
+
+            VStack(spacing: 8) {
+                Text("SYNC CORE")
+                    .font(.system(size: 14, weight: .black))
+                    .tracking(2.1)
+                    .foregroundStyle(.white)
+                Text("AWAKENING")
+                    .font(.system(size: 26, weight: .black, design: .rounded))
+                    .tracking(1.4)
+                    .foregroundStyle(.yellow)
+            }
+        }
+    }
+
+    private func awakenedCardFace(showcase: VersusViewModel.TransformationShowcase) -> some View {
+        ZStack(alignment: .bottomLeading) {
+            RoundedRectangle(cornerRadius: 30, style: .continuous)
+                .fill(
+                    LinearGradient(
+                        colors: [
+                            showcase.accentColor.opacity(0.25),
+                            showcase.frameColor.opacity(0.55),
+                            Color.black.opacity(0.92)
+                        ],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+                .frame(width: 248, height: 320)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 30, style: .continuous)
+                        .stroke(
+                            LinearGradient(
+                                colors: [.yellow, showcase.accentColor, .white.opacity(0.4)],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            ),
+                            lineWidth: 3
+                        )
+                )
+                .shadow(color: showcase.accentColor.opacity(0.45), radius: 26)
+
+            Circle()
+                .fill(showcase.accentColor.opacity(0.24))
+                .frame(width: 180, height: 180)
+                .blur(radius: 14)
+                .offset(x: 18, y: -12)
+
+            Image(showcase.artworkName)
+                .resizable()
+                .scaledToFit()
+                .frame(width: 214, height: 250)
+                .offset(y: -10)
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text(showcase.title.uppercased())
+                    .font(.system(size: 22, weight: .black, design: .rounded))
+                    .foregroundStyle(.white)
+                    .lineLimit(2)
+                Text(showcase.subtitle.uppercased())
+                    .font(.system(size: 11, weight: .bold))
+                    .tracking(1.2)
+                    .foregroundStyle(.white.opacity(0.72))
+                Text("AWAKENED \(showcase.rarity.displayTitle)")
+                    .font(.system(size: 9, weight: .black))
+                    .tracking(1.4)
+                    .foregroundStyle(.yellow)
+            }
+            .padding(18)
         }
     }
 }

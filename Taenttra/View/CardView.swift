@@ -39,6 +39,7 @@ struct CardView: View {
     private var ownedTemplates: [BattleCardTemplate] {
         let ids = wallet?.ownedBattleCardIDs ?? BattleDeckService.starterOwnedCardIDs(from: catalog)
         return ids.compactMap { templateMap[$0] }
+            .filter { $0.isTransformVariant != true }
             .sorted { lhs, rhs in
                 if lhs.rarity == rhs.rarity {
                     return lhs.power > rhs.power
@@ -350,6 +351,15 @@ struct CardView: View {
                         .font(.system(size: 9, weight: .black))
                         .tracking(1)
                         .foregroundStyle(rarityColor(template.rarity))
+                    if template.transformIntoID != nil {
+                        Text("TRANSFORM")
+                            .font(.system(size: 8, weight: .black))
+                            .tracking(0.9)
+                            .foregroundStyle(.yellow)
+                            .padding(.horizontal, 6)
+                            .padding(.vertical, 4)
+                            .background(Capsule().fill(Color.white.opacity(0.08)))
+                    }
                     Spacer()
                     Text("\(template.power)")
                         .font(.system(size: 24, weight: .black, design: .rounded))
@@ -429,6 +439,15 @@ struct CardView: View {
             VStack(alignment: .leading, spacing: 8) {
                 detailTextBlock(title: "SKILL", text: template.skillText)
                 detailTextBlock(title: "ULTIMATE", text: template.ultimateText)
+                if
+                    let transformIntoID = template.transformIntoID,
+                    let transformedTemplate = templateMap[transformIntoID]
+                {
+                    detailTextBlock(
+                        title: "TRANSFORM",
+                        text: "At \(template.transformThreshold ?? 0) sync, this card awakens into \(transformedTemplate.title) with new power and artwork."
+                    )
+                }
             }
         }
         .padding(18)
